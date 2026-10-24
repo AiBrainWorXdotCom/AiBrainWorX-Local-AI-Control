@@ -310,12 +310,12 @@ Seeing a model claim that it can access Unreal is insufficient. Inspect the actu
 
 Our AiBrainWorX control panel brings the daily workflow into one window:
 
-1. Start Qwen and wait for Strata to report ready.
-2. Start Harness, then open its browser chat.
+1. Click **Start model** and wait for Strata to report ready.
+2. Choose **DeepSeek Harness (browser)** in the workspace dropdown, start it, then open chat.
 3. Check the Unreal connection when live inspection is needed.
 4. Stop the service you are finished using.
 
-The controls are independent. Stopping Harness leaves Qwen running, and the launcher checks process identity before stopping its own services. We tested Harness start, stop and duplicate-start handling. Opening the panel does not start inference automatically.
+The workspace dropdown also offers **Codex CLI (optional)**, which opens the same local model profile in an interactive terminal. Its service buttons are disabled because the terminal controls that client session. The model choice is configured during Setup; the dropdown switches clients, not model weights. The controls are independent. Stopping Harness leaves Qwen running, and the launcher checks process identity before stopping its own services. We tested Harness start, stop and duplicate-start handling. Opening the panel does not start inference automatically.
 
 The refreshed design displays the real hardware, separates model and workspace controls, and carries **Made by AiBrainWorX**. These screenshots show the actual Windows application, not a generated mockup.
 
@@ -354,7 +354,7 @@ For Codex, copy each desired skill folder from the repository's `skills` directo
 
 **Skills provide guidance; MCP provides tools.** Installing the Markdown does not install Unreal, enable plugins, register a server, grant file access or turn inspection tools into editing tools. Complete the connection setup above first. Other coding assistants may use the same instructions, but their skill-loading mechanisms differ; automatic discovery is not assumed.
 
-These are our original MIT-licensed instructions. They contain no Epic engine code, Marketplace assets, model weights or private game files. Their structure and portability have been checked, while behavioral validation in a fresh user installation remains a separate acceptance step. The companion GitHub repository is currently private for owner review; its public download will follow that review. The installation directions describe the prepared package.
+These are our original MIT-licensed instructions. They contain no Epic engine code, Marketplace assets, model weights or private game files. Their structure and portability have been checked, while behavioral validation in a fresh user installation remains a separate acceptance step. The launcher, four skills and setup examples are available in the [public companion repository](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control). [Download the ZIP](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control/archive/refs/heads/main.zip), extract it, read the model license notes, and run Setup.cmd.
 
 ## A useful local assistant on hardware we already owned
 

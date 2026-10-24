@@ -1,8 +1,6 @@
 # AiBrainWorX Local AI Control
 
-**Local AI, with a clear Start button.** A Windows launcher for a Strata model server, DeepSeek Harness, a local Codex CLI profile and optional read-only Unreal tools.
-
-**Private review draft.** This repository is private while its owner reviews the launcher and tutorial. No public release is approved yet.
+**Local AI, with a clear Start button.** A Windows launcher for Strata and your choice of coding workspace, with optional Unreal inspection tools.
 
 **Measured on our PC: about 20–25 generated tokens/second on short probes**, using an RTX 3060 12 GB, Ryzen 5 5500, 32 GB RAM and SSD-backed data. Read the [public tutorial](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/). Heavy memory pressure reduced one live reading to roughly 13 tokens/second; these are observations, not a performance guarantee.
 
@@ -12,11 +10,13 @@ Made by **AiBrainWorX** · Original code: **MIT** · [Website](https://aibrainwo
 
 ## Start here — no Git commands required
 
-1. Download this repository using **Code → Download ZIP**, then extract it into a permanent folder.
+1. [Download the ZIP](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control/archive/refs/heads/main.zip), then extract it into a permanent folder. You can also use **Code → Download ZIP**.
 2. Read [model license notes](MODEL-LICENSES.md), then double-click **Setup.cmd**.
 3. Setup checks prerequisites, offers installation through official sources, and reuses an existing Strata installation when selected.
 4. Choose a working folder. Unreal is optional; an ordinary coding folder works too.
-5. Double-click **Launch.cmd**, start Qwen/Strata, wait for Ready, then start Harness and open chat.
+5. Open **Launch.cmd**, click **Start model**, and wait for Ready. Choose **DeepSeek Harness (browser)**, then **Start → Open chat**.
+
+The workspace dropdown also offers **Codex CLI (optional)**. Choose it and click **Open CLI** to open the prepared local profile in a terminal. Both clients use the same Strata server; you can use either one. The Harness Start/Stop buttons are disabled when the terminal client is selected. Switching clients does not stop an already running service. Model selection happens during Setup; model tuning controls are planned for a later version.
 
 Large model downloads require an explicit `DOWNLOAD` confirmation. The tested Qwen Coder files are approximately 58.4 GB, plus prepared data and other runtime files. The guided Strata option can select another supported model. Model weights are downloaded by Strata; none are stored in this repository.
 
@@ -29,7 +29,7 @@ Setup uses Windows Package Manager for missing Git, Python or Node when you appr
 - A named Codex local-provider profile, leaving the normal default profile unchanged.
 - Five optional Unreal inspection tools: project status, actors, actor details, selection and asset search.
 - Four original [Unreal skills](skills/README.md) for development, source investigation, Epic research and MCP diagnostics.
-- A [tutorial draft](docs/tutorial.md), screenshots, architecture graphics and a [rebuildable captioned walkthrough](media/VIDEO.md).
+- A [setup tutorial](docs/tutorial.md), screenshots, architecture graphics and a [rebuildable captioned walkthrough](media/VIDEO.md).
 - MIT-licensed integration source and contract tests.
 
 Harness is the agent interface; the configured model can be Qwen. You do not need to download a DeepSeek model to use this setup.
@@ -46,7 +46,7 @@ Keep one active agent at a time on memory-constrained machines. Stop inference w
 
 ## Settings and privacy
 
-See [SECURITY.md](SECURITY.md) for the private-review policy and security controls.
+See [SECURITY.md](SECURITY.md) for security and privacy details.
 
 `config.local.json` contains your actual installation paths and is ignored by Git. Runtime data and logs go into your local application-data folder. The first-run setup uses a dedicated Harness home so it can prepare its own profile without replacing your existing Harness history or credentials.
 

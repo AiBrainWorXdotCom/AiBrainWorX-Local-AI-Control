@@ -20,6 +20,9 @@ jobs:
       - name: PowerShell syntax
         shell: powershell
         run: ./Tests/Check-Scripts.ps1
+      - name: Client launch contract
+        shell: powershell
+        run: ./Tests/Check-ClientLaunch.ps1
       - name: No-download setup plan
         shell: powershell
         run: ./Setup.ps1 -Plan

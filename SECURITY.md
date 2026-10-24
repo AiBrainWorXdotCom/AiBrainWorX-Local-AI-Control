@@ -1,9 +1,8 @@
 # Security and privacy
 
-This repository is private during owner review. Do not change its visibility,
-invite collaborators, enable public Pages, or publish releases without the
-owner's explicit instruction. The MIT file describes the original code's
-license; it does not make a private GitHub repository publicly visible.
+This is a public repository for the original AiBrainWorX launcher, integration
+code and skills. The MIT license applies to that original work. Third-party
+models and tools retain their own licenses; model weights are not distributed.
 
 Local paths belong in ignored `config.local.json`. Model weights, credentials,
 session data, logs, game assets, and raw desktop recordings are excluded. The

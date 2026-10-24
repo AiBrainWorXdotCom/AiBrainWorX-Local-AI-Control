@@ -109,6 +109,7 @@ if (-not ($harnessInstalled -and $codexInstalled)) {
 }
 $HarnessEntry = Join-Path $packages 'node_modules\@deepseek-ai\dsh\lib\bin.js'
 $CodexCommand = Join-Path $packages 'node_modules\.bin\codex.cmd'
+$CodexEntry = Join-Path $packages 'node_modules\@openai\codex\bin\codex.js'
 $workspaceDefault = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'LocalAI-Workspace'
 $entered = Read-Host "Working project folder [Enter for $workspaceDefault]"
 $WorkspaceRoot = if ($entered) { [IO.Path]::GetFullPath($entered.Trim('"')) } else { $workspaceDefault }
@@ -145,7 +146,7 @@ else {
 $profile = $profile.Replace('apiKeyEnv: STRATA_LOCAL_TOKEN','apiKeyEnv: AIBRAINWORX_API_KEY')
 Write-Utf8 $patchPath $profile
 
-$settings = [ordered]@{NodeExecutable=$Node;HarnessEntry=$HarnessEntry;HarnessHome=$HarnessHome;PythonExecutable=$Python;StrataRoot=$StrataRoot;StrataConfig=$StrataConfig;StrataPython=$StrataPython;WorkspaceRoot=$WorkspaceRoot;UnrealProjectName=$UnrealName;EnginePython=$EnginePython;StateRoot=$RuntimeRoot;ModelLabel=$model.model_name;CodexCommand=$CodexCommand}
+$settings = [ordered]@{NodeExecutable=$Node;HarnessEntry=$HarnessEntry;HarnessHome=$HarnessHome;PythonExecutable=$Python;StrataRoot=$StrataRoot;StrataConfig=$StrataConfig;StrataPython=$StrataPython;WorkspaceRoot=$WorkspaceRoot;UnrealProjectName=$UnrealName;EnginePython=$EnginePython;StateRoot=$RuntimeRoot;ModelLabel=$model.model_name;CodexCommand=$CodexCommand;CodexEntry=$CodexEntry}
 $configPath = Join-Path $RepoRoot 'config.local.json'
 Save-Backup $configPath
 Write-Utf8 $configPath ($settings | ConvertTo-Json)
@@ -161,6 +162,6 @@ Write-Utf8 (Join-Path $RuntimeRoot 'model-catalog.json') ($catalog | ConvertTo-J
 if (-not ($UnrealName -and $EnginePython)) { $template = ($template -split '(?m)^\[mcp_servers.unreal_local\]')[0] }
 else { $template = $template.Replace('C:/AI/UnrealAssistant/unreal_mcp.py',(Join-Path $RepoRoot 'bridge\unreal_mcp.py').Replace('\','/')).Replace('C:/Projects/MyUnrealGame',$WorkspaceRoot.Replace('\','/')).Replace('MyUnrealGame',$UnrealName).Replace('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PythonScriptPlugin/Content/Python',$EnginePython.Replace('\','/')) }
 Write-Utf8 $codexProfile $template
-Write-Host "`nSetup complete. Double-click Launch.cmd, then Start Qwen and Start Harness." -ForegroundColor Cyan
+Write-Host "`nSetup complete. Open Launch.cmd, start the model, then choose your coding workspace." -ForegroundColor Cyan
 Write-Host 'Model files are reused. Local paths and logs stay in ignored configuration/runtime folders.'
 Write-Host 'Made by AiBrainWorX'

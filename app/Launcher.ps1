@@ -1,4 +1,4 @@
-param([ValidateSet('Gui','Start','Stop','Status','Open','UnrealStatus')][string]$Action = 'Gui', [string]$CaptureImage = '', [string]$CaptureFrames = '')
+param([ValidateSet('Gui','Start','Stop','Status','Open','UnrealStatus')][string]$Action = 'Gui', [string]$CaptureImage = '', [string]$CaptureFrames = '', [ValidateSet('Harness','Codex')][string]$Workspace = 'Harness')
 $ErrorActionPreference = 'Stop'
 $ConfigPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json'
 . (Join-Path $PSScriptRoot 'Settings.ps1')
@@ -98,6 +98,17 @@ function Open-Harness {
     return 'Harness opened in your browser.'
 }
 
+function Open-Codex {
+    $health = Invoke-RestMethod 'http://127.0.0.1:8081/health' -TimeoutSec 2
+    if ($health.service -ne 'strata' -or -not $health.loaded) { throw 'Start the model and wait for Ready before opening a coding client.' }
+    $launcher = Join-Path $PSScriptRoot 'Start-Codex.ps1'
+    & $launcher -ConfigPath $ConfigPath -CheckOnly | Out-Null
+    $arguments = '-NoProfile -NoExit -ExecutionPolicy Bypass -File "{0}" -ConfigPath "{1}"' -f $launcher,$ConfigPath
+    # This is an interactive coding terminal opened by the user's Open CLI button.
+    Start-Process -FilePath "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList $arguments -WorkingDirectory $Project -WindowStyle Normal | Out-Null
+    return 'Local Codex CLI opened. The model and Harness remain under separate controls.'
+}
+
 function Get-UnrealStatus {
     if (-not ($settings.UnrealProjectName -and $settings.EnginePython)) { return 'Unreal tools are optional. Run Setup.cmd to connect an Unreal project.' }
     $start = New-Object System.Diagnostics.ProcessStartInfo
@@ -195,7 +206,7 @@ function New-Card($x,$y,$width,$height,$accent) {
     return $panel
 }
 
-function New-ControlButton($parent,$text,$x,$y,$width,$handler,$accent=$null) {
+function New-ControlButton($parent,$text,$x,$y,$width,$handler,$accent=$null,[switch]$PassThru) {
     $button = New-Object System.Windows.Forms.Button
     $button.Text = $text
     $button.SetBounds($x,$y,$width,38)
@@ -207,13 +218,14 @@ function New-ControlButton($parent,$text,$x,$y,$width,$handler,$accent=$null) {
     $button.ForeColor = if ($accent) { $palette.Background } else { $palette.Text }
     $button.Add_Click($handler)
     $parent.Controls.Add($button)
+    if ($PassThru) { return $button }
 }
 
 $brand = New-Text $form 'AiBrainWorX' 32 23 500 35 19 $true $palette.Cyan
 $edition = New-Text $form 'LOCAL AI / DEVELOPER CONTROL' 32 64 650 22 9 $true $palette.Muted
 $localTag = New-Text $form 'LOCALHOST  /  MANUAL START' 705 31 265 28 9 $true $palette.Purple
 $title = New-Text $form 'Big model. Everyday hardware.' 30 103 940 49 28 $true
-$subtitle = New-Text $form ($settings.ModelLabel + ' + Strata + Codex + DeepSeek Harness') 32 160 940 28 11 $false $palette.Muted
+$subtitle = New-Text $form ($settings.ModelLabel + ' + Strata + your choice of coding workspace') 32 160 940 28 11 $false $palette.Muted
 
 $gpuCard = New-Card 32 210 300 80 $palette.Cyan
 $gpuLabel = New-Text $gpuCard 'GRAPHICS' 16 12 265 18 8 $true $palette.Muted
@@ -230,17 +242,26 @@ $modelEyebrow = New-Text $modelCard '01 / MODEL ENGINE' 20 16 415 22 9 $true $pa
 $modelTitle = New-Text $modelCard 'Local model / Strata' 20 48 415 35 18 $true
 $modelEndpoint = New-Text $modelCard 'LOCAL INFERENCE  /  127.0.0.1:8081' 21 91 415 20 9 $false $palette.Muted
 $modelStatus = New-Text $modelCard 'Checking model...' 21 118 415 34 10 $false $palette.Muted
-New-ControlButton $modelCard 'Start Qwen' 20 156 200 { try { $feedback.Text = & $QwenControl -Action Start } catch { $feedback.Text = $_.Exception.Message }; Update-Panel } $palette.Cyan
-New-ControlButton $modelCard 'Stop Qwen' 236 156 200 { try { $feedback.Text = & $QwenControl -Action Stop } catch { $feedback.Text = $_.Exception.Message }; Update-Panel }
+New-ControlButton $modelCard 'Start model' 20 156 200 { try { $feedback.Text = & $QwenControl -Action Start } catch { $feedback.Text = $_.Exception.Message }; Update-Panel } $palette.Cyan
+New-ControlButton $modelCard 'Stop model' 236 156 200 { try { $feedback.Text = & $QwenControl -Action Stop } catch { $feedback.Text = $_.Exception.Message }; Update-Panel }
 
 $harnessCard = New-Card 512 314 456 205 $palette.Purple
-$harnessEyebrow = New-Text $harnessCard '02 / AGENT WORKSPACE' 20 16 415 22 9 $true $palette.Purple
-$harnessTitle = New-Text $harnessCard 'DeepSeek Harness' 20 48 415 35 18 $true
+$harnessEyebrow = New-Text $harnessCard '02 / CHOOSE YOUR WORKSPACE' 20 16 415 22 9 $true $palette.Purple
+$workspacePicker = New-Object System.Windows.Forms.ComboBox
+$workspacePicker.DropDownStyle = 'DropDownList'
+$workspacePicker.FlatStyle = 'Flat'
+$workspacePicker.BackColor = $palette.Button
+$workspacePicker.ForeColor = $palette.Text
+$workspacePicker.Font = New-Object System.Drawing.Font('Segoe UI',13,[System.Drawing.FontStyle]::Bold)
+$workspacePicker.SetBounds(20,48,416,34)
+$workspacePicker.Items.AddRange(@('DeepSeek Harness (browser)','Codex CLI (optional)'))
+$workspacePicker.SelectedIndex = if ($Workspace -eq 'Codex') { 1 } else { 0 }
+$harnessCard.Controls.Add($workspacePicker)
 $harnessEndpoint = New-Text $harnessCard 'BROWSER CHAT  /  127.0.0.1:3080' 21 91 415 20 9 $false $palette.Muted
 $status = New-Text $harnessCard 'Checking Harness...' 21 118 415 34 10 $false $palette.Muted
-New-ControlButton $harnessCard 'Start' 20 156 120 { try { $feedback.Text = Start-Harness } catch { $feedback.Text = $_.Exception.Message }; Update-Panel }
-New-ControlButton $harnessCard 'Stop' 152 156 120 { try { $feedback.Text = Stop-Harness } catch { $feedback.Text = $_.Exception.Message }; Update-Panel }
-New-ControlButton $harnessCard 'Open chat' 284 156 152 { try { $feedback.Text = Open-Harness } catch { $feedback.Text = $_.Exception.Message } } $palette.Purple
+$workspaceStart = New-ControlButton $harnessCard 'Start' 20 156 120 { try { $feedback.Text = Start-Harness } catch { $feedback.Text = $_.Exception.Message }; Update-Panel } -PassThru
+$workspaceStop = New-ControlButton $harnessCard 'Stop' 152 156 120 { try { $feedback.Text = Stop-Harness } catch { $feedback.Text = $_.Exception.Message }; Update-Panel } -PassThru
+$workspaceOpen = New-ControlButton $harnessCard 'Open chat' 284 156 152 { try { $feedback.Text = if ($workspacePicker.SelectedIndex -eq 1) { Open-Codex } else { Open-Harness } } catch { $feedback.Text = $_.Exception.Message } } $palette.Purple -PassThru
 
 $unrealCard = New-Card 32 543 936 83 $palette.Purple
 $unrealTitle = New-Text $unrealCard 'UNREAL ENGINE / OPTIONAL EDITOR TOOLS' 20 13 710 23 10 $true
@@ -261,13 +282,19 @@ $form.Controls.Add($logs)
 
 function Update-Panel {
     try {
-        $status.Text = Get-HarnessStatus
+        $terminal = $workspacePicker.SelectedIndex -eq 1
+        $workspaceStart.Enabled = -not $terminal
+        $workspaceStop.Enabled = -not $terminal
+        $workspaceOpen.Text = if ($terminal) { 'Open CLI' } else { 'Open chat' }
+        $harnessEndpoint.Text = if ($terminal) { 'LOCAL PROFILE  /  aibrainworx-local' } else { 'BROWSER CHAT  /  127.0.0.1:3080' }
+        $status.Text = if ($terminal) { 'Uses the running model. Close its terminal to end the client.' } else { Get-HarnessStatus }
         $modelStatus.Text = Get-QwenStatus
         $status.ForeColor = if ($status.Text.StartsWith('Running')) { $palette.Cyan } else { $palette.Muted }
         $modelStatus.ForeColor = if ($modelStatus.Text.Contains('ready')) { $palette.Cyan } else { $palette.Muted }
     }
     catch { $feedback.Text = $_.Exception.Message }
 }
+$workspacePicker.Add_SelectedIndexChanged({ Update-Panel })
 
 $timer = New-Object System.Windows.Forms.Timer
 $timer.Interval = 5000
