@@ -1,4 +1,4 @@
-function Start-AwxOperation($Settings,[string]$ConfigPath,[string]$Action,$Payload=$null) {
+function Start-AwxOperation($Settings,[string]$ConfigPath,[string]$Action,$Payload=$null,[switch]$Stream) {
     $start = New-Object System.Diagnostics.ProcessStartInfo
     $start.FileName = $Settings.PythonExecutable
     $start.Arguments = '"{0}" {1} --config "{2}"' -f (Join-Path $PSScriptRoot 'control_runtime.py'),$Action,$ConfigPath
@@ -12,11 +12,11 @@ function Start-AwxOperation($Settings,[string]$ConfigPath,[string]$Action,$Paylo
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $start
     [void]$process.Start()
-    $output = $process.StandardOutput.ReadToEndAsync()
+    $output = if(-not $Stream){$process.StandardOutput.ReadToEndAsync()}else{$null}
     $errors = $process.StandardError.ReadToEndAsync()
     if ($null -ne $Payload) { $process.StandardInput.Write(($Payload | ConvertTo-Json -Depth 15 -Compress)) }
     $process.StandardInput.Close()
-    return [pscustomobject]@{Process=$process;Output=$output;Errors=$errors}
+    return [pscustomobject]@{Process=$process;Output=$output;Errors=$errors;Line=$(if($Stream){$process.StandardOutput.ReadLineAsync()}else{$null})}
 }
 
 function Complete-AwxOperation($Operation) {
@@ -44,11 +44,23 @@ function Start-AwxService($Settings,[string]$ConfigPath) {
     if (-not $held) { throw 'Another settings-service start is in progress. Try again.' }
     $scriptPath = Join-Path $PSScriptRoot 'control_runtime.py'
     $expected = Invoke-AwxOperation $Settings $ConfigPath 'state'
-    try {
-        $health = Invoke-RestMethod 'http://127.0.0.1:8082/health' -TimeoutSec 1
-        if ($health.service -eq 'aibrainworx-control' -and $health.dataIdentity -eq $expected.dataIdentity -and $health.version -eq $expected.version) { return }
+    $health=$null
+    try { $health = Invoke-RestMethod 'http://127.0.0.1:8082/health' -TimeoutSec 1 } catch {}
+    if($health) {
+        if ($health.service -eq 'aibrainworx-control' -and $health.dataIdentity -eq $expected.dataIdentity) {
+            if ($health.version -eq $expected.version) { return }
+            $connections=@(Get-NetTCPConnection -LocalPort 8082 -State Established -ErrorAction SilentlyContinue)
+            if($connections.Count){throw 'Wait for active model requests to finish before updating the settings service.'}
+            $owned=@(Get-CimInstance Win32_Process -Filter "Name = 'python.exe'" | Where-Object {$_.ExecutablePath -eq $Settings.PythonExecutable -and $_.CommandLine -and $_.CommandLine.IndexOf(('"'+$scriptPath+'"'),[StringComparison]::OrdinalIgnoreCase) -ge 0 -and $_.CommandLine.IndexOf(('"'+$ConfigPath+'"'),[StringComparison]::OrdinalIgnoreCase) -ge 0 -and $_.CommandLine.Contains(' serve ')})
+            if($owned.Count -ne 1){throw 'An older settings service needs to be closed before this update can start.'}
+            $verified=Get-CimInstance Win32_Process -Filter ('ProcessId = '+$owned[0].ProcessId)
+            if($verified.CreationDate -ne $owned[0].CreationDate){throw 'The settings service changed. Try again.'}
+            Stop-Process -Id $owned[0].ProcessId
+            Start-Sleep -Milliseconds 200
+        } else {
         throw 'Port 8082 belongs to another application.'
-    } catch {
+        }
+    } else {
         $socket = New-Object Net.Sockets.TcpClient
         try {
             $pending = $socket.BeginConnect('127.0.0.1',8082,$null,$null)
@@ -163,7 +175,7 @@ function Show-AwxSettings($Owner,$Settings,[string]$ConfigPath,$State,[string]$C
     $ui.Temperature.Enabled=$ui.Sampling.Checked;$ui.TopP.Enabled=$ui.Sampling.Checked
     [void](Label 'Maximum output tokens' 514 550 350)
     $ui.Tokens=New-Object Windows.Forms.NumericUpDown
-    $ui.Tokens.Minimum=64;$ui.Tokens.Maximum=8192;$ui.Tokens.Increment=128;$ui.Tokens.Value=$State.active.maxOutputTokens;$ui.Tokens.SetBounds(514,583,260,30)
+    $ui.Tokens.Minimum=64;$ui.Tokens.Maximum=65536;$ui.Tokens.Increment=128;$ui.Tokens.Value=$State.active.maxOutputTokens;$ui.Tokens.SetBounds(514,583,260,30)
     $dialog.Controls.Add($ui.Tokens)
     [void](Label 'This is a cap; a client can request less.' 514 623 350 25)
     [void](Label 'Changes apply to new requests. Existing CLI windows keep their selected profile.' 24 650 850 28)

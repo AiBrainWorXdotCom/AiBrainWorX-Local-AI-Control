@@ -1,6 +1,6 @@
 # Launch profiles and model settings
 
-Open **Settings** in the launcher before opening a coding client. Name the
+Open **Profiles + prompts** in the launcher before opening a coding client. Name the
 profile, choose an existing project folder and optionally select the Unreal
 engine folder containing `remote_execution.py`. The engine folder is unnecessary
 for ordinary coding. Save updates the current profile; Save as new creates one.
@@ -18,14 +18,14 @@ but correctness still needs tests. Leaving overrides off preserves the values
 sent by the client or the model's defaults. Change one setting at a time when
 comparing results.
 
-**Maximum output tokens** is an upper limit of 64–8192 per model request. It
+**Maximum output tokens** is an upper limit of 64–65,536 per model request. It
 respects a smaller client request. Reasoning can count against this allowance;
-raising it does not expand the 16k context used by this client preset or remove
-another client-level turn budget. Context, cache, GPU layers and model weights
-remain Strata settings. No model reload is needed for these request controls.
+raising it does not expand the model server’s context or remove another
+client-level turn budget. Set the context declaration in Models to match the
+server; cache allocation, GPU layers and weights remain backend settings. No model reload is needed for these request controls.
 
 The tiny settings gateway starts automatically when starting the model or a
-client. It listens on `127.0.0.1:8082`, forwards to Strata on `8081`, and handles
+client. It listens on `127.0.0.1:8082`, forwards to the selected loopback backend (Strata defaults to `8081`), and handles
 Chat Completions and Responses requests with incremental streaming. Each profile
 uses a fixed `/profiles/<id>/v1` endpoint. Saving its prompt or sampling settings
 affects subsequent requests, including requests in an existing chat; it does not
@@ -55,3 +55,6 @@ Setup to detect or install its separate dependencies and select its local paths.
 Never distribute your private config, client histories or prompts with the
 source ZIP. Model files remain separately licensed and can require substantial
 storage. A fresh-PC bootstrap has not been tested end to end.
+
+For model connections, local memory, chat and updates, see the
+[new features guide](models-memory-updates.md).

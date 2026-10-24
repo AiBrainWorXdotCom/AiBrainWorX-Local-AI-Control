@@ -11,6 +11,10 @@ import sys
 from urllib.parse import urlsplit
 
 import control_core as core
+import model_backends as backends
+import project_memory as memory
+import app_updates
+import local_chat
 
 MAX_BODY = 8 * 1024 * 1024
 GET_ROUTES = {'/v1/models', '/models', '/metrics', '/props', '/v1/status'}
@@ -22,7 +26,7 @@ def data_identity(config):
     return core.data_identity(config)
 
 
-def make_server(config, port=8082, upstream_port=8081):
+def make_server(config, port=8082, upstream_port=None):
     class Handler(BaseHTTPRequestHandler):
         protocol_version = 'HTTP/1.1'
 
@@ -71,6 +75,12 @@ def make_server(config, port=8082, upstream_port=8081):
                     identity, route = match.groups()
                 if route not in (POST_ROUTES if post else GET_ROUTES):
                     return self.reply_json(404, {'error': 'Unsupported local API route.'})
+                state = core.ensure_state(config)
+                profile = core.get_profile(state, identity)
+                selected = backends.normalize(profile['model'], config, validate_file=False)
+                target_url = urlsplit(selected['baseUrl'])
+                if not post and route in ('/metrics','/props','/v1/status') and selected['backend'] != 'strata':
+                    return self.reply_json(404, {'error': 'This telemetry endpoint is only available from Strata.'})
                 body = None
                 if post:
                     if self.headers.get_content_type() != 'application/json' or self.headers.get('Transfer-Encoding'):
@@ -85,12 +95,28 @@ def make_server(config, port=8082, upstream_port=8081):
                     raw = self.rfile.read(size)
                     if len(raw) != size:
                         raise ValueError('Incomplete request body.')
-                    state = core.ensure_state(config)
-                    profile = core.get_profile(state, identity)
-                    request = core.transform_request(json.loads(raw), profile, route)
+                    request = json.loads(raw)
+                    if not isinstance(request, dict):
+                        raise ValueError('A JSON object is required.')
+                    if request.get('model') and request['model'] != selected['modelId']:
+                        return self.reply_json(409, {'error': 'The saved profile model changed. Reopen the client to use its selected model.'})
+                    if selected['backend']=='ollama' and (request.get('previous_response_id') or request.get('conversation')):
+                        return self.reply_json(400, {'error': 'Ollama requires stateless Responses requests with complete input history.'})
+                    context = memory.recall(config,profile,memory.latest_question(request,route))['text'] if profile.get('useMemory') else ''
+                    request = core.transform_request(request, profile, route, context)
+                    request['model'] = selected['modelId']
+                    if selected['reasoningEffort']:
+                        if route=='/v1/responses':
+                            reasoning=request.get('reasoning') or {}
+                            if not isinstance(reasoning,dict):
+                                raise ValueError('Invalid reasoning configuration.')
+                            request['reasoning']={**reasoning,'effort':selected['reasoningEffort']}
+                        else:
+                            request['reasoning_effort']=selected['reasoningEffort']
                     body = json.dumps(request, ensure_ascii=False).encode('utf-8')
-                connection = HTTPConnection('127.0.0.1', upstream_port, timeout=600 if post else 3)
-                headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP_HEADERS | {'host', 'origin', 'accept-encoding'}}
+                connection = HTTPConnection('127.0.0.1', upstream_port or target_url.port, timeout=600 if post else 3)
+                headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP_HEADERS | {'host', 'origin', 'accept-encoding','authorization','cookie'}}
+                headers.update(backends.headers(selected))
                 headers['Accept-Encoding'] = 'identity'
                 target = route + ('?' + parsed.query if parsed.query else '')
                 connection.request('POST' if post else 'GET', target, body, headers)
@@ -120,7 +146,7 @@ def make_server(config, port=8082, upstream_port=8081):
             except OSError:
                 self.close_connection = True
                 if not response_started:
-                    self.reply_json(502, {'error': 'The local model is unavailable. Start Strata and wait for Ready.'})
+                    self.reply_json(502, {'error': 'The selected local model server is unavailable. Start its backend and try again.'})
             finally:
                 if connection:
                     connection.close()
@@ -132,7 +158,7 @@ def make_server(config, port=8082, upstream_port=8081):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve'])
+    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','chat'])
     parser.add_argument('--config', required=True)
     args = parser.parse_args()
     try:
@@ -142,10 +168,22 @@ def main():
             with make_server(config) as server:
                 server.serve_forever()
             return
-        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select') else None
+        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','chat') else {}
+        profile = lambda: core.get_profile(core.ensure_state(config))
+        if args.action=='chat':
+            chosen=core.get_profile(core.ensure_state(config),payload.get('profileId'))
+            local_chat.stream(config,chosen,payload)
+            return
         operations = {'state': lambda: core.view_state(config), 'save': lambda: core.save_profile(config, payload),
                       'select': lambda: core.select_profile(config, payload), 'prepare': lambda: core.prepare_clients(config),
-                      'diagnose': lambda: core.diagnose(config)}
+                      'diagnose': lambda: core.diagnose(config),'models':lambda:backends.discover(config,payload),
+                      'model-status':lambda:backends.status(config,profile()),
+                      'memory-list':lambda:dict(items=memory.items(config,profile(),payload.get('query',''),payload.get('archived',False))),
+                      'memory-save':lambda:memory.save(config,profile(),payload),
+                      'memory-archive':lambda:memory.archive(config,profile(),payload),
+                      'memory-preview':lambda:memory.recall(config,{**profile(),'useMemory':True},payload.get('query','')),
+                      'handoff':lambda:memory.handoff(config,profile()),
+                      'updates':lambda:app_updates.check(core.VERSION,payload.get('includePrereleases',True))}
         print(json.dumps(operations[args.action](), ensure_ascii=True))
     except Exception as exc:
         # Known validation messages are actionable; filesystem/network exceptions

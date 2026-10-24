@@ -14,6 +14,8 @@ import subprocess
 import time
 import urllib.request
 import uuid
+import model_backends as backends
+import project_memory
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = (ROOT / 'VERSION').read_text(encoding='utf-8').strip()
@@ -95,7 +97,8 @@ def default_profile(config):
     return dict(id='default', name='Default project', workspaceRoot=config['WorkspaceRoot'],
                 enginePython=config.get('EnginePython', ''), unrealProjectName=config.get('UnrealProjectName', ''),
                 preset='general', useInstructions=False, instructions=presets()[0]['text'],
-                overrideSampling=False, temperature=.7, topP=.9, maxOutputTokens=4096)
+                overrideSampling=False, temperature=.7, topP=.9, maxOutputTokens=4096,
+                model=backends.default_model(config), useMemory=False)
 
 
 def ensure_state(config):
@@ -106,6 +109,10 @@ def ensure_state(config):
     state = read_json(state_path(config))
     if state.get('schemaVersion') != 1 or not state.get('profiles'):
         raise ValueError('The local profiles file is invalid. Restore its backup or run Setup.')
+    for profile in state['profiles']:
+        if 'model' not in profile:
+            profile['model'] = backends.default_model(config)
+        profile.setdefault('useMemory', False)
     return state
 
 
@@ -127,7 +134,7 @@ def port_open(port):
         return False
 
 
-def validate_profile(value):
+def validate_profile(value, config=None):
     value = deepcopy(value)
     if not PROFILE_ID.fullmatch(str(value.get('id', ''))):
         raise ValueError('Invalid profile identifier.')
@@ -147,7 +154,7 @@ def validate_profile(value):
         raise ValueError('The engine Python folder must contain remote_execution.py.')
     projects = list(Path(value['workspaceRoot']).glob('*.uproject'))
     value['unrealProjectName'] = projects[0].stem if len(projects) == 1 else ''
-    for field in ('useInstructions', 'overrideSampling'):
+    for field in ('useInstructions', 'overrideSampling', 'useMemory'):
         if type(value.get(field)) is not bool:
             raise ValueError('Invalid checkbox value.')
     text = value.get('instructions', '')
@@ -158,8 +165,9 @@ def validate_profile(value):
         if type(number) not in (int, float) or not math.isfinite(number) or not low <= number <= high:
             raise ValueError('Sampling values are outside the supported range.')
     cap = value.get('maxOutputTokens')
-    if type(cap) is not int or not 64 <= cap <= 8192:
-        raise ValueError('The output cap must be between 64 and 8192 tokens.')
+    if type(cap) is not int or not 64 <= cap <= 65536:
+        raise ValueError('The output cap must be between 64 and 65536 tokens, within the model context.')
+    value['model'] = backends.normalize(value.get('model'), config)
     return value
 
 
@@ -177,12 +185,12 @@ def save_profile(config, payload):
         candidate = deepcopy(payload['profile'])
         if payload.get('saveAsNew'):
             candidate['id'] = uuid.uuid4().hex
-        candidate = validate_profile(candidate)
+        candidate = validate_profile(candidate, config)
         if any(p['name'].casefold() == candidate['name'].casefold() and p['id'] != candidate['id'] for p in state['profiles']):
             raise ValueError('That profile name is already in use.')
         old = next((p for p in state['profiles'] if p['id'] == candidate['id']), None)
-        if old and old['id'] == state['activeId'] and port_open(3080) and any(old[k] != candidate[k] for k in ('workspaceRoot', 'enginePython', 'unrealProjectName')):
-            raise ValueError('Stop Harness before changing the active project folders.')
+        if old and old['id'] == state['activeId'] and port_open(3080) and any(old[k] != candidate[k] for k in ('workspaceRoot', 'enginePython', 'unrealProjectName', 'model')):
+            raise ValueError('Stop Harness before changing the active project or model. Existing chats stay intact.')
         if old:
             state['profiles'][state['profiles'].index(old)] = candidate
         else:
@@ -209,7 +217,7 @@ def select_profile(config, payload):
     return view_state(config)
 
 
-def transform_request(body, profile, route):
+def transform_request(body, profile, route, memory=''):
     if not isinstance(body, dict):
         raise ValueError('The API request must be a JSON object.')
     result = deepcopy(body)
@@ -219,8 +227,13 @@ def transform_request(body, profile, route):
     existing = result.get(key)
     cap = profile['maxOutputTokens']
     result[key] = min(existing, cap) if type(existing) is int and existing > 0 else cap
+    additions=[]
     if profile['useInstructions'] and profile['instructions'].strip():
-        text = '\n\nLauncher custom instructions:\n' + profile['instructions']
+        additions.append('Launcher custom instructions:\n' + profile['instructions'])
+    if memory:
+        additions.append(memory)
+    if additions:
+        text = '\n\n' + '\n\n'.join(additions)
         if route == '/v1/responses':
             previous = result.get('instructions') or ''
             if not isinstance(previous, str):
@@ -243,9 +256,7 @@ def transform_request(body, profile, route):
 
 
 def model_id(config):
-    model = read_json(config['StrataConfig'])
-    aliases = model.get('aliases') or []
-    return str(aliases[0] if aliases else model['model_name'])
+    return get_profile(ensure_state(config))['model']['modelId']
 
 
 def prepare_clients(config):
@@ -253,7 +264,8 @@ def prepare_clients(config):
     identity = profile['id']
     home = Path(config['StateRoot']) / 'managed-clients' / identity
     home.mkdir(parents=True, exist_ok=True)
-    model = model_id(config)
+    selected = backends.normalize(profile['model'], config)
+    model = selected['modelId']
     endpoint = f'http://127.0.0.1:8082/profiles/{identity}/v1'
     harness = home / 'harness'
     target = harness / 'profiles/web'
@@ -267,7 +279,7 @@ def prepare_clients(config):
     patch = [
         {'id': 'llm-pi-ai', 'name': '@deepseek-ai/dsh-llm-pi-ai', 'config': {'providers': {'local_strata': {
             'apiKeyEnv': 'AIBRAINWORX_API_KEY', 'api': 'openai-completions', 'baseURL': endpoint,
-            'models': [{'id': model, 'name': 'AiBrainWorX local model', 'maxTokens': 8192, 'contextWindow': 16384}]}}}},
+            'models': [{'id': model, 'name': model, 'maxTokens': min(profile['maxOutputTokens'], selected['contextWindow']//2), 'contextWindow': selected['contextWindow']}]}}}},
         {'id': 'agent-default-model', 'name': '@deepseek-ai/dsh-agent-default-model', 'config': {'provider': 'local_strata', 'model': model}},
     ]
     if profile['unrealProjectName'] and profile['enginePython']:
@@ -281,6 +293,16 @@ def prepare_clients(config):
     codex = home / 'codex'
     catalog = read_json(ROOT / 'examples/model-catalog.json')
     catalog['models'][0].update(slug=model, display_name='AiBrainWorX local model')
+    entry = catalog['models'][0]
+    entry.update(description='Local model through '+selected['backend'], context_window=selected['contextWindow'],
+                 max_context_window=selected['contextWindow'], input_modalities=['text', 'image'] if selected['vision'] else ['text'])
+    entry['base_instructions'] = entry['base_instructions'].replace('using Qwen through Strata', 'using the selected local model')
+    if selected['backend'] != 'strata':
+        entry['apply_patch_tool_type'] = None
+    if not selected['reasoningEffort']:
+        entry.update(supported_reasoning_levels=[], default_reasoning_level=None, supports_reasoning_effort_updates=False)
+    elif selected['reasoningEffort']=='xhigh':
+        entry['supported_reasoning_levels'].append(dict(effort='xhigh',description='Extended reasoning when the local model supports it'))
     write_json(codex / 'model-catalog.json', catalog)
     template = (ROOT / 'examples/dronekilla-local.config.toml').read_text(encoding='utf-8')
     if not (profile['unrealProjectName'] and profile['enginePython']):
@@ -291,9 +313,13 @@ def prepare_clients(config):
             continue
         template = template.replace(json.dumps(before), json.dumps(after))
     template = template.replace('command = "python"', 'command = ' + json.dumps(config['PythonExecutable'].replace('\\', '/')))
+    template = template.replace('model_context_window = 16384', f"model_context_window = {selected['contextWindow']}")
+    template = template.replace('model_auto_compact_token_limit = 12000', f"model_auto_compact_token_limit = {int(selected['contextWindow']*.72)}")
+    template = template.replace('model_reasoning_effort = "medium"', 'model_reasoning_effort = '+json.dumps(selected['reasoningEffort']) if selected['reasoningEffort'] else '')
     (codex / 'aibrainworx-local.config.toml').write_text(template, encoding='utf-8')
     return dict(ProfileId=identity, HarnessHome=str(harness), CodexHome=str(codex), WorkspaceRoot=profile['workspaceRoot'],
-                EnginePython=profile['enginePython'], UnrealProjectName=profile['unrealProjectName'], GatewayURL=endpoint)
+                EnginePython=profile['enginePython'], UnrealProjectName=profile['unrealProjectName'], GatewayURL=endpoint,
+                Model=selected)
 
 
 def fetch_json(url, timeout=2):
@@ -308,7 +334,9 @@ def diagnose(config):
     def add(name, ok, detail):
         checks.append(dict(name=name, status='Ready' if ok else 'Needs attention', detail=detail))
     add('Workspace', Path(profile['workspaceRoot']).is_dir(), 'Selected project folder exists.' if Path(profile['workspaceRoot']).is_dir() else 'Choose an existing project folder.')
-    for name, port in (('Strata model', 8081), ('Launch settings service', 8082)):
+    readiness = backends.status(config, profile)
+    add('Model / '+readiness['backend'], readiness['ready'], readiness['detail'])
+    for name, port in (('Launch settings service', 8082),):
         try:
             health = fetch_json(f'http://127.0.0.1:{port}/health')
             ok = health.get('service') == 'strata' and health.get('loaded', False) if port == 8081 else health.get('service') == 'aibrainworx-control' and health.get('dataIdentity') == data_identity(config)

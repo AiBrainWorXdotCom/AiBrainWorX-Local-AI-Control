@@ -38,18 +38,35 @@ Write-Host 'This installs or reuses local tools. It does not start the model or 
 Write-Host 'Upstream licenses: Strata MIT; Harness MIT; Codex CLI Apache-2.0.'
 Write-Host 'Qwen weights have separate terms. Read MODEL-LICENSES.md before choosing a download.'
 if ($Plan) {
-    Write-Host 'PLAN ONLY: check Git, Python and Node; reuse or install Strata; optionally download a model; prepare Harness, a local Codex profile and optional Unreal tools.'
+    Write-Host 'PLAN ONLY: check Python and Node; choose Strata, Ollama or LM Studio; reuse or install Strata when selected; optionally download a model; prepare Harness, a local Codex profile and optional Unreal tools.'
     Write-Host 'Tested Coder download: approximately 58.4 GB, plus prepared data. Other models differ.'
     return
 }
 
-$Git = Require-Command 'git.exe' 'Git.Git' 'https://git-scm.com/download/win'
 $Python = Require-Command 'python.exe' 'Python.Python.3.12' 'https://www.python.org/downloads/windows/'
 $Node = Require-Command 'node.exe' 'OpenJS.NodeJS.LTS' 'https://nodejs.org/'
 $Npm = Require-Command 'npm.cmd' 'OpenJS.NodeJS.LTS' 'https://nodejs.org/'
 Run-Checked $Python @('-c','import sys; assert sys.version_info >= (3,10), "Python 3.10 or newer is required"')
 [void][System.IO.Directory]::CreateDirectory($RuntimeRoot)
 
+Write-Host '1: Strata (installed GGUF models)'
+Write-Host '2: Ollama local server'
+Write-Host '3: LM Studio local server'
+Write-Host '4: llama.cpp / llama-swap local compatible server'
+$backendChoice=Read-Host 'Choose a local backend [1]'
+$ModelBackend='strata';$ModelBaseUrl='http://127.0.0.1:8081/v1';$ModelId=''
+$StrataRoot='';$StrataConfig='';$StrataPython=''
+if($backendChoice -in @('2','3','4')) {
+    $ModelBackend=@{'2'='ollama';'3'='lmstudio';'4'='compatible'}[$backendChoice]
+    $defaultApi=@{ollama='http://127.0.0.1:11434/v1';lmstudio='http://127.0.0.1:1234/v1';compatible='http://127.0.0.1:8080/v1'}[$ModelBackend]
+    $entered=Read-Host "Local API URL [$defaultApi]"
+    $ModelBaseUrl=if($entered){$entered}else{$defaultApi}
+    $ModelId=Read-Host 'Exact installed model identifier (you can change it in the app)'
+    if(-not $ModelId){throw 'An installed model identifier is required. Start the server and check its model list.'}
+    $model=[pscustomobject]@{model_name=$ModelId}
+    Write-Host 'No Strata installation or model download is required. Start the chosen local server separately.'
+} else {
+    $Git=Require-Command 'git.exe' 'Git.Git' 'https://git-scm.com/download/win'
 $knownStrata = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'LocalAI\Strata'
 $defaultStrata = if (Test-Path -LiteralPath (Join-Path $knownStrata 'setup.py')) { $knownStrata } else { Join-Path $RuntimeRoot 'Strata' }
 $entered = Read-Host "Strata folder [Enter for $defaultStrata]"
@@ -100,6 +117,8 @@ if (($model.host -and $model.host -ne '127.0.0.1') -or ($model.port -and $model.
 $StrataPython = Join-Path $StrataRoot '.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $StrataPython)) { throw 'The source-based Strata Python environment is missing.' }
 
+}
+
 $packages = Join-Path $RuntimeRoot 'agent-packages'
 $harnessInstalled = Test-Path -LiteralPath (Join-Path $packages 'node_modules\@deepseek-ai\dsh\lib\bin.js')
 $codexInstalled = Test-Path -LiteralPath (Join-Path $packages 'node_modules\.bin\codex.cmd')
@@ -122,7 +141,7 @@ if ($UnrealName) {
     if ($EnginePython) { $EnginePython = [IO.Path]::GetFullPath($EnginePython.Trim('"')) }
     if ($EnginePython -and -not (Test-Path -LiteralPath (Join-Path $EnginePython 'remote_execution.py'))) { throw 'That folder does not contain remote_execution.py.' }
 }
-$settings = [ordered]@{NodeExecutable=$Node;HarnessEntry=$HarnessEntry;HarnessHome=(Join-Path $RuntimeRoot 'harness-home');PythonExecutable=$Python;StrataRoot=$StrataRoot;StrataConfig=$StrataConfig;StrataPython=$StrataPython;WorkspaceRoot=$WorkspaceRoot;UnrealProjectName=$UnrealName;EnginePython=$EnginePython;StateRoot=$RuntimeRoot;ModelLabel=$model.model_name;CodexCommand=$CodexCommand;CodexEntry=$CodexEntry}
+$settings = [ordered]@{NodeExecutable=$Node;HarnessEntry=$HarnessEntry;HarnessHome=(Join-Path $RuntimeRoot 'harness-home');PythonExecutable=$Python;StrataRoot=$StrataRoot;StrataConfig=$StrataConfig;StrataPython=$StrataPython;ModelBackend=$ModelBackend;ModelBaseUrl=$ModelBaseUrl;ModelId=$ModelId;WorkspaceRoot=$WorkspaceRoot;UnrealProjectName=$UnrealName;EnginePython=$EnginePython;StateRoot=$RuntimeRoot;ModelLabel=$model.model_name;CodexCommand=$CodexCommand;CodexEntry=$CodexEntry}
 $configPath = Join-Path $RepoRoot 'config.local.json'
 Save-Backup $configPath
 Write-Utf8 $configPath ($settings | ConvertTo-Json)

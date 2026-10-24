@@ -1,4 +1,4 @@
-# Qwen 3.8 Coder at 20â€“25 Tokens/s on a 12 GB GPU and Ryzen 5
+# Local Qwen Coder on a 12 GB GPU: Setup and Measured Performance
 
 *By AiBrainWorX-Ai Â· October 24, 2026 Â· Windows tutorial and build diary*
 
@@ -14,11 +14,22 @@ Pretty gangsta for an older Ryzen 5 and a 12 GB card.
 
 There is an important engineering detail behind that headline: the GPU works alongside **32 GB of system RAM and an SSD**. The model's roughly 58.4 GB of original files do not all fit into VRAM. Strata spreads the work across the GPU, CPU, RAM and storage. That arrangement makes this setup possibleâ€”and memory pressure is also its biggest limitation.
 
-![The AiBrainWorX Local AI Control launcher with Qwen, Harness and Unreal controls.](../media/aibrainworx-local-ai-control.png)
+![The AiBrainWorX Local AI Control launcher with Qwen, Harness and Unreal controls.](../media/aibrainworx-model-launcher.png)
 
 *Our actual Windows launcher. Model inference and the agent interface have separate controls. Made by AiBrainWorX.*
 
-## Portable local AI, with your settings saved
+## Current launcher: v0.3.0-alpha.1
+
+**AiBrainWorX Model Launcher** now offers Strata, Ollama, LM Studio and local
+compatible-server connections, tool-free chat, creative presets, original local
+project memory and manual update checks. [Start with the current README](../README.md)
+or [read the new features guide](models-memory-updates.md). The manual examples
+below document the original Strata setup; weights and backend apps stay separate.
+
+The newer varied-prompt audit measured **17.8–20.8 decode tokens/s** on four short,
+192-token-capped requests. The cover has no speed claim. See [all results](performance.md).
+
+## Earlier v0.2 controls
 
 **v0.2.0-alpha.1** adds project profiles, an editable custom-instructions box,
 General Coder / Unreal Developer / Code Reviewer presets, temperature and top-p

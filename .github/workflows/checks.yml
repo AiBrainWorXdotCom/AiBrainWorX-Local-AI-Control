@@ -19,6 +19,8 @@ jobs:
         run: python bridge/test_unreal_mcp.py
       - name: Profiles and settings service
         run: python Tests/test_control_runtime.py
+      - name: Model backends, memory, updates and chat
+        run: python Tests/test_desktop_features.py
       - name: PowerShell syntax
         shell: powershell
         run: ./Tests/Check-Scripts.ps1

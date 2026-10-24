@@ -26,6 +26,23 @@ feature is powerful: keep its network configuration restricted to this PC.
 Coding clients may still modify files through their separate tools. Review their
 permissions and proposed changes before using them on important projects.
 
+Model connections accept HTTP on literal loopback or localhost only. The gateway
+rejects itself as a target, strips incoming credentials and supplies only the
+selected API-key environment variable. Set that variable before starting it.
+A local server can itself proxy a cloud service: select local weights and review
+its settings. Ollama inventory discovery excludes advertised cloud models.
+
+Project memory is an unencrypted local SQLite database under StateRoot/memory.
+It records only notes you save, with previous revisions on changes. Archive is
+not deletion. Inclusion in model requests is opt-in and bounded, but enabled
+notes are sent to the chosen loopback model server. Do not store secrets there.
+Built-in chat history stays in process memory; the selected backend may keep its
+own logs. Exported handoffs can contain user-written paths or private notes.
+
+Update checks contact public GitHub release/version endpoints only on request.
+They never install code, change files or restart the application. Model-guide
+buttons open public pages when clicked; weights are not automatically fetched.
+
 Automated checks have read-only repository permissions, pinned action revisions,
 and no repository secrets. `Tests/check_public_files.py` checks common credential
 and personal-path patterns without echoing suspected values. It is a lightweight

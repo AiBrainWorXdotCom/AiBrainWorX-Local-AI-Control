@@ -1,0 +1,106 @@
+{
+  "method": "Four different short prompts sequentially, existing warm engine, temperature 0, reasoning none, 192 output-token cap. No applications closed or engine changes. Truncation and cached tokens retained per trial.",
+  "model": "qwen3.8-flash-next-coder-iq1_m",
+  "trials": [
+    {
+      "task": "creative",
+      "prompt": "Write a short scene in which a clockwork fox helps a lost astronaut find a garden. Use vivid concrete details and dialogue.",
+      "utc": "2026-10-24T22:35:31.395010+00:00",
+      "elapsed_s": 12.846,
+      "usage": {
+        "prompt_tokens": 37,
+        "completion_tokens": 192,
+        "total_tokens": 229,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "metrics": {
+        "prompt_tokens": 37,
+        "reused": 0,
+        "output_tokens": 192,
+        "first_engine_token_s": 2.493,
+        "prompt_read": 37,
+        "prompt_ms": 2439.6,
+        "decode_ms": 10364.5,
+        "decode_tok_s": 18.5
+      },
+      "finish_reason": "length"
+    },
+    {
+      "task": "coding",
+      "prompt": "Write Python code for a function that merges two already sorted lists without sorting the entire result. Include type hints and two example calls.",
+      "utc": "2026-10-24T22:35:43.477800+00:00",
+      "elapsed_s": 12.063,
+      "usage": {
+        "prompt_tokens": 38,
+        "completion_tokens": 192,
+        "total_tokens": 230,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "metrics": {
+        "prompt_tokens": 38,
+        "reused": 0,
+        "output_tokens": 192,
+        "first_engine_token_s": 2.254,
+        "prompt_read": 38,
+        "prompt_ms": 2188.4,
+        "decode_ms": 9856.0,
+        "decode_tok_s": 19.5
+      },
+      "finish_reason": "length"
+    },
+    {
+      "task": "explanation",
+      "prompt": "Explain why a bicycle stays upright when moving, in language a curious twelve-year-old can understand. Use three short paragraphs.",
+      "utc": "2026-10-24T22:35:54.554354+00:00",
+      "elapsed_s": 11.039,
+      "usage": {
+        "prompt_tokens": 37,
+        "completion_tokens": 192,
+        "total_tokens": 229,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "metrics": {
+        "prompt_tokens": 37,
+        "reused": 0,
+        "output_tokens": 192,
+        "first_engine_token_s": 1.83,
+        "prompt_read": 37,
+        "prompt_ms": 1780.3,
+        "decode_ms": 9212.7,
+        "decode_tok_s": 20.8
+      },
+      "finish_reason": "length"
+    },
+    {
+      "task": "planning",
+      "prompt": "Plan a tiny offline puzzle game about repairing a lighthouse. Give three distinct puzzles and one satisfying ending.",
+      "utc": "2026-10-24T22:36:07.059011+00:00",
+      "elapsed_s": 12.489,
+      "usage": {
+        "prompt_tokens": 33,
+        "completion_tokens": 192,
+        "total_tokens": 225,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "metrics": {
+        "prompt_tokens": 33,
+        "reused": 0,
+        "output_tokens": 192,
+        "first_engine_token_s": 1.758,
+        "prompt_read": 33,
+        "prompt_ms": 1694.3,
+        "decode_ms": 10770.1,
+        "decode_tok_s": 17.8
+      },
+      "finish_reason": "length"
+    }
+  ]
+}

@@ -46,3 +46,21 @@ our 32 GB / Ryzen 5 PC. Input rates near 900 tokens/s must not be described as
 Changes to inference/cache settings should be measured on the same task with
 conditions recorded. Do not substitute a better cached-repeat number for an
 everyday speed guarantee. Review generated code and measure task success too.
+
+## Different prompts on the same warm engine
+
+Four sequential requests used different creative, coding, explanation and planning
+prompts, temperature 0, reasoning none and a 192-token cap. Each produced 192
+tokens and ended at the cap, so these are short throughput samples, not completed
+task-quality evaluations. No apps were closed or engine settings changed.
+
+| Task | Cached input | Decode tokens/s | Complete time | Output / total time |
+| --- | ---: | ---: | ---: | ---: |
+| creative | 0 | 18.5 | 12.85 s | 14.9 tokens/s |
+| coding | 0 | 19.5 | 12.06 s | 15.9 tokens/s |
+| explanation | 0 | 20.8 | 11.04 s | 17.4 tokens/s |
+| planning | 0 | 17.8 | 12.49 s | 15.4 tokens/s |
+
+The observed decode range was **17.8–20.8 tokens/s**. This does not consistently
+meet a 20–25 target. Different hardware and workloads will differ.
+[All prompts, timestamps, usage and timings](benchmarks/2026-10-24-varied-prompts.json).

@@ -2,11 +2,15 @@ param([ValidateSet('Gui', 'Start', 'Stop', 'Status')][string]$Action = 'Gui', [s
 $ErrorActionPreference = 'Stop'
 $ConfigPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json'
 . (Join-Path $PSScriptRoot 'Settings.ps1')
+. (Join-Path $PSScriptRoot 'Control.ps1')
 $settings = Read-AwxSettings $ConfigPath
+$profileState = Invoke-AwxOperation $settings $ConfigPath 'state'
+if ($profileState.active.model.backend -ne 'strata') { throw 'Start and stop this backend in Ollama or LM Studio. The launcher connects to its local API.' }
+if (-not ($settings.StrataRoot -and $settings.StrataPython)) { throw 'Run Setup.cmd to configure the Strata engine before starting it.' }
 $StrataRoot = $settings.StrataRoot
 $Python = $settings.StrataPython
 $Server = Join-Path $StrataRoot 'serve\server.py'
-$Config = $settings.StrataConfig
+$Config = $profileState.active.model.configPath
 $Port = 8081
 $BaseUrl = "http://127.0.0.1:$Port"
 $Stdout = Join-Path $settings.StateRoot 'logs\coder-stdout.log'
@@ -86,7 +90,7 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 [System.Windows.Forms.Application]::EnableVisualStyles()
 $form = New-Object System.Windows.Forms.Form
-$form.Text = 'AiBrainWorX | Qwen Coder Control'
+$form.Text = 'AiBrainWorX | Strata Model Control'
 $form.ClientSize = New-Object System.Drawing.Size(680, 350)
 $form.StartPosition = 'CenterScreen'
 $form.FormBorderStyle = 'FixedDialog'
@@ -103,7 +107,7 @@ $brand.Font = New-Object System.Drawing.Font('Segoe UI', 12, [System.Drawing.Fon
 $brand.SetBounds(26, 22, 620, 28)
 $form.Controls.Add($brand)
 $title = New-Object System.Windows.Forms.Label
-$title.Text = $settings.ModelLabel
+$title.Text = $profileState.active.model.modelId
 $title.Font = New-Object System.Drawing.Font('Segoe UI', 22, [System.Drawing.FontStyle]::Bold)
 $title.SetBounds(24, 66, 640, 48)
 $form.Controls.Add($title)
