@@ -2,21 +2,21 @@
 
 **Portable local AI, with a clear Start button.** Download, extract and run the Windows launcher from your chosen folder. Choose a coding workspace, save your own instructions and model settings, and optionally connect Unreal inspection tools.
 
-**v0.2.0-alpha.1 · Portable source package.** No fixed installation folder or registry registration is required for the launcher. Python, Node, Strata and model files are separate dependencies; run **Setup.cmd on each PC**. This is not a standalone executable or a bundled model download.
+**v0.3.0-alpha.1 Â· Portable source package.** No fixed installation folder or registry registration is required for the launcher. Python, Node, Strata and model files are separate dependencies; run **Setup.cmd on each PC**. This is not a standalone executable or a bundled model download.
 
-**Measured on our PC: about 20–25 generated tokens/second on short probes**, using an RTX 3060 12 GB, Ryzen 5 5500, 32 GB RAM and SSD-backed data. Read the [public tutorial](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/). Heavy memory pressure reduced one live reading to roughly 13 tokens/second; these are observations, not a performance guarantee.
+**Performance is workload-dependent.** A fresh audit on our RTX 3060 12 GB / Ryzen 5 5500 / 32 GB PC measured **17.4 decode tokens/s on the first short request**, then **30.9 and 36.7** on identical cached repeats. A different earlier request showed **11.8**. These are separate observations, not a sustained-speed promise. [Method and complete results](docs/performance.md).
 
 ![AiBrainWorX Local AI Control](media/aibrainworx-local-ai-control.png)
 
-Made by **AiBrainWorX** · Original code: **MIT** · [Website](https://aibrainworx.com) · [GitHub](https://github.com/AiBrainWorXdotCom)
+Made by **AiBrainWorX** Â· Original code: **MIT** Â· [Website](https://aibrainworx.com) Â· [GitHub](https://github.com/AiBrainWorXdotCom)
 
-## Start here — no Git commands required
+## Start here â€” no Git commands required
 
-1. [Download the ZIP](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control/archive/refs/heads/main.zip), then extract it into a permanent folder. You can also use **Code → Download ZIP**.
+1. [Download the ZIP](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control/archive/refs/heads/main.zip), then extract it into a permanent folder. You can also use **Code â†’ Download ZIP**.
 2. Read [model license notes](MODEL-LICENSES.md), then double-click **Setup.cmd**.
 3. Setup checks prerequisites, offers installation through official sources, and reuses an existing Strata installation when selected.
 4. Choose a working folder. Unreal is optional; an ordinary coding folder works too.
-5. Open **Launch.cmd**, click **Start model**, and wait for Ready. Choose **DeepSeek Harness (browser)**, then **Start → Open chat**.
+5. Open **Launch.cmd**, click **Start model**, and wait for Ready. Choose **DeepSeek Harness (browser)**, then **Start â†’ Open chat**.
 
 The workspace dropdown also offers **Codex CLI (optional)**. Choose it and click **Open CLI** to open a prepared local profile in a terminal. Both clients use the same Strata server; you can use either one. Switching clients does not stop a running service. Choose model weights during Setup; customize instructions and request settings through **Settings**.
 
@@ -25,7 +25,7 @@ The workspace dropdown also offers **Codex CLI (optional)**. Choose it and click
 - **Saved profiles:** name a project, choose its folder and optional Unreal Python folder, then Save or Save as new.
 - **Custom instructions:** start with General Coder, Unreal Developer or Code Reviewer, edit the text, and enable its checkbox.
 - **Sampling sliders:** optionally override temperature and top-p. Leave the checkbox off to retain client/model defaults.
-- **Output limit:** set a maximum of 64–8192 tokens per request. A client may request fewer tokens, and reasoning can consume the output budget.
+- **Output limit:** set a maximum of 64â€“8192 tokens per request. A client may request fewer tokens, and reasoning can consume the output budget.
 - **Live readings:** see generation speed, CPU usage, VRAM and RAM from Strata's metrics. Idle shows the last completed request separately.
 - **Diagnostics:** check installed clients, the model and optional Unreal connection without generating a reply. The copyable report excludes personal paths and prompts.
 
@@ -33,7 +33,7 @@ The workspace dropdown also offers **Codex CLI (optional)**. Choose it and click
 
 These settings apply to new requests through a small local service on port **8082**, which forwards to Strata on **8081**. Existing client instructions and tools remain in place. Settings do not change model weights, context size or the client's permissions. See the [profiles guide](docs/launch-profiles.md).
 
-**Updating an existing installation:** if Harness is already running, finish its current turn, then use Stop → Start once to use the new managed profile. Each profile has its own client home; existing global history is preserved. Stop Harness before switching project profiles. The launcher never interrupts your current assistant automatically.
+**Updating an existing installation:** if Harness is already running, finish its current turn, then use Stop â†’ Start once to use the new managed profile. Each profile has its own client home; existing global history is preserved. Stop Harness before switching project profiles. The launcher never interrupts your current assistant automatically.
 
 ## Moving the launcher
 
@@ -61,7 +61,7 @@ This release targets **Windows**, using source-based Strata installations. Our t
 
 The launcher reads your hardware. Strata's hardware check and setup choose an appropriate backend/model. NVIDIA VRAM is queried through `nvidia-smi`; other adapters fall back to their reported name without guessing VRAM from Windows' limited `AdapterRAM` field.
 
-The model does not fit entirely in 12 GB VRAM. It also uses system RAM and SSD-backed files. We observed about 20–25 generated tokens/sec on short probes and around 13 tokens/sec under severe memory pressure with Unreal open. These are observations from one PC, not guaranteed performance. A probe also returned a wrong answer: review outputs and run tests.
+The model does not fit entirely in 12 GB VRAM. It also uses system RAM and SSD-backed files. We observed about 20â€“25 generated tokens/sec on short probes and around 13 tokens/sec under severe memory pressure with Unreal open. These are observations from one PC, not guaranteed performance. A probe also returned a wrong answer: review outputs and run tests.
 
 Keep one active agent at a time on memory-constrained machines. Stop inference when you need to free the GPU. Heavy concurrent Unreal/model workloads are not validated as a smooth experience on our 32 GB machine.
 

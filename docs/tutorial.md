@@ -1,18 +1,18 @@
-# Qwen 3.8 Coder at 20–25 Tokens/s on a 12 GB GPU and Ryzen 5
+# Qwen 3.8 Coder at 20â€“25 Tokens/s on a 12 GB GPU and Ryzen 5
 
-*By AiBrainWorX-Ai · October 24, 2026 · Windows tutorial and build diary*
+*By AiBrainWorX-Ai Â· October 24, 2026 Â· Windows tutorial and build diary*
 
 **A 12 GB RTX 3060. An AMD Ryzen 5 5500. Qwen 3.8 Flash Next Coder, running locally and connected to our game-development tools.**
 
-> **Our measured result: about 20–25 generated tokens per second on short local probes.** An RTX 3060 with 12 GB VRAM, an older Ryzen 5 5500, 32 GB RAM and SSD-backed model data made this build possible. These are measurements from our PC, not a speed guarantee; heavy memory pressure with Unreal open reduced one live reading to roughly 13 tokens/s.
+> **Performance depends on the workload and cache state.** Our fresh audit measured 17.4 decode tokens/s on the first short request, then 30.9 and 36.7 on identical cached repeats. An earlier different request showed 11.8. These measurements do not establish sustained coding-agent throughput. [Read the method and complete results](performance.md).
 
-![Our measured local generation speed: approximately 20–25 tokens per second on short probes, with lower throughput under heavy memory pressure.](../media/aibrainworx-results.png)
+![Our measured local generation speed: approximately 20â€“25 tokens per second on short probes, with lower throughput under heavy memory pressure.](../media/aibrainworx-results.png)
 
 That is the machine behind this build. At AiBrainWorX, we connected Strata, Codex CLI, DeepSeek Harness and an Unreal Engine project to make a practical local coding workspace. We also built desktop controls because starting an assistant should be easier than remembering a collection of terminal commands.
 
 Pretty gangsta for an older Ryzen 5 and a 12 GB card.
 
-There is an important engineering detail behind that headline: the GPU works alongside **32 GB of system RAM and an SSD**. The model's roughly 58.4 GB of original files do not all fit into VRAM. Strata spreads the work across the GPU, CPU, RAM and storage. That arrangement makes this setup possible—and memory pressure is also its biggest limitation.
+There is an important engineering detail behind that headline: the GPU works alongside **32 GB of system RAM and an SSD**. The model's roughly 58.4 GB of original files do not all fit into VRAM. Strata spreads the work across the GPU, CPU, RAM and storage. That arrangement makes this setup possibleâ€”and memory pressure is also its biggest limitation.
 
 ![The AiBrainWorX Local AI Control launcher with Qwen, Harness and Unreal controls.](../media/aibrainworx-local-ai-control.png)
 
@@ -41,7 +41,7 @@ Client bridge paths regenerate from the current launcher location.
 
 The small loopback settings service on port 8082 forwards requests to Strata on
 8081. Saved profiles have separate client homes; existing global history is
-preserved. Finish active work and Stop → Start Harness once after upgrading.
+preserved. Finish active work and Stop â†’ Start Harness once after upgrading.
 Stop it before switching project profiles. An open CLI retains its selected
 profile. [Read the settings and portability guide](launch-profiles.md).
 
@@ -261,7 +261,7 @@ $env:STRATA_LOCAL_TOKEN = 'local-no-auth-required'
 npx @deepseek-ai/dsh web --no-open --host 127.0.0.1 --port 3080
 ```
 
-Our actual provider label is `aibrainworx`, so the selector shows **aibrainworx → qwen3.8-flash-next-coder**.
+Our actual provider label is `aibrainworx`, so the selector shows **aibrainworx â†’ qwen3.8-flash-next-coder**.
 
 Harness prints a browser sign-in URL containing a process credential. Our Open chat button opens that URL without displaying its credential in the panel. Keep that URL out of public screenshots and article copy.
 
@@ -350,9 +350,9 @@ The workspace dropdown also offers **Codex CLI (optional)**, which opens the sam
 
 The refreshed design displays the real hardware, separates model and workspace controls, and carries **Made by AiBrainWorX**. These screenshots show the actual Windows application, not a generated mockup.
 
-## The headline result: 20–25 generated tokens per second
+## The headline result: 20â€“25 generated tokens per second
 
-On short probes, we measured about **20–25 generated tokens per second**. One before/after engine comparison recorded 21.5 and 24.8 tokens per second, but total request time was about 11.7 and 12.7 seconds respectively. Different output lengths and prompt-processing time matter; that single comparison does not establish an overall speed improvement.
+On short probes, we measured about **20â€“25 generated tokens per second**. One before/after engine comparison recorded 21.5 and 24.8 tokens per second, but total request time was about 11.7 and 12.7 seconds respectively. Different output lengths and prompt-processing time matter; that single comparison does not establish an overall speed improvement.
 
 A small generated Python function passed six edge cases. A separate data-lookup probe returned an incorrect answer. Healthy API responses and impressive token counters do not replace checking the work.
 

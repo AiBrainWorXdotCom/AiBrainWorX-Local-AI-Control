@@ -1,0 +1,66 @@
+{
+  "method": "Three sequential identical 128-token coding requests at temperature 0, reasoning none, direct Strata API, ordinary current desktop. No apps closed or engine settings changed.",
+  "model": "qwen3.8-flash-next-coder-iq1_m",
+  "trials": [
+    {
+      "trial": 1,
+      "utc": "2026-10-24T21:56:34.664785+00:00",
+      "max_output_tokens": 128,
+      "temperature": 0,
+      "reasoning_effort": "none",
+      "elapsed_s": 8.58,
+      "usage": {
+        "prompt_tokens": 45,
+        "completion_tokens": 93,
+        "total_tokens": 138,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "decode_tokens_s": 17.4,
+      "ram_used_gib": 29.17,
+      "ram_total_gib": 31.87,
+      "gpu_used_gib": 11.28
+    },
+    {
+      "trial": 2,
+      "utc": "2026-10-24T21:56:37.819804+00:00",
+      "max_output_tokens": 128,
+      "temperature": 0,
+      "reasoning_effort": "none",
+      "elapsed_s": 3.14,
+      "usage": {
+        "prompt_tokens": 45,
+        "completion_tokens": 93,
+        "total_tokens": 138,
+        "prompt_tokens_details": {
+          "cached_tokens": 38
+        }
+      },
+      "decode_tokens_s": 30.9,
+      "ram_used_gib": 31.02,
+      "ram_total_gib": 31.87,
+      "gpu_used_gib": 11.22
+    },
+    {
+      "trial": 3,
+      "utc": "2026-10-24T21:56:40.552724+00:00",
+      "max_output_tokens": 128,
+      "temperature": 0,
+      "reasoning_effort": "none",
+      "elapsed_s": 2.71,
+      "usage": {
+        "prompt_tokens": 45,
+        "completion_tokens": 93,
+        "total_tokens": 138,
+        "prompt_tokens_details": {
+          "cached_tokens": 38
+        }
+      },
+      "decode_tokens_s": 36.7,
+      "ram_used_gib": 31.21,
+      "ram_total_gib": 31.87,
+      "gpu_used_gib": 11.07
+    }
+  ]
+}
