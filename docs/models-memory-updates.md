@@ -79,7 +79,8 @@ information the user wrote. Review before sharing.
 ## Manual updates
 
 Check for updates reads this repository's published GitHub releases. With alpha
-versions included, it can fall back to the version on main. A failed network
+versions included, it also compares the version on main, even when an older
+release exists. A failed network
 request is shown as unavailable, never as up to date. Checking installs nothing.
 Read changes and replace the source package manually, keeping private runtime
 state separate. Existing active model requests block an owned old service's

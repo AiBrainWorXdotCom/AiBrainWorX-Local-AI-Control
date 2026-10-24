@@ -155,6 +155,11 @@ class Features(unittest.TestCase):
         encoded=base64.b64encode(b'0.3.0-alpha.1').decode()
         with patch.object(updates,'request_json',side_effect=[[],{'content':encoded}]):
             result=updates.check('0.2.0-alpha.1');self.assertEqual(result['state'],'available');self.assertEqual(result['channel'],'main source package')
+        release={'tag_name':'v0.1.0-alpha.1','draft':False,'prerelease':True}
+        with patch.object(updates,'request_json',side_effect=[[release],{'content':encoded}]):
+            result=updates.check('0.2.0-alpha.1');self.assertEqual(result['latest'],'0.3.0-alpha.1')
+        with patch.object(updates,'request_json',return_value=[dict(release,prerelease=False)]):
+            self.assertEqual(updates.check('0.2.0',False)['state'],'no-release')
         with patch.object(updates,'request_json',side_effect=OSError):self.assertEqual(updates.check('0.3.0-alpha.1')['state'],'unavailable')
         self.assertGreater(updates.version_key('0.3.0'),updates.version_key('0.3.0-rc.2'))
         self.assertGreater(updates.version_key('0.3.0-alpha.10'),updates.version_key('0.3.0-alpha.2'))

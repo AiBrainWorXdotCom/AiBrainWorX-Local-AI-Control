@@ -36,17 +36,16 @@ def check(current, include_prereleases=True):
                 key=version_key(tag)
             except ValueError:
                 continue
-            candidates.append((key,tag))
-        if candidates:
-            key,latest=max(candidates)
-            channel='GitHub release'
-            url=REPOSITORY+'/releases'
-        else:
-            if not include_prereleases:
-                return dict(state='no-release',current=current,latest='',url=REPOSITORY+'/releases',detail='No versioned stable release is published. Enable alpha/beta checks to compare the main source package.')
+            if not include_prereleases and key[3]!=3:
+                continue
+            candidates.append((key,tag,'GitHub release',REPOSITORY+'/releases'))
+        if include_prereleases:
             data=request_json(API+'/contents/VERSION?ref=main')
             latest=base64.b64decode(data['content']).decode('utf-8').strip()
-            key=version_key(latest);channel='main source package';url=REPOSITORY
+            candidates.append((version_key(latest),latest,'main source package',REPOSITORY))
+        if not candidates:
+            return dict(state='no-release',current=current,latest='',url=REPOSITORY+'/releases',detail='No versioned stable release is published. Enable alpha/beta checks to compare the main source package.')
+        key,latest,channel,url=max(candidates)
         own=version_key(current)
         state='available' if key>own else 'current' if key==own else 'ahead'
         return dict(state=state,current=current,latest=latest,channel=channel,url=url,
