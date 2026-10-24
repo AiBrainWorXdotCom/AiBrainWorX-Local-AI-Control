@@ -39,3 +39,6 @@ try {
         Remove-Item -LiteralPath $resolved -Recurse -Force
     }
 }
+# The deliberately failing stub must not leak its native exit code into a CI
+# wrapper that dot-sources this script. Assertions above still fail normally.
+$global:LASTEXITCODE = 0
