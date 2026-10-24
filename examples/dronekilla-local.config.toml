@@ -1,0 +1,34 @@
+# Example for the Codex CLI version described in the article.
+# Copy to %USERPROFILE%/.codex/dronekilla-local.config.toml after editing paths.
+model = "qwen3.8-flash-next-coder"
+model_provider = "local_strata"
+model_catalog_json = "C:/AI/UnrealAssistant/model-catalog.json"
+model_context_window = 16384
+model_auto_compact_token_limit = 12000
+model_reasoning_effort = "medium"
+web_search = "disabled"
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+[model_providers.local_strata]
+name = "Local Qwen through Strata"
+base_url = "http://127.0.0.1:8081/v1"
+wire_api = "responses"
+requires_openai_auth = false
+stream_idle_timeout_ms = 600000
+
+[features]
+apps = false
+plugins = false
+multi_agent = false
+
+[mcp_servers.unreal_local]
+command = "python"
+args = ["C:/AI/UnrealAssistant/unreal_mcp.py"]
+startup_timeout_sec = 15
+tool_timeout_sec = 60
+
+[mcp_servers.unreal_local.env]
+UE_PROJECT_ROOT = "C:/Projects/MyUnrealGame"
+UE_PROJECT_NAME = "MyUnrealGame"
+UE_ENGINE_PYTHON = "C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PythonScriptPlugin/Content/Python"

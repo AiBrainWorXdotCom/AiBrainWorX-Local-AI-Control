@@ -1,0 +1,36 @@
+# Local configuration can contain personal paths. Only templates are public.
+*.local.json
+*.local.toml
+.env
+.env.*
+!.env.example
+logs/
+*.log
+*.pid
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+recordings-private/
+backups/
+*.gguf
+*.bin
+*.uasset
+*.umap
+# Credentials, session data and local backups never belong in the repository.
+*.pem
+*.key
+*.pfx
+*.p12
+*.bak
+*.sqlite
+*.sqlite3
+auth.json
+cookies.txt
+.ssh/
+.dsh/
+.codex/
+application-frames/
+.video-build/
+*.mp4

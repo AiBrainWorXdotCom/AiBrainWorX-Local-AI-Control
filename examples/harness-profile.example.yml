@@ -1,0 +1,31 @@
+# Merge entries into your existing web profile; preserve other settings.
+- id: llm-pi-ai
+  name: "@deepseek-ai/dsh-llm-pi-ai"
+  config:
+    providers:
+      local_strata:
+        apiKeyEnv: STRATA_LOCAL_TOKEN
+        api: openai-completions
+        baseURL: http://127.0.0.1:8081/v1
+        models:
+          - id: qwen3.8-flash-next-coder
+            name: Qwen 3.8 Flash Next Coder
+            maxTokens: 4096
+            contextWindow: 16384
+- id: agent-default-model
+  name: "@deepseek-ai/dsh-agent-default-model"
+  config:
+    provider: local_strata
+    model: qwen3.8-flash-next-coder
+- id: mcp-unreal-local
+  name: "@deepseek-ai/dsh-mcp-client"
+  config:
+    serverName: unreal_local
+    transport: stdio
+    command: python
+    args: ["C:/AI/UnrealAssistant/unreal_mcp.py"]
+    env:
+      UE_PROJECT_ROOT: "C:/Projects/MyUnrealGame"
+      UE_PROJECT_NAME: MyUnrealGame
+      UE_ENGINE_PYTHON: "C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PythonScriptPlugin/Content/Python"
+    toolCallTimeoutMs: 30000
