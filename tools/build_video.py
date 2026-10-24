@@ -48,6 +48,11 @@ def main():
         subprocess.run([args.ffmpeg, "-hide_banner", "-loglevel", "error", "-y", *arguments], cwd=work, check=True)
 
     def text(value, x, y, size=30, color="0xF0F5FC"):
+        # Draw individual lines: some Windows FFmpeg/font builds display newline
+        # control characters as missing-glyph boxes in multiline text files.
+        if "\n" in value:
+            return ",".join(text(line, x, y + i * (size + 14), size, color)
+                            for i, line in enumerate(value.splitlines()) if line)
         name = f"caption-{len(list(work.glob('caption-*.txt'))):03d}.txt"
         (work / name).write_text(value, encoding="utf-8", newline="\n")
         return f"drawtext=fontfile='{font}':textfile={name}:x={x}:y={y}:fontsize={size}:fontcolor={color}:line_spacing=14"
