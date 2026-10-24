@@ -82,6 +82,7 @@ For contributors:
 ```powershell
 python bridge/test_unreal_mcp.py
 powershell -NoProfile -File Tests/Check-Scripts.ps1
+powershell -NoProfile -File Tests/Check-ClientLaunch.ps1
 powershell -NoProfile -File Setup.ps1 -Plan
 ```
 
