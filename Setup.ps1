@@ -1,4 +1,4 @@
-param([switch]$Plan)
+﻿param([switch]$Plan)
 $ErrorActionPreference = 'Stop'
 $RepoRoot = $PSScriptRoot
 $RuntimeRoot = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'AiBrainWorX\LocalAI'
@@ -95,7 +95,7 @@ if ($models.Count -gt 1) {
 $StrataConfig = $models[$selectedIndex].FullName
 $model = Get-Content -LiteralPath $StrataConfig -Raw | ConvertFrom-Json
 if (($model.host -and $model.host -ne '127.0.0.1') -or ($model.port -and $model.port -ne 8081) -or $model.api_key) {
-    throw 'Version 1 expects a loopback Strata config on port 8081 without a key. Keep existing settings, or prepare a separate matching config with Strata setup.'
+    throw 'This alpha expects a loopback Strata config on port 8081 without a key. Keep existing settings, or prepare a separate matching config with Strata setup.'
 }
 $StrataPython = Join-Path $StrataRoot '.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $StrataPython)) { throw 'The source-based Strata Python environment is missing.' }
@@ -122,46 +122,13 @@ if ($UnrealName) {
     if ($EnginePython) { $EnginePython = [IO.Path]::GetFullPath($EnginePython.Trim('"')) }
     if ($EnginePython -and -not (Test-Path -LiteralPath (Join-Path $EnginePython 'remote_execution.py'))) { throw 'That folder does not contain remote_execution.py.' }
 }
-$HarnessHome = Join-Path $RuntimeRoot 'harness-home'
-$oldHome = [Environment]::GetEnvironmentVariable('DSH_HOME','Process')
-try {
-    [Environment]::SetEnvironmentVariable('DSH_HOME',$HarnessHome,'Process')
-    & $Node $HarnessEntry web --help | Out-Null
-} finally { [Environment]::SetEnvironmentVariable('DSH_HOME',$oldHome,'Process') }
-$profileRoot = Join-Path $HarnessHome 'profiles\web'
-[void][System.IO.Directory]::CreateDirectory($profileRoot)
-$profilePackage = @{name='aibrainworx-local-profile';private=$true;dependencies=@{};dsh=@{profile=@{bundles=@('@deepseek-ai/dsh-base','@deepseek-ai/dsh-web-app')}}} | ConvertTo-Json -Depth 8
-Write-Utf8 (Join-Path $profileRoot 'package.json') $profilePackage
-$patchPath = Join-Path $profileRoot 'cordis.patch.yml'
-Save-Backup $patchPath
-$aliases = @($model.aliases)
-$ModelId = if ($aliases.Count -and $aliases[0]) { [string]$aliases[0] } else { [string]$model.model_name }
-$profile = Get-Content -LiteralPath (Join-Path $RepoRoot 'examples\harness-profile.example.yml') -Raw
-$profile = $profile.Replace('qwen3.8-flash-next-coder',$ModelId)
-if (-not ($UnrealName -and $EnginePython)) { $profile = ($profile -split '(?m)^- id: mcp-unreal-local')[0] }
-else {
-    $bridge = (Join-Path $RepoRoot 'bridge\unreal_mcp.py').Replace('\','/')
-    $profile = $profile.Replace('C:/AI/UnrealAssistant/unreal_mcp.py',$bridge).Replace('C:/Projects/MyUnrealGame',$WorkspaceRoot.Replace('\','/')).Replace('MyUnrealGame',$UnrealName).Replace('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PythonScriptPlugin/Content/Python',$EnginePython.Replace('\','/'))
-}
-$profile = $profile.Replace('apiKeyEnv: STRATA_LOCAL_TOKEN','apiKeyEnv: AIBRAINWORX_API_KEY')
-Write-Utf8 $patchPath $profile
-
-$settings = [ordered]@{NodeExecutable=$Node;HarnessEntry=$HarnessEntry;HarnessHome=$HarnessHome;PythonExecutable=$Python;StrataRoot=$StrataRoot;StrataConfig=$StrataConfig;StrataPython=$StrataPython;WorkspaceRoot=$WorkspaceRoot;UnrealProjectName=$UnrealName;EnginePython=$EnginePython;StateRoot=$RuntimeRoot;ModelLabel=$model.model_name;CodexCommand=$CodexCommand;CodexEntry=$CodexEntry}
+$settings = [ordered]@{NodeExecutable=$Node;HarnessEntry=$HarnessEntry;HarnessHome=(Join-Path $RuntimeRoot 'harness-home');PythonExecutable=$Python;StrataRoot=$StrataRoot;StrataConfig=$StrataConfig;StrataPython=$StrataPython;WorkspaceRoot=$WorkspaceRoot;UnrealProjectName=$UnrealName;EnginePython=$EnginePython;StateRoot=$RuntimeRoot;ModelLabel=$model.model_name;CodexCommand=$CodexCommand;CodexEntry=$CodexEntry}
 $configPath = Join-Path $RepoRoot 'config.local.json'
 Save-Backup $configPath
 Write-Utf8 $configPath ($settings | ConvertTo-Json)
-$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path ([Environment]::GetFolderPath('UserProfile')) '.codex' }
-[void][System.IO.Directory]::CreateDirectory($codexHome)
-$codexProfile = Join-Path $codexHome 'aibrainworx-local.config.toml'
-Save-Backup $codexProfile
-$template = Get-Content -LiteralPath (Join-Path $RepoRoot 'examples\dronekilla-local.config.toml') -Raw
-$template = $template.Replace('qwen3.8-flash-next-coder',$ModelId).Replace('C:/AI/UnrealAssistant/model-catalog.json',(Join-Path $RuntimeRoot 'model-catalog.json').Replace('\','/'))
-$catalog = Get-Content -LiteralPath (Join-Path $RepoRoot 'examples\model-catalog.json') -Raw | ConvertFrom-Json
-$catalog.models[0].slug = $ModelId
-Write-Utf8 (Join-Path $RuntimeRoot 'model-catalog.json') ($catalog | ConvertTo-Json -Depth 20)
-if (-not ($UnrealName -and $EnginePython)) { $template = ($template -split '(?m)^\[mcp_servers.unreal_local\]')[0] }
-else { $template = $template.Replace('C:/AI/UnrealAssistant/unreal_mcp.py',(Join-Path $RepoRoot 'bridge\unreal_mcp.py').Replace('\','/')).Replace('C:/Projects/MyUnrealGame',$WorkspaceRoot.Replace('\','/')).Replace('MyUnrealGame',$UnrealName).Replace('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PythonScriptPlugin/Content/Python',$EnginePython.Replace('\','/')) }
-Write-Utf8 $codexProfile $template
+# Generate isolated client homes using this checkout's current location.
+# No global client profile or existing workspace instruction file is replaced.
+Run-Checked $Python @((Join-Path $RepoRoot 'app/control_runtime.py'),'prepare','--config',$configPath)
 Write-Host "`nSetup complete. Open Launch.cmd, start the model, then choose your coding workspace." -ForegroundColor Cyan
 Write-Host 'Model files are reused. Local paths and logs stay in ignored configuration/runtime folders.'
 Write-Host 'Made by AiBrainWorX'

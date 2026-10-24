@@ -1,6 +1,8 @@
 # AiBrainWorX Local AI Control
 
-**Local AI, with a clear Start button.** A Windows launcher for Strata and your choice of coding workspace, with optional Unreal inspection tools.
+**Portable local AI, with a clear Start button.** Download, extract and run the Windows launcher from your chosen folder. Choose a coding workspace, save your own instructions and model settings, and optionally connect Unreal inspection tools.
+
+**v0.2.0-alpha.1 · Portable source package.** No fixed installation folder or registry registration is required for the launcher. Python, Node, Strata and model files are separate dependencies; run **Setup.cmd on each PC**. This is not a standalone executable or a bundled model download.
 
 **Measured on our PC: about 20–25 generated tokens/second on short probes**, using an RTX 3060 12 GB, Ryzen 5 5500, 32 GB RAM and SSD-backed data. Read the [public tutorial](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/). Heavy memory pressure reduced one live reading to roughly 13 tokens/second; these are observations, not a performance guarantee.
 
@@ -16,7 +18,26 @@ Made by **AiBrainWorX** · Original code: **MIT** · [Website](https://aibrainwo
 4. Choose a working folder. Unreal is optional; an ordinary coding folder works too.
 5. Open **Launch.cmd**, click **Start model**, and wait for Ready. Choose **DeepSeek Harness (browser)**, then **Start → Open chat**.
 
-The workspace dropdown also offers **Codex CLI (optional)**. Choose it and click **Open CLI** to open the prepared local profile in a terminal. Both clients use the same Strata server; you can use either one. The Harness Start/Stop buttons are disabled when the terminal client is selected. Switching clients does not stop an already running service. Model selection happens during Setup; model tuning controls are planned for a later version.
+The workspace dropdown also offers **Codex CLI (optional)**. Choose it and click **Open CLI** to open a prepared local profile in a terminal. Both clients use the same Strata server; you can use either one. Switching clients does not stop a running service. Choose model weights during Setup; customize instructions and request settings through **Settings**.
+
+## Your settings, before launch
+
+- **Saved profiles:** name a project, choose its folder and optional Unreal Python folder, then Save or Save as new.
+- **Custom instructions:** start with General Coder, Unreal Developer or Code Reviewer, edit the text, and enable its checkbox.
+- **Sampling sliders:** optionally override temperature and top-p. Leave the checkbox off to retain client/model defaults.
+- **Output limit:** set a maximum of 64–8192 tokens per request. A client may request fewer tokens, and reasoning can consume the output budget.
+- **Live readings:** see generation speed, CPU usage, VRAM and RAM from Strata's metrics. Idle shows the last completed request separately.
+- **Diagnostics:** check installed clients, the model and optional Unreal connection without generating a reply. The copyable report excludes personal paths and prompts.
+
+![Instructions, sampling sliders and saved launch profiles](media/aibrainworx-launch-settings.png)
+
+These settings apply to new requests through a small local service on port **8082**, which forwards to Strata on **8081**. Existing client instructions and tools remain in place. Settings do not change model weights, context size or the client's permissions. See the [profiles guide](docs/launch-profiles.md).
+
+**Updating an existing installation:** if Harness is already running, finish its current turn, then use Stop → Start once to use the new managed profile. Each profile has its own client home; existing global history is preserved. Stop Harness before switching project profiles. The launcher never interrupts your current assistant automatically.
+
+## Moving the launcher
+
+Keep the extracted source folder together. After moving it on the same PC, client bridge paths are regenerated at launch. On another PC, run Setup again to select that computer's installed runtimes, project and model. Do not share `config.local.json`, prompts, logs or client homes. Heavy model data can stay in its own location, including a suitable external drive; drive speed affects loading and inference.
 
 Large model downloads require an explicit `DOWNLOAD` confirmation. The tested Qwen Coder files are approximately 58.4 GB, plus prepared data and other runtime files. The guided Strata option can select another supported model. Model weights are downloaded by Strata; none are stored in this repository.
 
@@ -24,9 +45,9 @@ Setup uses Windows Package Manager for missing Git, Python or Node when you appr
 
 ## What is included
 
-- A branded control panel with detected CPU, GPU and RAM labels.
+- A branded portable control panel with detected hardware and live utilization.
 - Independent model and Harness start/stop controls.
-- A named Codex local-provider profile, leaving the normal default profile unchanged.
+- Saved launch profiles and isolated client configuration, leaving global defaults unchanged.
 - Five optional Unreal inspection tools: project status, actors, actor details, selection and asset search.
 - Four original [Unreal skills](skills/README.md) for development, source investigation, Epic research and MCP diagnostics.
 - A [setup tutorial](docs/tutorial.md), screenshots, architecture graphics and a [rebuildable captioned walkthrough](media/VIDEO.md).
@@ -50,7 +71,7 @@ See [SECURITY.md](SECURITY.md) for security and privacy details.
 
 `config.local.json` contains your actual installation paths and is ignored by Git. Runtime data and logs go into your local application-data folder. The first-run setup uses a dedicated Harness home so it can prepare its own profile without replacing your existing Harness history or credentials.
 
-Version 1 expects the model API on `127.0.0.1:8081`, and Harness on `127.0.0.1:3080`. Both services bind to loopback. The current model-control preset expects no Strata API key. A conflicting port blocks another start instead of killing its owner.
+This alpha expects Strata on `127.0.0.1:8081`, the launch settings service on `127.0.0.1:8082`, and Harness on `127.0.0.1:3080`. All bind to loopback. The model-control preset expects no Strata API key. A conflicting port blocks another start instead of killing its owner.
 
 Harness prints a process sign-in URL into its private log. **Open chat** uses that URL. Do not publish the URL or your local configuration. Screenshots and video in this release contain application-only captures and explanatory graphics.
 
@@ -71,6 +92,7 @@ The first diagnostic prompt:
 - The portable Unreal bridge's ten contract tests pass.
 - PowerShell parsing, the no-download setup plan, hardware detection and existing-install status checks were exercised.
 - Harness lifecycle and duplicate-start handling were tested on our installation.
+- Saved-profile persistence, instruction injection, request limits, isolation and incremental streaming have contract tests. A managed Harness profile also booted on a separate test port without interrupting the active session.
 - Model generation and earlier Codex project-status tool calls were validated.
 - A complete fresh-machine bootstrap with new model downloads has **not** been tested end to end.
 - Live actor/asset/selection inspection still needs a separate open-editor acceptance pass.
@@ -81,6 +103,8 @@ For contributors:
 
 ```powershell
 python bridge/test_unreal_mcp.py
+python Tests/test_control_runtime.py
+python Tests/check_public_files.py
 powershell -NoProfile -File Tests/Check-Scripts.ps1
 powershell -NoProfile -File Tests/Check-ClientLaunch.ps1
 powershell -NoProfile -File Setup.ps1 -Plan

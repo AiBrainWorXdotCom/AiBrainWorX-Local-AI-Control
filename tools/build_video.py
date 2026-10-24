@@ -76,7 +76,7 @@ def main():
     title = text("THE LAUNCHER / REAL APP CONTROLS", 65, 60, 46)
     notes = text("01  START THE MODEL\nWait for Ready.\n\n02  START HARNESS\nOpen your local chat.\n\n03  CHECK UNREAL\nOptional inspection tools.\n\nSeparate Start / Stop controls.\nNo terminal juggling.", 1180, 225, 29)
     footer = text("Made by AiBrainWorX  |  Application-rendered capture with live status; explanatory overlays added.", 65, 1010, 23, "0x6DE7D6")
-    encode("02-launcher", 12, ["-f", "lavfi", "-i", "color=c=0x0C111B:s=1920x1080:r=30", *capture_input], f"[1:v]scale=1080:-2,setsar=1[app];[0:v][app]overlay=50:180,{title},{notes},{footer}")
+    encode("02-launcher", 12, ["-f", "lavfi", "-i", "color=c=0x0C111B:s=1920x1080:r=30", *capture_input], f"[1:v]scale=1080:790:force_original_aspect_ratio=decrease,setsar=1[app];[0:v][app]overlay=50:180,{title},{notes},{footer}")
     image_clip("03-architecture", 18, "aibrainworx-stack-infographic.png")
     steps = text("START. WAIT. CREATE.", 80, 85, 58)
     steps2 = text("1. Start Coder.\n2. Wait for the model to report Ready.\n3. Start Harness and open chat.\n\nClosing a panel keeps the service running.\nUse Stop to release model resources.", 1030, 300, 31)

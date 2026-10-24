@@ -12,6 +12,14 @@ The model and Harness bind to loopback. This launcher does not open firewall
 ports or configure a public tunnel. Other processes on the same computer may
 still reach local services. Keep Harness sign-in URLs and logs private.
 
+The request-settings service also binds only to loopback, on port 8082. It
+checks Host/Origin, accepts a fixed set of model API routes and rejects oversized
+requests. It is not an authenticated boundary against other software on this PC.
+It does not log requests or prompts. Custom instructions are stored as plain text
+in your local runtime profile file: never put passwords or API keys in prompts.
+Project profiles have separate client homes and fixed model URLs, preserving the
+profile chosen by an existing client when another profile is selected.
+
 The Unreal bridge exposes five fixed inspection operations. It has no arbitrary
 Python-execution tool and cannot edit or save maps. Unreal's own remote-execution
 feature is powerful: keep its network configuration restricted to this PC.

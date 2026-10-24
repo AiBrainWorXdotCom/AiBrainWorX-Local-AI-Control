@@ -14,7 +14,9 @@ try {
     [IO.File]::WriteAllText($entry,'require("fs").writeFileSync(require("path").join(__dirname,"invoked.txt"),"invoked"); process.stdout.write(JSON.stringify(process.argv.slice(2)));')
     [Environment]::SetEnvironmentVariable('CODEX_HOME',$testRoot,'Process')
     $config = Join-Path $testRoot 'config.local.json'
-    $settings = @{NodeExecutable=$node;HarnessEntry=$entry;PythonExecutable=$node;StrataRoot=$testRoot;StrataConfig=$profile;StrataPython=$node;WorkspaceRoot=$workspace;StateRoot=$testRoot;ModelLabel='Test model';CodexEntry=$entry}
+    $modelConfig = Join-Path $testRoot 'strata-test.json'
+    [IO.File]::WriteAllText($modelConfig,'{"model_name":"test-model","aliases":["test-model"]}')
+    $settings = @{NodeExecutable=$node;HarnessEntry=$entry;PythonExecutable=(Get-Command python.exe -ErrorAction Stop).Source;StrataRoot=$testRoot;StrataConfig=$modelConfig;StrataPython=$node;WorkspaceRoot=$workspace;StateRoot=$testRoot;ModelLabel='Test model';CodexEntry=$entry}
     [IO.File]::WriteAllText($config,($settings | ConvertTo-Json))
     $launcher = Join-Path $root 'app\Start-Codex.ps1'
     & $launcher -ConfigPath $config -CheckOnly | Out-Null
@@ -25,11 +27,13 @@ try {
     $rejected = $false
     try { & $launcher -ConfigPath $config } catch { $rejected = $true }
     if (-not $rejected) { throw 'A failed client was reported as successful.' }
-    Rename-Item -LiteralPath $profile -NewName 'profile.disabled.toml'
+    if ($env:CODEX_HOME -cne $testRoot) { throw 'The client changed its caller environment.' }
+    if (-not (Test-Path -LiteralPath (Join-Path $testRoot 'managed-clients\default\codex\aibrainworx-local.config.toml'))) { throw 'The managed local profile was not prepared.' }
+    Rename-Item -LiteralPath $entry -NewName 'client.disabled.js'
     $rejected = $false
     try { & $launcher -ConfigPath $config -CheckOnly | Out-Null } catch { $rejected = $true }
-    if (-not $rejected) { throw 'A missing local profile was accepted.' }
-    Write-Output 'Client launch checks passed: no-start validation, argument preservation, failure reporting and missing-profile handling.'
+    if (-not $rejected) { throw 'A missing client entry was accepted.' }
+    Write-Output 'Client launch checks passed: no-start validation, arguments, managed profile isolation, failure reporting and missing-client handling.'
 } finally {
     [Environment]::SetEnvironmentVariable('CODEX_HOME',$oldCodexHome,'Process')
     if (Test-Path -LiteralPath $testRoot) {

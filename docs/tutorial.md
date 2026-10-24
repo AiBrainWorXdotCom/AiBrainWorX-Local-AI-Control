@@ -18,6 +18,37 @@ There is an important engineering detail behind that headline: the GPU works alo
 
 *Our actual Windows launcher. Model inference and the agent interface have separate controls. Made by AiBrainWorX.*
 
+## Portable local AI, with your settings saved
+
+**v0.2.0-alpha.1** adds project profiles, an editable custom-instructions box,
+General Coder / Unreal Developer / Code Reviewer presets, temperature and top-p
+sliders, and a per-request output cap. Open **Settings**, customize the profile,
+and Save before launching your client. Instructions are added to the client's
+existing system instructions; tools and client permissions stay in place.
+
+![The settings editor, with example paths rather than personal information.](../media/aibrainworx-launch-settings.png)
+
+The main panel shows live generated tokens per second plus CPU, VRAM and RAM
+readings from Strata. An idle reading is explicitly marked as the last completed
+request. Diagnostics checks local connections without generating a reply and
+provides a copyable report without personal paths, credentials or prompts.
+
+**Portable means you can extract or move the launcher folder.** There is no
+required launcher install directory. Run Setup on each PC to select its own
+Python, Node, Strata, model and project locations. Dependencies and model weights
+are separate; this is not a standalone EXE or a zero-download model package.
+Client bridge paths regenerate from the current launcher location.
+
+The small loopback settings service on port 8082 forwards requests to Strata on
+8081. Saved profiles have separate client homes; existing global history is
+preserved. Finish active work and Stop → Start Harness once after upgrading.
+Stop it before switching project profiles. An open CLI retains its selected
+profile. [Read the settings and portability guide](launch-profiles.md).
+
+The following manual configuration examples describe the original direct-to-
+Strata setup. The launcher's generated configurations now use the profile URL
+on port 8082 and isolated client homes instead of global configuration files.
+
 ## What each piece does
 
 **A smaller starting setup is enough:** Strata plus one coding client. Choose Harness for its browser workspace or Codex CLI for a terminal workflow. Our launcher package prepares both for convenience, but you can use just one. The Unreal bridge is optional for people who need editor inspection. This is a flexible development setup, rather than a minimum requirement for running local AI.
