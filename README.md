@@ -4,6 +4,8 @@
 
 **Private review draft.** This repository is private while its owner reviews the launcher and tutorial. No public release is approved yet.
 
+**Measured on our PC: about 20–25 generated tokens/second on short probes**, using an RTX 3060 12 GB, Ryzen 5 5500, 32 GB RAM and SSD-backed data. Read the [public tutorial](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/). Heavy memory pressure reduced one live reading to roughly 13 tokens/second; these are observations, not a performance guarantee.
+
 ![AiBrainWorX Local AI Control](media/aibrainworx-local-ai-control.png)
 
 Made by **AiBrainWorX** · Original code: **MIT** · [Website](https://aibrainworx.com) · [GitHub](https://github.com/AiBrainWorXdotCom)

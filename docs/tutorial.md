@@ -1,8 +1,12 @@
-# Qwen 3.8 Flash Next Coder on a 12 GB GPU and an Old Ryzen 5: Our Local AI Setup for Unreal
+# Qwen 3.8 Coder at 20–25 Tokens/s on a 12 GB GPU and Ryzen 5
 
 *By AiBrainWorX-Ai · October 24, 2026 · Windows tutorial and build diary*
 
 **A 12 GB RTX 3060. An AMD Ryzen 5 5500. Qwen 3.8 Flash Next Coder, running locally and connected to our game-development tools.**
+
+> **Our measured result: about 20–25 generated tokens per second on short local probes.** An RTX 3060 with 12 GB VRAM, an older Ryzen 5 5500, 32 GB RAM and SSD-backed model data made this build possible. These are measurements from our PC, not a speed guarantee; heavy memory pressure with Unreal open reduced one live reading to roughly 13 tokens/s.
+
+![Our measured local generation speed: approximately 20–25 tokens per second on short probes, with lower throughput under heavy memory pressure.](../media/aibrainworx-results.png)
 
 That is the machine behind this build. At AiBrainWorX, we connected Strata, Codex CLI, DeepSeek Harness and an Unreal Engine project to make a practical local coding workspace. We also built desktop controls because starting an assistant should be easier than remembering a collection of terminal commands.
 
@@ -14,9 +18,9 @@ There is an important engineering detail behind that headline: the GPU works alo
 
 *Our actual Windows launcher. Model inference and the agent interface have separate controls. Made by AiBrainWorX.*
 
-![How Codex and Harness connect to Strata and Unreal.](../media/aibrainworx-stack-infographic.png)
-
 ## What each piece does
+
+**A smaller starting setup is enough:** Strata plus one coding client. Choose Harness for its browser workspace or Codex CLI for a terminal workflow. Our launcher package prepares both for convenience, but you can use just one. The Unreal bridge is optional for people who need editor inspection. This is a flexible development setup, rather than a minimum requirement for running local AI.
 
 The names can make this sound more complicated than it is. Here is the division of work in our installation:
 
@@ -315,9 +319,7 @@ The controls are independent. Stopping Harness leaves Qwen running, and the laun
 
 The refreshed design displays the real hardware, separates model and workspace controls, and carries **Made by AiBrainWorX**. These screenshots show the actual Windows application, not a generated mockup.
 
-![How this build uses GPU memory, RAM and SSD storage.](../media/aibrainworx-hardware-infographic.png)
-
-## What performance really looked like
+## The headline result: 20–25 generated tokens per second
 
 On short probes, we measured about **20–25 generated tokens per second**. One before/after engine comparison recorded 21.5 and 24.8 tokens per second, but total request time was about 11.7 and 12.7 seconds respectively. Different output lengths and prompt-processing time matter; that single comparison does not establish an overall speed improvement.
 
@@ -352,7 +354,7 @@ For Codex, copy each desired skill folder from the repository's `skills` directo
 
 **Skills provide guidance; MCP provides tools.** Installing the Markdown does not install Unreal, enable plugins, register a server, grant file access or turn inspection tools into editing tools. Complete the connection setup above first. Other coding assistants may use the same instructions, but their skill-loading mechanisms differ; automatic discovery is not assumed.
 
-These are our original MIT-licensed instructions. They contain no Epic engine code, Marketplace assets, model weights or private game files. Their structure and portability have been checked, while behavioral validation in a fresh user installation remains a separate acceptance step. The skills and launcher are in the same private review draft before public release.
+These are our original MIT-licensed instructions. They contain no Epic engine code, Marketplace assets, model weights or private game files. Their structure and portability have been checked, while behavioral validation in a fresh user installation remains a separate acceptance step. The companion GitHub repository is currently private for owner review; its public download will follow that review. The installation directions describe the prepared package.
 
 ## A useful local assistant on hardware we already owned
 
