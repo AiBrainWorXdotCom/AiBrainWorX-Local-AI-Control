@@ -1,0 +1,841 @@
+{
+  "date": "2026-10-25",
+  "model": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF",
+  "quantization": "IQ1_M",
+  "hardware": "RTX3060 12GB / Ryzen5 5500 / 32GB RAM",
+  "conditions": "Sequential direct Strata API. Temperature 0. Reasoning none. No applications closed. Request-local tuning only; saved settings unchanged. Warm-up and order effects are not isolated.",
+  "series": {
+    "baseline": [
+      {
+        "name": "varied-coding",
+        "utc": "2026-10-25T08:10:53.604749+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 17.7169,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 192,
+          "total_tokens": 230,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 687,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 3.753,
+          "prompt_ms": 3708.9,
+          "decode_ms": 14001.2,
+          "decode_tok_s": 13.7,
+          "hit_rate": 0.5,
+          "pcie_share": 0.058,
+          "drafts_offered": 163,
+          "drafts_accepted": 133
+        }
+      },
+      {
+        "name": "varied-explanation",
+        "utc": "2026-10-25T08:11:08.965362+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 15.3244,
+        "usage": {
+          "prompt_tokens": 37,
+          "completion_tokens": 192,
+          "total_tokens": 229,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 914,
+        "engine": {
+          "prompt_tokens": 37,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 3.168,
+          "prompt_ms": 3113.5,
+          "decode_ms": 12206.1,
+          "decode_tok_s": 15.7,
+          "hit_rate": 0.717,
+          "pcie_share": 0.092,
+          "drafts_offered": 161,
+          "drafts_accepted": 77
+        }
+      },
+      {
+        "name": "varied-planning",
+        "utc": "2026-10-25T08:11:22.055761+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 13.0746,
+        "usage": {
+          "prompt_tokens": 33,
+          "completion_tokens": 192,
+          "total_tokens": 225,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 851,
+        "engine": {
+          "prompt_tokens": 33,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 2.026,
+          "prompt_ms": 1972.4,
+          "decode_ms": 11095.4,
+          "decode_tok_s": 17.3,
+          "hit_rate": 0.692,
+          "pcie_share": 0.092,
+          "drafts_offered": 172,
+          "drafts_accepted": 95
+        }
+      },
+      {
+        "name": "identical-1",
+        "utc": "2026-10-25T08:11:30.695073+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 8.6151,
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 128,
+          "total_tokens": 170,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 469,
+        "engine": {
+          "prompt_tokens": 42,
+          "reused": 0,
+          "output_tokens": 128,
+          "first_engine_token_s": 2.442,
+          "prompt_ms": 2390.4,
+          "decode_ms": 6220.5,
+          "decode_tok_s": 20.6,
+          "hit_rate": 0.451,
+          "pcie_share": 0.104,
+          "drafts_offered": 98,
+          "drafts_accepted": 91
+        }
+      },
+      {
+        "name": "identical-2",
+        "utc": "2026-10-25T08:11:34.205243+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 3.4968,
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 128,
+          "total_tokens": 170,
+          "prompt_tokens_details": {
+            "cached_tokens": 35
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 469,
+        "engine": {
+          "prompt_tokens": 42,
+          "reused": 35,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.176,
+          "prompt_ms": 135.6,
+          "decode_ms": 3357.7,
+          "decode_tok_s": 38.1,
+          "hit_rate": 0.722,
+          "pcie_share": 0.058,
+          "drafts_offered": 100,
+          "drafts_accepted": 91
+        }
+      },
+      {
+        "name": "identical-3",
+        "utc": "2026-10-25T08:11:37.877638+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 3.6468,
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 128,
+          "total_tokens": 170,
+          "prompt_tokens_details": {
+            "cached_tokens": 35
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 469,
+        "engine": {
+          "prompt_tokens": 42,
+          "reused": 35,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.24,
+          "prompt_ms": 188.5,
+          "decode_ms": 3454.3,
+          "decode_tok_s": 37.1,
+          "hit_rate": 0.732,
+          "pcie_share": 0.056,
+          "drafts_offered": 103,
+          "drafts_accepted": 91
+        }
+      }
+    ],
+    "tune": [
+      {
+        "name": "warmup-excluded",
+        "utc": "2026-10-25T08:15:32.646231+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 7.4309,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 481,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 0,
+          "output_tokens": 128,
+          "first_engine_token_s": 1.727,
+          "prompt_ms": 1684.3,
+          "decode_ms": 5743.2,
+          "decode_tok_s": 22.3,
+          "hit_rate": 0.662,
+          "pcie_share": 0.07,
+          "drafts_offered": 116,
+          "drafts_accepted": 85
+        }
+      },
+      {
+        "name": "round-1-auto",
+        "utc": "2026-10-25T08:15:37.092792+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 4.4233,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 31
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 481,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 31,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.221,
+          "prompt_ms": 179.0,
+          "decode_ms": 4230.0,
+          "decode_tok_s": 30.3,
+          "hit_rate": 0.686,
+          "pcie_share": 0.066,
+          "drafts_offered": 116,
+          "drafts_accepted": 86
+        }
+      },
+      {
+        "name": "round-1-pcie-0.20",
+        "utc": "2026-10-25T08:15:41.268741+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.2,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 4.1511,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 31
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 458,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 31,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.189,
+          "prompt_ms": 150.3,
+          "decode_ms": 3997.0,
+          "decode_tok_s": 32.0,
+          "hit_rate": 0.653,
+          "pcie_share": 0.016,
+          "drafts_offered": 108,
+          "drafts_accepted": 89
+        }
+      },
+      {
+        "name": "round-1-pcie-0.55",
+        "utc": "2026-10-25T08:15:44.930513+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.55,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 3.6347,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 31
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 458,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 31,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.182,
+          "prompt_ms": 135.5,
+          "decode_ms": 3494.9,
+          "decode_tok_s": 36.6,
+          "hit_rate": 0.688,
+          "pcie_share": 0.062,
+          "drafts_offered": 108,
+          "drafts_accepted": 89
+        }
+      },
+      {
+        "name": "round-1-pcie-0.90",
+        "utc": "2026-10-25T08:15:48.301016+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.9,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 3.3464,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 31
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 458,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 31,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.197,
+          "prompt_ms": 153.2,
+          "decode_ms": 3178.2,
+          "decode_tok_s": 40.3,
+          "hit_rate": 0.73,
+          "pcie_share": 0.114,
+          "drafts_offered": 108,
+          "drafts_accepted": 89
+        }
+      },
+      {
+        "name": "round-2-pcie-0.90",
+        "utc": "2026-10-25T08:15:51.692929+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.9,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 3.3655,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 31
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 458,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 31,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.198,
+          "prompt_ms": 146.7,
+          "decode_ms": 3214.5,
+          "decode_tok_s": 39.8,
+          "hit_rate": 0.729,
+          "pcie_share": 0.115,
+          "drafts_offered": 111,
+          "drafts_accepted": 89
+        }
+      },
+      {
+        "name": "round-2-pcie-0.55",
+        "utc": "2026-10-25T08:15:55.001201+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.55,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 3.2944,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 31
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 458,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 31,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.171,
+          "prompt_ms": 132.5,
+          "decode_ms": 3158.0,
+          "decode_tok_s": 40.5,
+          "hit_rate": 0.692,
+          "pcie_share": 0.061,
+          "drafts_offered": 105,
+          "drafts_accepted": 90
+        }
+      },
+      {
+        "name": "round-2-pcie-0.20",
+        "utc": "2026-10-25T08:15:58.911332+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.2,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 3.8958,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 31
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 481,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 31,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.175,
+          "prompt_ms": 133.4,
+          "decode_ms": 3748.1,
+          "decode_tok_s": 34.2,
+          "hit_rate": 0.652,
+          "pcie_share": 0.016,
+          "drafts_offered": 117,
+          "drafts_accepted": 85
+        }
+      },
+      {
+        "name": "round-2-auto",
+        "utc": "2026-10-25T08:16:02.430876+00:00",
+        "max_tokens": 128,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 3.4921,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 128,
+          "total_tokens": 166,
+          "prompt_tokens_details": {
+            "cached_tokens": 31
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 481,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 31,
+          "output_tokens": 128,
+          "first_engine_token_s": 0.17,
+          "prompt_ms": 129.7,
+          "decode_ms": 3358.3,
+          "decode_tok_s": 38.1,
+          "hit_rate": 0.687,
+          "pcie_share": 0.065,
+          "drafts_offered": 112,
+          "drafts_accepted": 86
+        }
+      }
+    ],
+    "validation": [
+      {
+        "name": "coding-auto",
+        "utc": "2026-10-25T08:21:40.326047+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 9.5716,
+        "usage": {
+          "prompt_tokens": 43,
+          "completion_tokens": 192,
+          "total_tokens": 235,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 717,
+        "engine": {
+          "prompt_tokens": 43,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 1.883,
+          "prompt_ms": 1830.3,
+          "decode_ms": 7733.7,
+          "decode_tok_s": 24.8,
+          "hit_rate": 0.555,
+          "pcie_share": 0.093,
+          "drafts_offered": 164,
+          "drafts_accepted": 131
+        }
+      },
+      {
+        "name": "coding-pcie-0.55",
+        "utc": "2026-10-25T08:21:47.235518+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.55,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 6.8943,
+        "usage": {
+          "prompt_tokens": 43,
+          "completion_tokens": 192,
+          "total_tokens": 235,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 721,
+        "engine": {
+          "prompt_tokens": 43,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 1.205,
+          "prompt_ms": 1154.2,
+          "decode_ms": 5735.2,
+          "decode_tok_s": 33.5,
+          "hit_rate": 0.669,
+          "pcie_share": 0.069,
+          "drafts_offered": 161,
+          "drafts_accepted": 135
+        }
+      },
+      {
+        "name": "coding-pcie-0.90",
+        "utc": "2026-10-25T08:21:53.446844+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.9,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 6.1952,
+        "usage": {
+          "prompt_tokens": 43,
+          "completion_tokens": 192,
+          "total_tokens": 235,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 712,
+        "engine": {
+          "prompt_tokens": 43,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 1.143,
+          "prompt_ms": 1095.9,
+          "decode_ms": 5094.2,
+          "decode_tok_s": 37.7,
+          "hit_rate": 0.717,
+          "pcie_share": 0.131,
+          "drafts_offered": 155,
+          "drafts_accepted": 133
+        }
+      },
+      {
+        "name": "explanation-pcie-0.55",
+        "utc": "2026-10-25T08:22:06.970860+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.55,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 13.5001,
+        "usage": {
+          "prompt_tokens": 41,
+          "completion_tokens": 191,
+          "total_tokens": 232,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "stop",
+        "visible_characters": 942,
+        "engine": {
+          "prompt_tokens": 41,
+          "reused": 0,
+          "output_tokens": 191,
+          "first_engine_token_s": 2.39,
+          "prompt_ms": 2341.6,
+          "decode_ms": 11153.9,
+          "decode_tok_s": 17.1,
+          "hit_rate": 0.667,
+          "pcie_share": 0.087,
+          "drafts_offered": 165,
+          "drafts_accepted": 88
+        }
+      },
+      {
+        "name": "explanation-pcie-0.90",
+        "utc": "2026-10-25T08:22:17.336578+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.9,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 10.35,
+        "usage": {
+          "prompt_tokens": 41,
+          "completion_tokens": 192,
+          "total_tokens": 233,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 896,
+        "engine": {
+          "prompt_tokens": 41,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 1.407,
+          "prompt_ms": 1343.4,
+          "decode_ms": 9001.3,
+          "decode_tok_s": 21.3,
+          "hit_rate": 0.822,
+          "pcie_share": 0.111,
+          "drafts_offered": 155,
+          "drafts_accepted": 81
+        }
+      },
+      {
+        "name": "explanation-auto",
+        "utc": "2026-10-25T08:22:26.486234+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 9.1332,
+        "usage": {
+          "prompt_tokens": 41,
+          "completion_tokens": 192,
+          "total_tokens": 233,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 924,
+        "engine": {
+          "prompt_tokens": 41,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 1.656,
+          "prompt_ms": 1611.0,
+          "decode_ms": 7516.8,
+          "decode_tok_s": 25.5,
+          "hit_rate": 0.778,
+          "pcie_share": 0.06,
+          "drafts_offered": 167,
+          "drafts_accepted": 79
+        }
+      },
+      {
+        "name": "planning-pcie-0.90",
+        "utc": "2026-10-25T08:22:36.970098+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.9,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 10.451,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 192,
+          "total_tokens": 230,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 816,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 1.482,
+          "prompt_ms": 1429.8,
+          "decode_ms": 9015.7,
+          "decode_tok_s": 21.3,
+          "hit_rate": 0.712,
+          "pcie_share": 0.154,
+          "drafts_offered": 175,
+          "drafts_accepted": 96
+        }
+      },
+      {
+        "name": "planning-auto",
+        "utc": "2026-10-25T08:22:45.913678+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": null,
+        "elapsed_s": 8.9287,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 192,
+          "total_tokens": 230,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 759,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 1.278,
+          "prompt_ms": 1239.4,
+          "decode_ms": 7684.7,
+          "decode_tok_s": 25.0,
+          "hit_rate": 0.704,
+          "pcie_share": 0.079,
+          "drafts_offered": 154,
+          "drafts_accepted": 97
+        }
+      },
+      {
+        "name": "planning-pcie-0.55",
+        "utc": "2026-10-25T08:22:54.526689+00:00",
+        "max_tokens": 192,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "tune": {
+          "pcie_frac": 0.55,
+          "spec_min_p": 0.5
+        },
+        "elapsed_s": 8.5986,
+        "usage": {
+          "prompt_tokens": 38,
+          "completion_tokens": 192,
+          "total_tokens": 230,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "finish_reason": "length",
+        "visible_characters": 784,
+        "engine": {
+          "prompt_tokens": 38,
+          "reused": 0,
+          "output_tokens": 192,
+          "first_engine_token_s": 1.055,
+          "prompt_ms": 999.7,
+          "decode_ms": 7595.1,
+          "decode_tok_s": 25.3,
+          "hit_rate": 0.694,
+          "pcie_share": 0.08,
+          "drafts_offered": 158,
+          "drafts_accepted": 89
+        }
+      }
+    ]
+  },
+  "completed_code_review": {
+    "model": "qwen3.8-flash-next-coder",
+    "elapsed_s": 42.46,
+    "usage": {
+      "prompt_tokens": 3464,
+      "completion_tokens": 733,
+      "total_tokens": 4197,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "finish_reason": "stop",
+    "engine": {
+      "prompt_tokens": 3464,
+      "reused": 0,
+      "output_tokens": 733,
+      "first_engine_token_s": 8.945,
+      "prompt_ms": 8894.7,
+      "decode_ms": 33501.8,
+      "decode_tok_s": 21.9
+    }
+  }
+}

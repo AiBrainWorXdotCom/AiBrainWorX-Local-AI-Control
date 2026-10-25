@@ -10,6 +10,14 @@ Download, extract and run from your chosen folder. No fixed launcher installatio
 
 [Setup article](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/) · [Model library](https://aibrainworx.com/model-library/) · [MIT license](LICENSE) · [Security](SECURITY.md)
 
+## Built with Codex orchestration and local Qwen
+
+AiBrainWorX directs the product. **Codex is our development orchestrator**: it plans changes, coordinates focused reviews, implements integrations, runs checks and prepares GitHub and website updates. The October 25 review session used **GPT-6.1 Sol with Ultra reasoning**, verified from its session configuration.
+
+Our **Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF, IQ1_M** also contributes local coding and review through Strata. Suggestions are checked against source and tests before being accepted. Codex development assistance is separate from local inference: measured token speeds come from Qwen, Strata and the test hardware. Codex is optional for people running the launcher.
+
+[Development workflow and responsibilities](docs/development-workflow.md) · [Fresh performance review](docs/reviews/2026-10-25-performance.md)
+
 ## Start without Git commands
 
 1. [Download the ZIP](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control/archive/refs/heads/main.zip) and extract it into a permanent folder.
