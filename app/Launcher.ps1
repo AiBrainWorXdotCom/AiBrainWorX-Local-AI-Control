@@ -1,4 +1,4 @@
-﻿param([ValidateSet('Gui','Start','Stop','Status','Open','UnrealStatus')][string]$Action = 'Gui', [string]$CaptureImage = '', [string]$CaptureFrames = '', [ValidateSet('Harness','Codex')][string]$Workspace = 'Harness', [string]$CaptureSettingsImage = '', [ValidateSet('Overview','Chat','Models','Memory','Updates')][string]$CapturePage='Overview')
+﻿param([ValidateSet('Gui','Start','Stop','Status','Open','UnrealStatus')][string]$Action = 'Gui', [string]$CaptureImage = '', [string]$CaptureFrames = '', [ValidateSet('Harness','Codex')][string]$Workspace = 'Harness', [string]$CaptureSettingsImage = '', [ValidateSet('Overview','Chat','Models','Memory','Training','Updates')][string]$CapturePage='Overview')
 $ErrorActionPreference = 'Stop'
 $ConfigPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json'
 . (Join-Path $PSScriptRoot 'Settings.ps1')

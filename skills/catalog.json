@@ -1,0 +1,114 @@
+[
+  {
+    "name": "awx-android-edge",
+    "kind": "Bundled original",
+    "license": "MIT",
+    "path": "awx-android-edge/SKILL.md",
+    "url": "",
+    "review": "Original AiBrainWorX workflow. Read instructions; does not install a runtime or modify weights.",
+    "id": "awx-android-edge"
+  },
+  {
+    "name": "awx-blender-inspection",
+    "kind": "Bundled original",
+    "license": "MIT",
+    "path": "awx-blender-inspection/SKILL.md",
+    "url": "",
+    "review": "Original AiBrainWorX workflow. Read instructions; does not install a runtime or modify weights.",
+    "id": "awx-blender-inspection"
+  },
+  {
+    "name": "awx-model-dataset-review",
+    "kind": "Bundled original",
+    "license": "MIT",
+    "path": "awx-model-dataset-review/SKILL.md",
+    "url": "",
+    "review": "Original AiBrainWorX workflow. Read instructions; does not install a runtime or modify weights.",
+    "id": "awx-model-dataset-review"
+  },
+  {
+    "name": "awx-offline-lora",
+    "kind": "Bundled original",
+    "license": "MIT",
+    "path": "awx-offline-lora/SKILL.md",
+    "url": "",
+    "review": "Original AiBrainWorX workflow. Read instructions; does not install a runtime or modify weights.",
+    "id": "awx-offline-lora"
+  },
+  {
+    "name": "awx-unreal-mcp-check",
+    "kind": "Bundled original",
+    "license": "MIT",
+    "path": "awx-unreal-mcp-check/SKILL.md",
+    "url": "",
+    "review": "Original AiBrainWorX workflow. Read instructions; does not install a runtime or modify weights.",
+    "id": "awx-unreal-mcp-check"
+  },
+  {
+    "name": "awx-unreal-project-dev",
+    "kind": "Bundled original",
+    "license": "MIT",
+    "path": "awx-unreal-project-dev/SKILL.md",
+    "url": "",
+    "review": "Original AiBrainWorX workflow. Read instructions; does not install a runtime or modify weights.",
+    "id": "awx-unreal-project-dev"
+  },
+  {
+    "name": "awx-unreal-research",
+    "kind": "Bundled original",
+    "license": "MIT",
+    "path": "awx-unreal-research/SKILL.md",
+    "url": "",
+    "review": "Original AiBrainWorX workflow. Read instructions; does not install a runtime or modify weights.",
+    "id": "awx-unreal-research"
+  },
+  {
+    "name": "awx-unreal-source",
+    "kind": "Bundled original",
+    "license": "MIT",
+    "path": "awx-unreal-source/SKILL.md",
+    "url": "",
+    "review": "Original AiBrainWorX workflow. Read instructions; does not install a runtime or modify weights.",
+    "id": "awx-unreal-source"
+  },
+  {
+    "name": "android/skills",
+    "kind": "Upstream reference",
+    "license": "Apache-2.0",
+    "path": "",
+    "url": "https://github.com/android/skills",
+    "revision": "4ebabf2b0fd6c04b7150023c8b612f80592a6226",
+    "review": "README and license reviewed at this revision. Individual scripts are not audited or installed. Review selected skills and dependencies before use; Hugging Face cloud/job skills are separate from local training.",
+    "id": "android/skills"
+  },
+  {
+    "name": "arjun988/blender-skills",
+    "kind": "Upstream reference",
+    "license": "MIT",
+    "path": "",
+    "url": "https://github.com/arjun988/blender-skills",
+    "revision": "8f778d2405a214b508d4c7d80742be8e43acdd52",
+    "review": "README and license reviewed at this revision. Individual scripts are not audited or installed. Review selected skills and dependencies before use; Hugging Face cloud/job skills are separate from local training.",
+    "id": "arjun988/blender-skills"
+  },
+  {
+    "name": "quodsoler/unreal-engine-skills",
+    "kind": "Upstream reference",
+    "license": "MIT",
+    "path": "",
+    "url": "https://github.com/quodsoler/unreal-engine-skills",
+    "revision": "f3742d7b688690810df369802b90430324e380b9",
+    "review": "README and license reviewed at this revision. Individual scripts are not audited or installed. Review selected skills and dependencies before use; Hugging Face cloud/job skills are separate from local training.",
+    "id": "quodsoler/unreal-engine-skills"
+  },
+  {
+    "name": "huggingface/skills",
+    "kind": "Upstream reference",
+    "license": "Apache-2.0",
+    "path": "",
+    "url": "https://github.com/huggingface/skills",
+    "revision": "fabc634a893f62ad5c2039830397efa35fa62715",
+    "review": "README and license reviewed at this revision. Individual scripts are not audited or installed. Review selected skills and dependencies before use; Hugging Face cloud/job skills are separate from local training.",
+    "id": "huggingface/skills"
+  }
+]

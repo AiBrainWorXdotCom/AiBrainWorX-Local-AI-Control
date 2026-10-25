@@ -14,10 +14,13 @@ The bridge, controller scripts, documentation and original infographic artwork a
 
 `app/model-details.json` contains original, concise editorial summaries plus
 attributed factual metadata and reviewed upstream revision IDs, not mirrored
-model cards or weights. The 33 launcher suggestions have MIT/Apache-2.0 source
-metadata; research-only profiles may have custom licenses. Check exact artifacts.
+model cards or weights. The expanded catalog includes permissive references and explicitly labeled custom/gated terms. Check exact artifacts, auxiliary assets and datasets. No weights or upstream skills/scripts are copied into the repository.
 
 AiBrainWorX Memory is original Python/SQLite code. REA (MIT) was used for a
 selected-source private static research exercise. OpenHuman (GPL-3.0) code and
 research copies are not incorporated or distributed. DeepInfer is documented
 as a future server-engine possibility, not installed or bundled here.
+
+Optional training environments use PyTorch, Transformers, PEFT, Accelerate and safetensors under their own licenses; none are bundled or automatically installed. Blender/Android applications and SDKs remain separately installed. The optional in-Chat player uses the Windows Media Player component installed by the user/OS.
+
+The skills catalog links source/license-reviewed Android (Apache-2.0), Hugging Face (Apache-2.0), community Unreal (MIT) and Blender (MIT) repositories. They are references, not a complete security audit or automatic installation. The eight bundled guides are original AiBrainWorX MIT instructions.

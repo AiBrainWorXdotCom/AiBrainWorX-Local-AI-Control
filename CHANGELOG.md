@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0-alpha.1
+
+- Expanded library: 56 model profiles, 36 text suggestions and six dataset guides.
+- Tiny Gemma, TTS, ASR, vision, embedding and video references with explicit runtime/license notes.
+- Experimental offline tiny-text LoRA jobs, preflight, opt-in starts, progress and cooperative stop.
+- Profile-scoped training and original workflow-reading MCP tools for coding clients.
+- Optional Android project/ADB inventory and Blender main-thread inspection bridges.
+- Thirteen workflow templates, eight original skills and four reviewed upstream references.
+- In-Chat local video preview through the optional Windows Media Player component.
+- Ko-fi support links; no payment credentials, downloads or automatic training.
+
 ## 0.3.0-alpha.1
 
 - Rebranded as AiBrainWorX Model Launcher, with a desktop sidebar and brand icon.

@@ -15,13 +15,13 @@ License information was checked on October 24, 2026. Review upstream terms again
 
 ## The model library
 
-The 33 launcher suggestions reference MIT/Apache-2.0 source-model metadata. Each
+The 36 text suggestions include 33 MIT/Apache-2.0 references and three gated Gemma checkpoints with their own Gemma terms. The wider 56-profile catalog includes voice, vision, embeddings and video references. Each
 entry keeps the creator, original model ID, source URL and reviewed revision.
 AiBrainWorX brands its launcher, memory and presets; it does not claim authorship
 of upstream model weights. Suggested use cases and hardware tiers are editorial
 guidance rather than tested compatibility.
 
-Research-only profiles can carry other licenses, prominently identified. For
+Specialized and research profiles can carry other licenses, prominently identified. Pocket-TTS lists attribution terms; MobileNet is reference-only pending exact weight-license review. Gemma access is never accepted on the user’s behalf. Datasets and auxiliary voice/video assets have their own rights and are not bundled. For
 example, DeepSeek V4.1 Flash 1017 declares MIT; Qwen3.8 Flash Next, Kimi K3 and
 Cosmos3-H-Dreams have custom terms. No weights from any of these are included.
 

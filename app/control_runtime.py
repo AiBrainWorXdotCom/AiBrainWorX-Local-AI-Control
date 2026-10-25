@@ -15,6 +15,7 @@ import model_backends as backends
 import project_memory as memory
 import app_updates
 import local_chat
+import training_local
 
 MAX_BODY = 8 * 1024 * 1024
 GET_ROUTES = {'/v1/models', '/models', '/metrics', '/props', '/v1/status'}
@@ -158,7 +159,7 @@ def make_server(config, port=8082, upstream_port=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','chat'])
+    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','chat','training-preflight','training-start','training-status','training-stop','training-latest'])
     parser.add_argument('--config', required=True)
     args = parser.parse_args()
     try:
@@ -168,12 +169,20 @@ def main():
             with make_server(config) as server:
                 server.serve_forever()
             return
-        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','chat') else {}
+        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','chat','training-preflight','training-start','training-status','training-stop','training-latest') else {}
         profile = lambda: core.get_profile(core.ensure_state(config))
         if args.action=='chat':
             chosen=core.get_profile(core.ensure_state(config),payload.get('profileId'))
             local_chat.stream(config,chosen,payload)
             return
+        if args.action.startswith('training-'):
+            chosen=core.get_profile(core.ensure_state(config),payload.get('profileId'))
+            operations={'training-preflight':lambda:training_local.preflight(config,chosen),
+                        'training-start':lambda:training_local.start(config,chosen),
+                        'training-status':lambda:training_local.status(config,chosen,payload.get('jobId')),
+                        'training-stop':lambda:training_local.stop(config,chosen,payload.get('jobId')),
+                        'training-latest':lambda:training_local.latest(config,chosen)}
+            print(json.dumps(operations[args.action](),ensure_ascii=True));return
         operations = {'state': lambda: core.view_state(config), 'save': lambda: core.save_profile(config, payload),
                       'select': lambda: core.select_profile(config, payload), 'prepare': lambda: core.prepare_clients(config),
                       'diagnose': lambda: core.diagnose(config),'models':lambda:backends.discover(config,payload),

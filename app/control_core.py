@@ -16,6 +16,7 @@ import urllib.request
 import uuid
 import model_backends as backends
 import project_memory
+import training_local
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = (ROOT / 'VERSION').read_text(encoding='utf-8').strip()
@@ -40,6 +41,7 @@ def write_json(path, value):
 
 def load_config(path):
     config = read_json(path)
+    config['_configPath']=str(Path(path).resolve())
     for field in ('StateRoot', 'WorkspaceRoot'):
         if not isinstance(config.get(field), str) or not Path(config[field]).is_absolute():
             raise ValueError('Run Setup.cmd to configure this PC.')
@@ -98,7 +100,8 @@ def default_profile(config):
                 enginePython=config.get('EnginePython', ''), unrealProjectName=config.get('UnrealProjectName', ''),
                 preset='general', useInstructions=False, instructions=presets()[0]['text'],
                 overrideSampling=False, temperature=.7, topP=.9, maxOutputTokens=4096,
-                model=backends.default_model(config), useMemory=False)
+                model=backends.default_model(config), useMemory=False, useAndroid=False, useBlender=False,
+                allowTraining=False, training=dict(training_local.DEFAULTS))
 
 
 def ensure_state(config):
@@ -113,6 +116,10 @@ def ensure_state(config):
         if 'model' not in profile:
             profile['model'] = backends.default_model(config)
         profile.setdefault('useMemory', False)
+        profile.setdefault('useAndroid', False)
+        profile.setdefault('useBlender', False)
+        profile.setdefault('allowTraining', False)
+        profile.setdefault('training',dict(training_local.DEFAULTS))
     return state
 
 
@@ -154,7 +161,10 @@ def validate_profile(value, config=None):
         raise ValueError('The engine Python folder must contain remote_execution.py.')
     projects = list(Path(value['workspaceRoot']).glob('*.uproject'))
     value['unrealProjectName'] = projects[0].stem if len(projects) == 1 else ''
-    for field in ('useInstructions', 'overrideSampling', 'useMemory'):
+    value.setdefault('useAndroid',False)
+    value.setdefault('useBlender',False);value.setdefault('allowTraining',False)
+    value['training']=training_local.validate_settings(value.get('training',{}))
+    for field in ('useInstructions', 'overrideSampling', 'useMemory', 'useAndroid','useBlender','allowTraining'):
         if type(value.get(field)) is not bool:
             raise ValueError('Invalid checkbox value.')
     text = value.get('instructions', '')
@@ -289,6 +299,16 @@ def prepare_clients(config):
             'UE_PROJECT_NAME': profile['unrealProjectName'], 'UE_ENGINE_PYTHON': profile['enginePython']},
             'toolCallTimeoutMs': 30000}})
     # JSON is a YAML subset, so paths and prompt text need no YAML interpolation.
+    android_bridge=ROOT/'bridge/android_mcp.py'
+    if profile.get('useAndroid'):
+        patch.append({'id':'mcp-android-local','name':'@deepseek-ai/dsh-mcp-client','config':{
+            'serverName':'android_local','transport':'stdio','command':config['PythonExecutable'],
+            'args':[str(android_bridge)],'env':{'ANDROID_PROJECT_ROOT':profile['workspaceRoot']},'toolCallTimeoutMs':15000}})
+    extra_bridges=[]
+    if profile.get('useBlender'):extra_bridges.append(('blender_local',ROOT/'bridge/blender_mcp.py',{}))
+    extra_bridges.append(('awx_training',ROOT/'bridge/training_mcp.py',{'AWX_CONFIG':config.get('_configPath',str(ROOT/'config.local.json')),'AWX_PROFILE':identity}))
+    for server_name,path,environment in extra_bridges:
+        patch.append({'id':'mcp-'+server_name,'name':'@deepseek-ai/dsh-mcp-client','config':{'serverName':server_name,'transport':'stdio','command':config['PythonExecutable'],'args':[str(path)],'env':environment,'toolCallTimeoutMs':30000}})
     write_json(target / 'cordis.patch.yml', patch)
     codex = home / 'codex'
     catalog = read_json(ROOT / 'examples/model-catalog.json')
@@ -316,6 +336,11 @@ def prepare_clients(config):
     template = template.replace('model_context_window = 16384', f"model_context_window = {selected['contextWindow']}")
     template = template.replace('model_auto_compact_token_limit = 12000', f"model_auto_compact_token_limit = {int(selected['contextWindow']*.72)}")
     template = template.replace('model_reasoning_effort = "medium"', 'model_reasoning_effort = '+json.dumps(selected['reasoningEffort']) if selected['reasoningEffort'] else '')
+    if profile.get('useAndroid'):
+        template+='\n[mcp_servers.android_local]\ncommand = '+json.dumps(config['PythonExecutable'].replace('\\','/'))+'\nargs = ['+json.dumps(android_bridge.as_posix())+']\ntool_timeout_sec = 15\n[mcp_servers.android_local.env]\nANDROID_PROJECT_ROOT = '+json.dumps(Path(profile['workspaceRoot']).as_posix())+'\n'
+    for server_name,path,environment in extra_bridges:
+        template+='\n[mcp_servers.'+server_name+']\ncommand = '+json.dumps(config['PythonExecutable'].replace('\\','/'))+'\nargs = ['+json.dumps(path.as_posix())+']\ntool_timeout_sec = 30\n'
+        if environment:template+='[mcp_servers.'+server_name+'.env]\n'+''.join(key+' = '+json.dumps(value.replace('\\','/'))+'\n' for key,value in environment.items())
     (codex / 'aibrainworx-local.config.toml').write_text(template, encoding='utf-8')
     return dict(ProfileId=identity, HarnessHome=str(harness), CodexHome=str(codex), WorkspaceRoot=profile['workspaceRoot'],
                 EnginePython=profile['enginePython'], UnrealProjectName=profile['unrealProjectName'], GatewayURL=endpoint,
@@ -356,4 +381,7 @@ def diagnose(config):
             add('Unreal editor', False, 'Check Python plugins, the engine Python folder and the open project.')
     else:
         checks.append(dict(name='Unreal editor', status='Optional', detail='No Unreal connection configured for this profile.'))
+    if profile.get('useAndroid'):
+        markers=any((Path(profile['workspaceRoot'])/name).is_file() for name in ('settings.gradle','settings.gradle.kts'))
+        add('Android project',markers,'Read-only bridge enabled; Gradle settings found. Device and model execution are not validated.' if markers else 'Choose an Android Gradle project folder; bridge inspection remains bounded.')
     return dict(version=VERSION, checks=checks, note='No generation request was sent. The report excludes prompts, credentials and personal paths.')

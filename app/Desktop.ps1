@@ -48,16 +48,17 @@ $content=New-Object Windows.Forms.Panel;$content.SetBounds(184,0,856,666);$conte
 $bar=New-Object Windows.Forms.StatusStrip;$bar.BackColor=$palette.Card;$bar.ForeColor=$palette.Muted
 $feedback=New-Object Windows.Forms.ToolStripStatusLabel;$feedback.Text='Ready';$feedback.Spring=$true;$feedback.TextAlign='MiddleLeft';[void]$bar.Items.Add($feedback);$form.Controls.Add($bar)
 $pages=@{};$nav=@{}
-foreach($name in @('Overview','Chat','Models','Memory','Updates')){$p=New-Object Windows.Forms.Panel;$p.Dock='Fill';$p.Visible=$false;$content.Controls.Add($p);$pages[$name]=$p}
+foreach($name in @('Overview','Chat','Models','Memory','Training','Updates')){$p=New-Object Windows.Forms.Panel;$p.Dock='Fill';$p.Visible=$false;$content.Controls.Add($p);$pages[$name]=$p}
 function Show-Page([string]$Name){
  foreach($key in $pages.Keys){$pages[$key].Visible=$key -eq $Name;$nav[$key].BackColor=if($key -eq $Name){$palette.Button}else{$side.BackColor}}
- $pages[$Name].BringToFront()
+ $pages[$Name].BringToFront();if($Name -ne 'Chat' -and $script:videoHost){try{$script:videoHost.Player.controls.pause()}catch{}}
  if($Name -eq 'Models'){Refresh-ModelEditor}
+ if($Name -eq 'Training'){Refresh-Training}
  if($Name -eq 'Chat' -and $script:chatProfile -ne $script:launchState.activeId){Reset-Chat}
  if($Name -eq 'Memory'){Refresh-Memory}
 }
 $y=112
-foreach($name in @('Overview','Chat','Models','Memory','Updates')){
+foreach($name in @('Overview','Chat','Models','Memory','Training','Updates')){
  $b=Ui-Button $side $name 12 $y 160 {param($sender,$e);Show-Page $sender.Tag};$b.Tag=$name;$b.TextAlign='MiddleLeft';$b.Padding=New-Object Windows.Forms.Padding(12,0,0,0);$b.FlatAppearance.BorderSize=0;$nav[$name]=$b;$y+=44
 }
 [void](Ui-Button $side 'Profiles + prompts' 12 372 160 {Edit-Profile})
@@ -66,6 +67,9 @@ $version=Ui-Label $side ('v'+$script:launchState.version) 20 581 150 22 8;$versi
 $byline=Ui-Label $side 'Made by AiBrainWorX' 20 608 150 24 8;$byline.ForeColor=$palette.Muted;$byline.Anchor='Bottom,Left'
 
 . (Join-Path $PSScriptRoot 'Model-Library.ps1')
+. (Join-Path $PSScriptRoot 'Skills.ps1')
+[void](Ui-Button $side 'Skills + templates' 12 460 160 {Show-WorkflowLibrary})
+[void](Ui-Button $side 'Support development' 12 504 160 {Start-Process 'https://ko-fi.com/aibrainworx'})
 
 # Overview: operational controls, no website hero or marketing sections.
 $overview=$pages.Overview
@@ -126,6 +130,7 @@ $chatSend=Ui-Button $chat 'Send' 32 584 130 {Send-Chat}
 $chatStop=Ui-Button $chat 'Stop reply' 174 584 130 {if($script:chatJob){$script:chatJob.Process.Kill();$feedback.Text='Chat connection closed. The backend may take a moment to stop.'}};$chatStop.Enabled=$false
 [void](Ui-Button $chat 'New conversation' 316 584 190 {Reset-Chat})
 [void](Ui-Button $chat 'Make a memory note' 518 584 280 {if($script:chatReply){Show-Page 'Memory';Clear-MemoryEditor;$memoryTitle.Text='Conversation note';$memoryBody.Text=$script:chatReply.Substring(0,[Math]::Min(4000,$script:chatReply.Length));$memorySource.Text='Local chat response; review before saving.';$memoryVerified.Checked=$false}})
+. (Join-Path $PSScriptRoot 'Video.ps1')
 $chatInput.Add_KeyDown({param($sender,$e);if($e.Control -and $e.KeyCode -eq 'Enter'){$e.SuppressKeyPress=$true;Send-Chat}})
 function Poll-Chat {
  if(-not $script:chatJob){return}
@@ -142,6 +147,8 @@ function Poll-Chat {
   $job.Process.Dispose();$script:chatJob=$null;$chatSend.Enabled=$true;$chatStop.Enabled=$false
  }
 }
+
+. (Join-Path $PSScriptRoot 'Training.ps1')
 
 # Model connections are saved with the project profile.
 $models=$pages.Models
@@ -249,7 +256,7 @@ function Refresh-ProfilePicker {
  for($i=0;$i -lt $script:launchState.profiles.Count;$i++){if($script:launchState.profiles[$i].id -eq $script:launchState.activeId){$profilePicker.SelectedIndex=$i}}
  $script:loadingProfiles=$false
 }
-$profilePicker.Add_SelectedIndexChanged({if($script:loadingProfiles -or $profilePicker.SelectedIndex -lt 0){return};try{if($script:chatJob){throw 'Stop the active reply before switching profiles.'};$script:launchState=Invoke-AwxOperation $settings $ConfigPath 'select' @{id=$script:launchState.profiles[$profilePicker.SelectedIndex].id};Refresh-Overview;Queue-Status}catch{$feedback.Text=$_.Exception.Message;Refresh-ProfilePicker}})
+$profilePicker.Add_SelectedIndexChanged({if($script:loadingProfiles -or $profilePicker.SelectedIndex -lt 0){return};try{if($script:chatJob){throw 'Stop the active reply before switching profiles.'};$script:launchState=Invoke-AwxOperation $settings $ConfigPath 'select' @{id=$script:launchState.profiles[$profilePicker.SelectedIndex].id};Refresh-Overview;if($pages.Training.Visible){Refresh-Training};Queue-Status}catch{$feedback.Text=$_.Exception.Message;Refresh-ProfilePicker}})
 function Refresh-Overview {
  $m=$script:launchState.active.model;$modelName.Text=$m.modelId;$modelCaption.Text='MODEL / '+$m.backend.ToUpper();$modelEndpoint.Text=$m.baseUrl
  $modelStart.Enabled=$m.backend -eq 'strata';$modelStop.Enabled=$modelStart.Enabled
@@ -262,6 +269,7 @@ $script:statusJob=$null;$script:metricsTask=$null;$script:metricsClient=New-Obje
 function Queue-Status {if(-not $script:statusJob){$script:statusJob=Start-AwxOperation $settings $ConfigPath 'model-status';$script:statusProfile=$script:launchState.activeId;$script:statusModel=$script:launchState.active.model.modelId}}
 function Poll-DesktopJobs {
  Poll-Chat
+ Poll-Training
  if($script:modelJob -and $script:modelJob.Process.HasExited){try{$r=Complete-AwxOperation $script:modelJob;if($script:scanBackend -eq (Backend-Key)){$modelPicker.Items.Clear();foreach($m in @($r.models)){[void]$modelPicker.Items.Add($m)};$modelNote.Text=$r.note;if($modelPicker.Items.Count){$modelPicker.SelectedIndex=0;$m=$modelPicker.SelectedItem;$contextTokens.Value=$m.contextWindow;if($m.configPath){$modelConfig.Text=$m.configPath};$reasoningPicker.SelectedIndex=if($m.reasoningEffort){[Array]::IndexOf(@('Server default','none','low','medium','high','xhigh'),$m.reasoningEffort)}else{0}}}}catch{$modelNote.Text=$_.Exception.Message}finally{$script:modelJob=$null;$refreshModels.Enabled=$true}}
  if($script:updateJob -and $script:updateJob.Process.HasExited){try{$r=Complete-AwxOperation $script:updateJob;$updateStatus.Text=@{available='Update available';current='You are up to date';ahead='Development version';unavailable='Could not check';'no-release'='No stable release yet'}[$r.state];$updateDetail.Text=$r.detail+$(if($r.latest){"`r`nPublished: "+$r.latest+' / '+$r.channel}else{''})}catch{$updateStatus.Text='Could not check';$updateDetail.Text=$_.Exception.Message}finally{$script:updateJob=$null;$updateButton.Enabled=$true}}
  if($script:statusJob -and $script:statusJob.Process.HasExited){try{$r=Complete-AwxOperation $script:statusJob;if($script:statusProfile -eq $script:launchState.activeId -and $script:statusModel -eq $script:launchState.active.model.modelId){$connectionState.Text=if($r.ready){'Ready / local'}else{'Needs attention'};$tips.SetToolTip($connectionState,$r.detail)}}catch{$connectionState.Text='Unavailable'}finally{$script:statusJob=$null}}
@@ -274,17 +282,17 @@ function Poll-DesktopJobs {
  }}catch{if($script:launchState.active.model.backend -eq 'strata'){$speedValue.Text='Speed: model telemetry unavailable'}}finally{$script:metricsTask=$null}}
 }
 $timer=New-Object Windows.Forms.Timer;$timer.Interval=150;$script:pollTicks=0
-$timer.Add_Tick({Poll-DesktopJobs;$script:pollTicks++;if($script:pollTicks%20 -eq 0){Queue-Status;if($script:launchState.active.model.backend -eq 'strata' -and -not $script:metricsTask){$script:metricsTask=$script:metricsClient.GetStringAsync('http://127.0.0.1:8081/metrics')};Refresh-Overview}})
+$timer.Add_Tick({Poll-DesktopJobs;if($script:pollTicks%20 -eq 0 -and $pages.Training.Visible -and $script:trainingIdentity -and -not $script:trainingTask){Queue-Training 'training-status'};$script:pollTicks++;if($script:pollTicks%20 -eq 0){Queue-Status;if($script:launchState.active.model.backend -eq 'strata' -and -not $script:metricsTask){$script:metricsTask=$script:metricsClient.GetStringAsync('http://127.0.0.1:8081/metrics')};Refresh-Overview}})
 Refresh-ProfilePicker;Refresh-Overview;Show-Page 'Overview'
 $form.Add_Shown({
  $dark=1;try{[void][AwxDesktopWindow]::DwmSetWindowAttribute($form.Handle,20,[ref]$dark,4)}catch{}
  Queue-Status;$script:metricsTask=$script:metricsClient.GetStringAsync('http://127.0.0.1:8081/metrics');$timer.Start()
- if($CaptureImage -and $CapturePage -ne 'Overview'){Show-Page $CapturePage;if($CapturePage -eq 'Models'){$modelConfig.Text='C:\AI\Strata\strata-example.json'}}
+ if($CaptureImage -and $CapturePage -ne 'Overview'){Show-Page $CapturePage;if($CapturePage -eq 'Models'){$modelConfig.Text='C:\AI\Strata\strata-example.json'};if($CapturePage -eq 'Training'){$trainPython.Text='C:\AI\TrainingEnv\Scripts\python.exe';$trainModel.Text='C:\AI\Models\TinyText';$trainDataset.Text='C:\AI\Datasets\train.jsonl';$trainOutput.Text='C:\AI\Training'}}
  if($CaptureSettingsImage){[void](Show-AwxSettings $form $settings $ConfigPath $script:launchState $CaptureSettingsImage);$form.Close();return}
  if($CaptureImage -or $CaptureFrames){$script:captureIndex=0;$script:captureTimer=New-Object Windows.Forms.Timer;$script:captureTimer.Interval=200
   if($CaptureFrames){[void][IO.Directory]::CreateDirectory($CaptureFrames)}
   $script:captureTimer.Add_Tick({$script:captureIndex++;if(-not $CaptureFrames -and $script:captureIndex -lt 5){return};$bitmap=New-Object Drawing.Bitmap($form.Width,$form.Height);try{$form.DrawToBitmap($bitmap,(New-Object Drawing.Rectangle(0,0,$form.Width,$form.Height)));if($CaptureFrames){$bitmap.Save((Join-Path $CaptureFrames ('frame-{0:D4}.png' -f ($script:captureIndex-1))),[Drawing.Imaging.ImageFormat]::Png)}elseif($CaptureImage){$bitmap.Save($CaptureImage,[Drawing.Imaging.ImageFormat]::Png)}}finally{$bitmap.Dispose()};if(-not $CaptureFrames -or $script:captureIndex -ge 60){$script:captureTimer.Stop();$script:captureTimer.Dispose();$form.Close()}});$script:captureTimer.Start()
  }
 })
-$form.Add_FormClosed({$timer.Stop();$timer.Dispose();foreach($job in @($script:modelJob,$script:updateJob,$script:statusJob,$script:chatJob)){if($job){if(-not $job.Process.HasExited){$job.Process.Kill()};$job.Process.Dispose()}};$script:metricsClient.CancelPendingRequests();$script:metricsClient.Dispose();$tips.Dispose();$logo.Image.Dispose();$form.Icon.Dispose()})
+$form.Add_FormClosed({$timer.Stop();$timer.Dispose();foreach($job in @($script:modelJob,$script:updateJob,$script:statusJob,$script:chatJob,$script:trainingTask)){if($job){if(-not $job.Process.HasExited){$job.Process.Kill()};$job.Process.Dispose()}};$script:metricsClient.CancelPendingRequests();$script:metricsClient.Dispose();if($script:videoHost){try{$script:videoHost.Player.controls.stop();$script:videoHost.Dispose()}catch{}};$tips.Dispose();$logo.Image.Dispose();$form.Icon.Dispose()})
 [void]$form.ShowDialog();$form.Dispose()

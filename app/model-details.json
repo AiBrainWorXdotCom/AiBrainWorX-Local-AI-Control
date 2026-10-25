@@ -25,7 +25,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-0-6b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-0-6b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": true,
+    "trainingWorkflow": "tiny-text-lora",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen3-1.7B",
@@ -53,7 +60,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-1-7b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-1-7b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen3-4B",
@@ -81,7 +95,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-4b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-4b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen3-8B",
@@ -109,7 +130,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-8b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-8b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen3-14B",
@@ -137,7 +165,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-14b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-14b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen3-32B",
@@ -165,7 +200,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-32b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-32b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen3-30B-A3B",
@@ -193,7 +235,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-30b-a3b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-30b-a3b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen3-4B-Instruct-2507",
@@ -221,7 +270,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-4b-instruct-2507/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-4b-instruct-2507/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen3-30B-A3B-Instruct-2507",
@@ -249,7 +305,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-30b-a3b-instruct-2507/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-30b-a3b-instruct-2507/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "HuggingFaceTB/SmolLM2-135M-Instruct",
@@ -277,7 +340,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-135m-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-135m-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": true,
+    "trainingWorkflow": "tiny-text-lora",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "HuggingFaceTB/SmolLM2-360M-Instruct",
@@ -305,7 +375,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-360m-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-360m-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": true,
+    "trainingWorkflow": "tiny-text-lora",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
@@ -333,7 +410,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-1-7b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-1-7b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "HuggingFaceTB/SmolLM3-3B",
@@ -361,7 +445,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm3-3b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm3-3b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "mistralai/Mistral-7B-Instruct-v0.3",
@@ -389,7 +480,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-7b-instruct-v0-3/"
+    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-7b-instruct-v0-3/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "mistralai/Mistral-Nemo-Instruct-2407",
@@ -417,7 +515,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-nemo-instruct-2407/"
+    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-nemo-instruct-2407/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
@@ -445,7 +550,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-small-3-1-24b-instruct-2503/"
+    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-small-3-1-24b-instruct-2503/",
+    "category": "vision",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -473,7 +585,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mixtral-8x7b-instruct-v0-1/"
+    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mixtral-8x7b-instruct-v0-1/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "ibm-granite/granite-3.3-2b-instruct",
@@ -501,7 +620,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-3-3-2b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-3-3-2b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "ibm-granite/granite-3.3-8b-instruct",
@@ -529,7 +655,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-3-3-8b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-3-3-8b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "ibm-granite/granite-4.0-h-tiny",
@@ -557,7 +690,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-4-0-h-tiny/"
+    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-4-0-h-tiny/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "allenai/OLMo-2-1124-7B-Instruct",
@@ -585,7 +725,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/allenai-olmo-2-1124-7b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/allenai-olmo-2-1124-7b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "allenai/OLMo-2-0325-32B-Instruct",
@@ -613,7 +760,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/allenai-olmo-2-0325-32b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/allenai-olmo-2-0325-32b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
@@ -641,7 +795,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-1-5b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-1-5b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
@@ -669,7 +830,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-7b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-7b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
@@ -697,7 +865,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-14b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-14b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
@@ -725,7 +900,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-32b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-32b/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "microsoft/Phi-4-mini-instruct",
@@ -753,7 +935,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/microsoft-phi-4-mini-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/microsoft-phi-4-mini-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "microsoft/Phi-3-mini-4k-instruct",
@@ -781,7 +970,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/microsoft-phi-3-mini-4k-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/microsoft-phi-3-mini-4k-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen2.5-0.5B-Instruct",
@@ -809,7 +1005,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-0-5b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-0-5b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": true,
+    "trainingWorkflow": "tiny-text-lora",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen2.5-1.5B-Instruct",
@@ -837,7 +1040,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-1-5b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-1-5b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen2.5-7B-Instruct",
@@ -865,7 +1075,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-7b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-7b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen2.5-14B-Instruct",
@@ -893,7 +1110,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-14b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-14b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "Qwen/Qwen2.5-32B-Instruct",
@@ -921,7 +1145,14 @@
     "benchmarks": [],
     "licenseNote": "Keep upstream notices and check the exact downloaded artifact and parent-model terms. The original creator remains credited.",
     "sources": [],
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-32b-instruct/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-32b-instruct/",
+    "category": "text",
+    "integrationStatus": "Connect a supported local text/vision backend; not independently tested",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Supported local text backend"
+    ]
   },
   {
     "id": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
@@ -976,7 +1207,14 @@
     "launcher": false,
     "tested": "Source-reviewed research profile; this exact checkpoint has not been benchmarked locally.",
     "contextNote": "Publisher/model configuration specification. Usable context depends on deployment resources.",
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-v4-1-flash-1017/"
+    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-v4-1-flash-1017/",
+    "category": "research",
+    "integrationStatus": "Research profile only",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Dedicated research runtime"
+    ]
   },
   {
     "id": "Qwen/Qwen3.8-Flash-Next",
@@ -1004,7 +1242,14 @@
     "launcher": false,
     "tested": "Source-reviewed research profile; this exact checkpoint has not been benchmarked locally.",
     "contextNote": "Publisher/model configuration specification. Usable context depends on deployment resources.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-8-flash-next/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-8-flash-next/",
+    "category": "research",
+    "integrationStatus": "Research profile only",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Dedicated research runtime"
+    ]
   },
   {
     "id": "Qwen/Qwen3.8-27B",
@@ -1032,7 +1277,14 @@
     "launcher": false,
     "tested": "Source-reviewed research profile; this exact checkpoint has not been benchmarked locally.",
     "contextNote": "Publisher/model configuration specification. Usable context depends on deployment resources.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-8-27b/"
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-8-27b/",
+    "category": "research",
+    "integrationStatus": "Research profile only",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Dedicated research runtime"
+    ]
   },
   {
     "id": "moonshotai/Kimi-K3",
@@ -1060,7 +1312,14 @@
     "launcher": false,
     "tested": "Source-reviewed research profile; this exact checkpoint has not been benchmarked locally.",
     "contextNote": "Publisher/model configuration specification. Usable context depends on deployment resources.",
-    "detailsUrl": "https://aibrainworx.com/model-library/moonshotai-kimi-k3/"
+    "detailsUrl": "https://aibrainworx.com/model-library/moonshotai-kimi-k3/",
+    "category": "research",
+    "integrationStatus": "Research profile only",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Dedicated research runtime"
+    ]
   },
   {
     "id": "nvidia/Cosmos3-H-Dreams",
@@ -1088,6 +1347,656 @@
     "launcher": false,
     "tested": "Source-reviewed research profile; this exact checkpoint has not been benchmarked locally.",
     "contextNote": "Publisher/model configuration specification. Usable context depends on deployment resources.",
-    "detailsUrl": "https://aibrainworx.com/model-library/nvidia-cosmos3-h-dreams/"
+    "detailsUrl": "https://aibrainworx.com/model-library/nvidia-cosmos3-h-dreams/",
+    "category": "research",
+    "integrationStatus": "Research profile only",
+    "edgeCandidate": false,
+    "trainingWorkflow": "Separate model-specific training workflow",
+    "runtimes": [
+      "Dedicated research runtime"
+    ]
+  },
+  {
+    "id": "google/gemma-3-270m-it",
+    "slug": "google-gemma-3-270m-it",
+    "name": "gemma-3-270m-it",
+    "creator": "Google",
+    "license": "gemma",
+    "summary": "A very small instruction-tuned Gemma text model for focused tasks on resource-constrained hardware.",
+    "features": [
+      "Compact text generation",
+      "Connect with a compatible text backend; parser and format must match"
+    ],
+    "parameters": "270M",
+    "context": "32,768 text tokens (publisher)",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Use a compatible local conversion and modest context. Tiny size does not make it a reliable general coding agent.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": true,
+    "source": "https://huggingface.co/google/gemma-3-270m-it",
+    "revision": "ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/google-gemma-3-270m-it/",
+    "category": "text",
+    "integrationStatus": "Connect with a compatible text backend; parser and format must match",
+    "edgeCandidate": true,
+    "trainingWorkflow": "tiny-text-lora",
+    "runtimes": [
+      "Compatible Gemma text backend",
+      "LiteRT-LM conversion / device validation required"
+    ],
+    "gated": true
+  },
+  {
+    "id": "google/gemma-3-1b-it",
+    "slug": "google-gemma-3-1b-it",
+    "name": "gemma-3-1b-it",
+    "creator": "Google",
+    "license": "gemma",
+    "summary": "Google’s compact instruction-tuned Gemma 3 text model for local and on-device applications.",
+    "features": [
+      "Compact text generation",
+      "Connect with a compatible text backend; parser and format must match"
+    ],
+    "parameters": "1B",
+    "context": "32,768 text tokens (publisher)",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Google documents Gemma3-1B-IT through LiteRT-LM. The Android artifact, memory budget and device still need validation.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": true,
+    "source": "https://huggingface.co/google/gemma-3-1b-it",
+    "revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/google-gemma-3-1b-it/",
+    "category": "text",
+    "integrationStatus": "Connect with a compatible text backend; parser and format must match",
+    "edgeCandidate": true,
+    "trainingWorkflow": "tiny-text-lora",
+    "runtimes": [
+      "Compatible Gemma text backend",
+      "LiteRT-LM Android"
+    ],
+    "gated": true
+  },
+  {
+    "id": "google/functiongemma-270m-it",
+    "slug": "google-functiongemma-270m-it",
+    "name": "functiongemma-270m-it",
+    "creator": "Google",
+    "license": "gemma",
+    "summary": "A tiny Gemma model specialized for translating requests into function-call structures.",
+    "features": [
+      "Compact text generation",
+      "Connect with a compatible text backend; parser and format must match"
+    ],
+    "parameters": "270M",
+    "context": "32,768 text tokens (publisher)",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Requires the correct tool format and task-specific tuning. It is not intended as an unrestricted chat assistant or automatic device controller.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": true,
+    "source": "https://huggingface.co/google/functiongemma-270m-it",
+    "revision": "39eccb091651513a5dfb56892d3714c1b5b8276c",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/google-functiongemma-270m-it/",
+    "category": "text",
+    "integrationStatus": "Connect with a compatible text backend; parser and format must match",
+    "edgeCandidate": true,
+    "trainingWorkflow": "tiny-text-lora",
+    "runtimes": [
+      "FunctionGemma-compatible parser",
+      "LiteRT-LM tool workflow"
+    ],
+    "gated": true
+  },
+  {
+    "id": "google/embeddinggemma-300m",
+    "slug": "google-embeddinggemma-300m",
+    "name": "embeddinggemma-300m",
+    "creator": "Google",
+    "license": "gemma",
+    "summary": "A compact multilingual embedding model for semantic retrieval and similarity, rather than answer generation.",
+    "features": [
+      "Vector representations",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "300M",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → vectors",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Embedding output is a vector. This launcher’s chat and project memory do not automatically use it.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/google/embeddinggemma-300m",
+    "revision": "57c266a740f537b4dc058e1b0cda161fd15afa75",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/google-embeddinggemma-300m/",
+    "category": "embeddings",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "Separate embedding fine-tuning",
+    "runtimes": [
+      "Sentence Transformers",
+      "Compatible edge embedding runtime"
+    ],
+    "gated": true
+  },
+  {
+    "id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+    "slug": "huggingfacetb-smolvlm-256m-instruct",
+    "name": "SmolVLM-256M-Instruct",
+    "creator": "Hugging Face",
+    "license": "apache-2.0",
+    "summary": "A small vision-language instruction model for image descriptions and questions with limited compute.",
+    "features": [
+      "Small visual model",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "256M",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Images + text",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Needs its image processor and a runtime supporting this architecture. Not every GGUF/ONNX/chat server supports it.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/HuggingFaceTB/SmolVLM-256M-Instruct",
+    "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smolvlm-256m-instruct/",
+    "category": "vision",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "External vision SFT",
+    "runtimes": [
+      "Transformers vision-language runtime",
+      "Validated ONNX/mobile export"
+    ],
+    "gated": false
+  },
+  {
+    "id": "HuggingFaceTB/SmolVLM-500M-Instruct",
+    "slug": "huggingfacetb-smolvlm-500m-instruct",
+    "name": "SmolVLM-500M-Instruct",
+    "creator": "Hugging Face",
+    "license": "apache-2.0",
+    "summary": "A compact vision-language model for image-grounded conversation and lightweight visual experiments.",
+    "features": [
+      "Small visual model",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "500M",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Images + text",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Vision preprocessing and image tokens consume memory. Android compatibility requires an appropriate converted artifact and device test.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/HuggingFaceTB/SmolVLM-500M-Instruct",
+    "revision": "a7da5b986cb59b408707209984f360a5f4ad7e47",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smolvlm-500m-instruct/",
+    "category": "vision",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "External vision SFT",
+    "runtimes": [
+      "Transformers vision-language runtime",
+      "Validated ONNX/mobile export"
+    ],
+    "gated": false
+  },
+  {
+    "id": "hexgrad/Kokoro-82M",
+    "slug": "hexgrad-kokoro-82m",
+    "name": "Kokoro-82M",
+    "creator": "hexgrad",
+    "license": "apache-2.0",
+    "summary": "A lightweight text-to-speech model with Apache-licensed weights for local speech synthesis.",
+    "features": [
+      "Local speech synthesis",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "82M",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → audio",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Requires a dedicated Kokoro audio runtime and its voice assets. Built-in launcher chat does not synthesize speech.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+    "revision": "f3ff3571791e39611d31c381e3a41a3af07b4987",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/hexgrad-kokoro-82m/",
+    "category": "tts",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "No integrated fine-tuning recipe",
+    "runtimes": [
+      "Kokoro Python",
+      "Compatible ONNX audio pipeline"
+    ],
+    "gated": false
+  },
+  {
+    "id": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+    "slug": "qwen-qwen3-tts-12hz-0-6b-base",
+    "name": "Qwen3-TTS-12Hz-0.6B-Base",
+    "creator": "Qwen",
+    "license": "apache-2.0",
+    "summary": "The small Qwen3-TTS Base checkpoint supports multilingual speech synthesis from reference voice audio.",
+    "features": [
+      "Local speech synthesis",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "0.6B",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → audio",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Uses an audio tokenizer and dedicated Qwen TTS runtime. The official Base-model training recipe is single-speaker, separate from text LoRA.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+    "revision": "5d83992436eae1d760afd27aff78a71d676296fc",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-tts-12hz-0-6b-base/",
+    "category": "tts",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "External Qwen TTS single-speaker SFT",
+    "runtimes": [
+      "qwen-tts"
+    ],
+    "gated": false
+  },
+  {
+    "id": "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+    "slug": "qwen-qwen3-tts-12hz-0-6b-customvoice",
+    "name": "Qwen3-TTS-12Hz-0.6B-CustomVoice",
+    "creator": "Qwen",
+    "license": "apache-2.0",
+    "summary": "A small Qwen speech checkpoint for controllable synthesis with supported preset speaker identities.",
+    "features": [
+      "Local speech synthesis",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "0.6B",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → audio",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Use its supported speaker interface. It is not interchangeable with the Base model’s reference-audio cloning workflow.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+    "revision": "85e237c12c027371202489a0ec509ded67b5e4b5",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-tts-12hz-0-6b-customvoice/",
+    "category": "tts",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "Use supported Base checkpoint for the official fine-tuning workflow",
+    "runtimes": [
+      "qwen-tts"
+    ],
+    "gated": false
+  },
+  {
+    "id": "kyutai/pocket-tts",
+    "slug": "kyutai-pocket-tts",
+    "name": "pocket-tts",
+    "creator": "Kyutai",
+    "license": "cc-by-4.0",
+    "summary": "A small CPU-oriented speech synthesis family for local voice applications.",
+    "features": [
+      "Local speech synthesis",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "100M (publisher family size)",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → audio",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Uses a dedicated Pocket-TTS runtime. Review the current card’s attribution terms and access conditions before downloading.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/kyutai/pocket-tts",
+    "revision": "db04f0e653473e5c7333c69686ac92b7460b0c1d",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/kyutai-pocket-tts/",
+    "category": "tts",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "No integrated fine-tuning recipe",
+    "runtimes": [
+      "Pocket-TTS"
+    ],
+    "gated": true
+  },
+  {
+    "id": "KittenML/kitten-tts-mini-0.8",
+    "slug": "kittenml-kitten-tts-mini-0-8",
+    "name": "kitten-tts-mini-0.8",
+    "creator": "KittenML",
+    "license": "apache-2.0",
+    "summary": "A compact Kitten speech model distributed for lightweight local text-to-speech generation.",
+    "features": [
+      "Local speech synthesis",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "80M",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → audio",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Use the official Kitten runtime and correct model/voice assets; no built-in launcher audio renderer is supplied.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/KittenML/kitten-tts-mini-0.8",
+    "revision": "c02725660cea441db4c383af69f1f26f5cd00947",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/kittenml-kitten-tts-mini-0-8/",
+    "category": "tts",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "No integrated fine-tuning recipe",
+    "runtimes": [
+      "KittenTTS / ONNX"
+    ],
+    "gated": false
+  },
+  {
+    "id": "KittenML/kitten-tts-nano-0.8-fp32",
+    "slug": "kittenml-kitten-tts-nano-0-8-fp32",
+    "name": "kitten-tts-nano-0.8-fp32",
+    "creator": "KittenML",
+    "license": "apache-2.0",
+    "summary": "A very small Kitten speech model aimed at local synthesis without a large GPU.",
+    "features": [
+      "Local speech synthesis",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "15M",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → audio",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "The reviewed source resolves to the fp32 checkpoint. Model size is not a measured Android latency or memory guarantee.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/KittenML/kitten-tts-nano-0.8-fp32",
+    "revision": "7a1db645b1f3ab9420761d87428e042b9cec3f26",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/kittenml-kitten-tts-nano-0-8-fp32/",
+    "category": "tts",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "No integrated fine-tuning recipe",
+    "runtimes": [
+      "KittenTTS / ONNX"
+    ],
+    "gated": false
+  },
+  {
+    "id": "sentence-transformers/all-MiniLM-L6-v2",
+    "slug": "sentence-transformers-all-minilm-l6-v2",
+    "name": "all-MiniLM-L6-v2",
+    "creator": "Sentence Transformers",
+    "license": "apache-2.0",
+    "summary": "A small sentence embedding model for English semantic search, clustering and similarity.",
+    "features": [
+      "Vector representations",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "22M (approximately)",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → vectors",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "This is not a chat model. Document chunking, an index and a retrieval application remain separate components.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/sentence-transformers-all-minilm-l6-v2/",
+    "category": "embeddings",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "External sentence embedding training",
+    "runtimes": [
+      "Sentence Transformers",
+      "Compatible ONNX embedding runtime"
+    ],
+    "gated": false
+  },
+  {
+    "id": "BAAI/bge-small-en-v1.5",
+    "slug": "baai-bge-small-en-v1-5",
+    "name": "bge-small-en-v1.5",
+    "creator": "BAAI",
+    "license": "mit",
+    "summary": "A small English embedding checkpoint for retrieval-oriented text representations.",
+    "features": [
+      "Vector representations",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "33M (approximately)",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Text → vectors",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Use the model’s documented query formatting and vector normalization. It does not generate prose or tool calls.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/BAAI/bge-small-en-v1.5",
+    "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/baai-bge-small-en-v1-5/",
+    "category": "embeddings",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "External embedding contrastive training",
+    "runtimes": [
+      "Sentence Transformers",
+      "Compatible ONNX embedding runtime"
+    ],
+    "gated": false
+  },
+  {
+    "id": "openai/whisper-tiny",
+    "slug": "openai-whisper-tiny",
+    "name": "whisper-tiny",
+    "creator": "OpenAI",
+    "license": "apache-2.0",
+    "summary": "A tiny multilingual Whisper checkpoint for automatic speech recognition and speech translation.",
+    "features": [
+      "Speech-to-text",
+      "External task-specific runtime; not integrated into launcher chat"
+    ],
+    "parameters": "39M",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Audio → text",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "Needs an audio preprocessing/decoder pipeline. CPU and mobile implementations use different artifacts and have separate validation requirements.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/openai/whisper-tiny",
+    "revision": "169d4a4341b33bc18d8881c4b69c2e104e1cc0af",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/openai-whisper-tiny/",
+    "category": "asr",
+    "integrationStatus": "External task-specific runtime; not integrated into launcher chat",
+    "edgeCandidate": true,
+    "trainingWorkflow": "External ASR fine-tuning",
+    "runtimes": [
+      "Transformers Whisper",
+      "Compatible whisper.cpp / mobile conversion"
+    ],
+    "gated": false
+  },
+  {
+    "id": "google/mobilenet_v2_1.0_224",
+    "slug": "google-mobilenet-v2-1-0-224",
+    "name": "mobilenet_v2_1.0_224",
+    "creator": "Google",
+    "license": "other",
+    "summary": "A compact MobileNet V2 image classifier pretrained for 224-by-224 image input.",
+    "features": [
+      "Small visual model",
+      "Reference only — checkpoint license review required"
+    ],
+    "parameters": "Small mobile vision CNN",
+    "context": "Task-specific; see the reviewed source and runtime",
+    "contextNote": "Runtime limits and on-device memory must be validated separately.",
+    "modality": "Images → labels",
+    "hardware": "Very small model / edge candidate; runtime validation required",
+    "localNote": "This is a classifier, not a vision-language chat model. This checkpoint’s license metadata is “other”; verify exact weight terms before use.",
+    "tested": "Source reviewed only. No local model or Android inference test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/google/mobilenet_v2_1.0_224",
+    "revision": "75e607b00aeae1297cc89d026a118bce012f5c5a",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review the exact checkpoint, voice assets and applicable upstream notices; model references do not grant new rights.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/google-mobilenet-v2-1-0-224/",
+    "category": "vision",
+    "integrationStatus": "Reference only — checkpoint license review required",
+    "edgeCandidate": true,
+    "trainingWorkflow": "External image-classification transfer learning",
+    "runtimes": [
+      "Transformers image classification",
+      "Validated TFLite / ONNX export"
+    ],
+    "gated": false
+  },
+  {
+    "id": "Wan-AI/Wan2.1-T2V-1.3B",
+    "slug": "wan-ai-wan2-1-t2v-1-3b",
+    "name": "Wan 2.1 / small video",
+    "creator": "Wan-AI",
+    "license": "Apache-2.0",
+    "parameters": "1.3B",
+    "modality": "Text → video",
+    "hardware": "Consumer GPU candidate; publisher lists 8.19 GB VRAM",
+    "summary": "A compact text-to-video model for short creative scenes and effects experiments.",
+    "localNote": "The publisher recommends 480p and reports 8.19 GB VRAM. Their timing is on an RTX 4090; no RTX 3060 timing has been measured here. Text-to-video alone does not establish a personal avatar identity or lip sync.",
+    "features": [
+      "Local video-generation workflow",
+      "Dedicated video runtime required"
+    ],
+    "context": "Video duration and resolution are runtime-specific",
+    "contextNote": "Video frames and audio samples are not a text context window.",
+    "tested": "Source reviewed only. No local rendering or avatar quality test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/Wan-AI/Wan2.1-T2V-1.3B",
+    "revision": "37ec512624d61f7aa208f7ea8140a131f93afc9a",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review exact checkpoint, dependencies and input-media rights. No weights or runtime are bundled.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/wan-ai-wan2-1-t2v-1-3b/",
+    "category": "video",
+    "integrationStatus": "External video runtime; not installed or wired to Chat generation",
+    "edgeCandidate": false,
+    "trainingWorkflow": "External video-specific fine-tuning",
+    "runtimes": [
+      "Wan official runtime",
+      "Compatible ComfyUI workflow"
+    ],
+    "gated": false
+  },
+  {
+    "id": "Wan-AI/Wan2.2-S2V-14B",
+    "slug": "wan-ai-wan2-2-s2v-14b",
+    "name": "Wan 2.2 / speech-to-video",
+    "creator": "Wan-AI",
+    "license": "Apache-2.0",
+    "parameters": "14B",
+    "modality": "Image + audio + optional text → video",
+    "hardware": "Large GPU workflow; official example lists 80 GB VRAM",
+    "summary": "An audio-driven video model combining a reference image, speech and optional scene direction.",
+    "localNote": "The official single-GPU example requires at least 80 GB VRAM. This is a larger-hardware reference, not a validated 12 GB recipe; community offload/quantized workflows require separate review and testing.",
+    "features": [
+      "Local video-generation workflow",
+      "Dedicated video runtime required"
+    ],
+    "context": "Video duration and resolution are runtime-specific",
+    "contextNote": "Video frames and audio samples are not a text context window.",
+    "tested": "Source reviewed only. No local rendering or avatar quality test performed.",
+    "launcher": false,
+    "source": "https://huggingface.co/Wan-AI/Wan2.2-S2V-14B",
+    "revision": "dab4e9c55bbe4c8c4d03db1c2c98c7f0ac9c454b",
+    "checked": "2026-10-24",
+    "benchmarks": [],
+    "licenseNote": "Review exact checkpoint, dependencies and input-media rights. No weights or runtime are bundled.",
+    "sources": [],
+    "detailsUrl": "https://aibrainworx.com/model-library/wan-ai-wan2-2-s2v-14b/",
+    "category": "video",
+    "integrationStatus": "External video runtime; not installed or wired to Chat generation",
+    "edgeCandidate": false,
+    "trainingWorkflow": "External video-specific fine-tuning",
+    "runtimes": [
+      "Wan official runtime",
+      "Compatible ComfyUI workflow"
+    ],
+    "gated": false
   }
 ]

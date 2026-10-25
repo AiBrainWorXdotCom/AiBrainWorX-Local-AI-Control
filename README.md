@@ -2,7 +2,7 @@
 
 **Portable local AI for your hardware.** Connect a model, chat, choose a coding client, save instructions and carry project notes across model profiles.
 
-**v0.3.0-alpha.1 · Windows source package · Made by AiBrainWorX**
+**v0.4.0-alpha.1 · Windows source package · Made by AiBrainWorX**
 
 ![AiBrainWorX Model Launcher](media/aibrainworx-model-launcher.png)
 
@@ -47,7 +47,7 @@ The settings service on **127.0.0.1:8082** forwards Chat Completions and Respons
 
 ## Small PCs through powerful workstations
 
-The library contains **33 MIT/Apache-2.0 source-model suggestions**, with original creator credit and reviewed source metadata. Read summaries, context limits, licenses and local-use notes inside the launcher or on our site before opening the original card. No catalog button downloads weights.
+The library contains **56 model profiles**, including 36 text suggestions, tiny Gemma candidates, TTS, ASR, vision, embeddings and video references, with original creator credit and reviewed source metadata. Read summaries, context limits, licenses and local-use notes inside the launcher or on our site before opening the original card. No catalog button downloads weights.
 
 | Starting point | Models to investigate, not fit guarantees |
 | --- | --- |
@@ -57,7 +57,7 @@ The library contains **33 MIT/Apache-2.0 source-model suggestions**, with origin
 
 Choose a quantization your backend explicitly supports. Weights, cache, vision files and other applications consume memory. CPU-only speed and other GPU vendors have not been benchmarked by us. Strata supports its specific architecture; the other backends broaden model choices.
 
-The site also has five clearly labeled research profiles. A server model appearing in an editorial profile is not a desktop compatibility claim or a bundled download. See [model licensing](MODEL-LICENSES.md).
+Audio, vision, embeddings and video use dedicated runtimes; cataloguing them does not enable generation in built-in text Chat. Gemma access/terms require separate review and acceptance. The site also has five clearly labeled research profiles. A server model appearing in an editorial profile is not a desktop compatibility claim or a bundled download. See [model licensing](MODEL-LICENSES.md).
 
 ## Performance: measured conditions matter
 
@@ -79,19 +79,34 @@ Stop Harness before switching profiles or model settings. Existing terminals ret
 
 ## Optional Unreal tools
 
-Five fixed inspection operations cover project status, actor list, actor details, editor selection and asset search. The bridge cannot edit or save maps. Four original [Unreal skills](skills/README.md) cover development, source investigation, Epic research and MCP diagnostics. Unreal and its Python plugin are installed separately. See the [setup tutorial](docs/tutorial.md).
+Five fixed inspection operations cover project status, actor list, actor details, editor selection and asset search. The bridge cannot edit or save maps. Eight original [workflow skills](skills/README.md), including four Unreal guides, cover development, source investigation, Epic research and MCP diagnostics. Unreal and its Python plugin are installed separately. See the [setup tutorial](docs/tutorial.md).
+
+## Training, datasets and platform templates
+
+![Offline tiny-model training](media/aibrainworx-training.png)
+
+**Training** provides an experimental offline LoRA worker for small floating-point text checkpoints (1.2B stored-tensor cap). Choose local weights, JSONL, a separate training Python and an output folder; preflight and explicitly enable starts per profile. Coding clients receive the same scoped training tools and read-only bundled workflow guides. No live training, dependency install or model download was performed for this update.
+
+The catalog includes six dataset preparation guides. Thirteen saved instruction templates cover coding, creative work, Unreal, tiny Android AI, Blender, LoRA, voice, vision and video/avatar planning. Android and Blender bridges are optional fixed inspection tools; they do not deploy apps, edit scenes or execute arbitrary scripts. Blender is separate from the avatar video workflow.
+
+In **Chat → Open video**, review a completed local MP4 inside the Chat panel using the Windows Media Player component when installed. Play/pause, seek, volume and fullscreen use its native controls. No video is uploaded or sent to the text model. Video model generation is not integrated yet. See [training and platform guide](docs/training-and-platforms.md) and [video workflow](docs/local-video.md).
+
+## Support development
+
+[Support AiBrainWorX on Ko-fi](https://ko-fi.com/aibrainworx). Contributions help fund more hardware coverage, model testing and accessible local-AI tools. The application remains MIT; tips do not buy benchmark claims or favorable reviews.
 
 ## Verification
 
 ```powershell
 python Tests/test_control_runtime.py
 python Tests/test_desktop_features.py
+python Tests/test_platform_training.py
 python bridge/test_unreal_mcp.py
 powershell -NoProfile -File Tests/Check-Scripts.ps1
 powershell -NoProfile -File Tests/Check-ClientLaunch.ps1
 python Tests/check_public_files.py
 ```
 
-Routing, credentials, discovery, streaming, memory, update handling and client preparation have local fake-API contract tests. Live Strata chat returned `PONG` through the new service. Ollama and LM Studio live generation, a fresh-PC bootstrap and live Unreal acceptance have **not** been completed. This remains an alpha source package.
+Routing, credentials, discovery, streaming, memory, update handling and client preparation have local fake-API contract tests. Live Strata chat returned `PONG` through the new service. Ollama and LM Studio live generation, a fresh-PC bootstrap and live Unreal acceptance have **not** been completed. The new platform bridges were tested with mocks, not live Blender or physical-device inference. This remains an alpha source package.
 
 Original launcher, memory, integration code and skills are **MIT**. Models and separately installed tools retain their own terms and attribution. No weights, third-party runtime binaries, OpenHuman implementation or private session files are included. [Third-party notices](THIRD_PARTY_NOTICES.md).

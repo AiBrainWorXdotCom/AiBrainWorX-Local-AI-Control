@@ -39,8 +39,11 @@ class Features(unittest.TestCase):
         indexed={m['id']:m for m in details}
         self.assertEqual(len(indexed),len(details))
         for m in suggestions:
-            self.assertIn(m['license'],('mit','apache-2.0'))
             detail=indexed[m['id']]
+            if m['license'] not in ('mit','apache-2.0'):
+                self.assertEqual(m['license'],'gemma')
+                self.assertTrue(detail['gated'])
+                self.assertIn('Gemma terms',detail['licenseNote'])
             self.assertTrue(detail['launcher'])
             self.assertEqual(detail['creator'],m['creator'])
             self.assertEqual(detail['source'],m['modelCard'])

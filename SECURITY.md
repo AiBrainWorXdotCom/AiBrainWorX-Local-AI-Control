@@ -52,3 +52,9 @@ If you discover an exposed credential, revoke it at its provider first. Removing
 a file does not remove it from Git history. Report vulnerabilities privately to
 the repository owner using GitHub's private reporting option when available;
 never put credentials in issues, screenshots, or pull requests.
+
+Offline training starts are disabled by default per profile. They spawn only the selected local Python and packaged worker, with fixed local paths, no Hub downloads, no remote model code and separate adapter output. Training environments and model/data files must still be trusted. Preflight inspects metadata and schemas; it is not a sandbox or completed training validation. A killed worker may leave a stale job requiring local inspection.
+
+Android tools inspect Gradle/manifest files without evaluating scripts and query only an existing local ADB server for device inventory; serials are hashed. The optional Blender add-on reads on its main thread at 127.0.0.1:9877 and exposes no arbitrary Python or save operation. Coding clients retain their own file/shell permissions.
+
+Video preview accepts explicitly selected local files, never remote playback URLs or automatic media links from model replies. It does not upload media. Codec support depends on the installed Windows player; keep the operating system updated.

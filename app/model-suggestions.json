@@ -394,5 +394,41 @@
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
     "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-32b-instruct/"
+  },
+  {
+    "id": "google/gemma-3-270m-it",
+    "creator": "Google",
+    "license": "gemma",
+    "use": "Tiny text / edge development",
+    "hardwareHint": "Small CPU / GPU; validate mobile conversion",
+    "modelCard": "https://huggingface.co/google/gemma-3-270m-it",
+    "revision": "ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
+    "checked": "2026-10-24",
+    "detailsUrl": "https://aibrainworx.com/model-library/google-gemma-3-270m-it/",
+    "note": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled."
+  },
+  {
+    "id": "google/gemma-3-1b-it",
+    "creator": "Google",
+    "license": "gemma",
+    "use": "Tiny text / edge development",
+    "hardwareHint": "Small CPU / GPU; validate mobile conversion",
+    "modelCard": "https://huggingface.co/google/gemma-3-1b-it",
+    "revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+    "checked": "2026-10-24",
+    "detailsUrl": "https://aibrainworx.com/model-library/google-gemma-3-1b-it/",
+    "note": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled."
+  },
+  {
+    "id": "google/functiongemma-270m-it",
+    "creator": "Google",
+    "license": "gemma",
+    "use": "Tiny text / edge development",
+    "hardwareHint": "Small CPU / GPU; validate mobile conversion",
+    "modelCard": "https://huggingface.co/google/functiongemma-270m-it",
+    "revision": "39eccb091651513a5dfb56892d3714c1b5b8276c",
+    "checked": "2026-10-24",
+    "detailsUrl": "https://aibrainworx.com/model-library/google-functiongemma-270m-it/",
+    "note": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled."
   }
 ]

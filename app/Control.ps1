@@ -1,4 +1,4 @@
-function Start-AwxOperation($Settings,[string]$ConfigPath,[string]$Action,$Payload=$null,[switch]$Stream) {
+﻿function Start-AwxOperation($Settings,[string]$ConfigPath,[string]$Action,$Payload=$null,[switch]$Stream) {
     $start = New-Object System.Diagnostics.ProcessStartInfo
     $start.FileName = $Settings.PythonExecutable
     $start.Arguments = '"{0}" {1} --config "{2}"' -f (Join-Path $PSScriptRoot 'control_runtime.py'),$Action,$ConfigPath
@@ -95,6 +95,8 @@ function Save-AwxEditor($Dialog,[bool]$AsNew) {
         $profile.temperature = [double]$ui.Temperature.Value / 100
         $profile.topP = [double]$ui.TopP.Value / 100
         $profile.maxOutputTokens = [int]$ui.Tokens.Value
+        $profile.useAndroid = $ui.Android.Checked
+        $profile.useBlender = $ui.Blender.Checked
         $profile.preset = $ui.State.presets[$ui.Preset.SelectedIndex].id
         $ui.Result = Invoke-AwxOperation $ui.Settings $ui.ConfigPath 'save' @{profile=$profile;saveAsNew=$AsNew;revision=$ui.State.revision}
         $Dialog.DialogResult = [Windows.Forms.DialogResult]::OK
@@ -146,7 +148,7 @@ function Show-AwxSettings($Owner,$Settings,[string]$ConfigPath,$State,[string]$C
     $ui.Preset.Items.AddRange([object[]]@($State.presets | ForEach-Object {$_.name}));$ui.Preset.SelectedIndex=0
     for($i=0;$i -lt $State.presets.Count;$i++){if($State.presets[$i].id -eq $State.active.preset){$ui.Preset.SelectedIndex=$i}}
     $dialog.Controls.Add($ui.Preset)
-    $load = Button 'Load preset' 444 201 135 {param($sender,$e);$u=$sender.FindForm().Tag;$u.Prompt.Text=$u.State.presets[$u.Preset.SelectedIndex].text;$u.UsePrompt.Checked=$true}
+    $load = Button 'Load template' 444 201 135 {param($sender,$e);$u=$sender.FindForm().Tag;$p=$u.State.presets[$u.Preset.SelectedIndex];$u.Prompt.Text=$p.text;$u.UsePrompt.Checked=$true;if($p.profileDefaults){$u.Android.Checked=$p.profileDefaults.useAndroid;$u.Blender.Checked=$p.profileDefaults.useBlender}}
     $ui.UsePrompt = New-Object Windows.Forms.CheckBox
     $ui.UsePrompt.Text='Use custom instructions';$ui.UsePrompt.SetBounds(608,204,270,26);$ui.UsePrompt.Checked=[bool]$State.active.useInstructions
     $dialog.Controls.Add($ui.UsePrompt)
@@ -160,6 +162,10 @@ function Show-AwxSettings($Owner,$Settings,[string]$ConfigPath,$State,[string]$C
     $ui.Sampling.Text='Override temperature and top-p';$ui.Sampling.SetBounds(24,506,850,28);$ui.Sampling.Checked=[bool]$State.active.overrideSampling
     $dialog.Controls.Add($ui.Sampling)
     [void](Label 'Temperature' 24 548 140)
+    $ui.Android=New-Object Windows.Forms.CheckBox
+    $ui.Android.Text='Android inspection tools';$ui.Android.SetBounds(24,650,410,27);$ui.Android.Checked=[bool]$State.active.useAndroid;$dialog.Controls.Add($ui.Android)
+    $ui.Blender=New-Object Windows.Forms.CheckBox
+    $ui.Blender.Text='Blender inspection tools (add-on required)';$ui.Blender.SetBounds(450,650,424,27);$ui.Blender.Checked=[bool]$State.active.useBlender;$dialog.Controls.Add($ui.Blender)
     $ui.TempValue=Label ('{0:N2}' -f $State.active.temperature) 385 548 80
     $ui.Temperature=New-Object Windows.Forms.TrackBar
     $ui.Temperature.Minimum=0;$ui.Temperature.Maximum=200;$ui.Temperature.TickFrequency=25;$ui.Temperature.Value=[int]([double]$State.active.temperature*100);$ui.Temperature.SetBounds(164,540,215,46)
@@ -178,7 +184,6 @@ function Show-AwxSettings($Owner,$Settings,[string]$ConfigPath,$State,[string]$C
     $ui.Tokens.Minimum=64;$ui.Tokens.Maximum=65536;$ui.Tokens.Increment=128;$ui.Tokens.Value=$State.active.maxOutputTokens;$ui.Tokens.SetBounds(514,583,260,30)
     $dialog.Controls.Add($ui.Tokens)
     [void](Label 'This is a cap; a client can request less.' 514 623 350 25)
-    [void](Label 'Changes apply to new requests. Existing CLI windows keep their selected profile.' 24 650 850 28)
     $ui.Feedback=Label '' 24 679 850 36
     $ui.Feedback.ForeColor=[Drawing.ColorTranslator]::FromHtml('#B5A2FF')
     $save=Button 'Save profile' 24 727 200 {param($sender,$e);Save-AwxEditor $sender.FindForm() $false}
