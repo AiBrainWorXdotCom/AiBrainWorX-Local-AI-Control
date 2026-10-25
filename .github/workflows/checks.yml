@@ -29,6 +29,9 @@ jobs:
       - name: Client launch contract
         shell: powershell
         run: ./Tests/Check-ClientLaunch.ps1
+      - name: Native workflow list selection
+        shell: powershell
+        run: ./Tests/Check-WorkflowCatalog.ps1
       - name: No-download setup plan
         shell: powershell
         run: ./Setup.ps1 -Plan
