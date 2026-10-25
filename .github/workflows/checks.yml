@@ -32,6 +32,9 @@ jobs:
       - name: Native workflow list selection
         shell: powershell
         run: ./Tests/Check-WorkflowCatalog.ps1
+      - name: Model lifecycle and control states
+        shell: powershell
+        run: ./Tests/Check-ModelLifecycle.ps1
       - name: No-download setup plan
         shell: powershell
         run: ./Setup.ps1 -Plan

@@ -1,4 +1,4 @@
-param([ValidateSet('Gui', 'Start', 'Stop', 'Status')][string]$Action = 'Gui', [string]$CaptureImage = '')
+﻿param([ValidateSet('Gui', 'Start', 'Stop', 'Status')][string]$Action = 'Gui', [string]$CaptureImage = '', [switch]$AsJson)
 $ErrorActionPreference = 'Stop'
 $ConfigPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json'
 . (Join-Path $PSScriptRoot 'Settings.ps1')
@@ -16,68 +16,21 @@ $BaseUrl = "http://127.0.0.1:$Port"
 $Stdout = Join-Path $settings.StateRoot 'logs\coder-stdout.log'
 $Stderr = Join-Path $settings.StateRoot 'logs\coder-stderr.log'
 
-function Get-CoderProcess {
-    @(Get-CimInstance Win32_Process -Filter "Name = 'python.exe'" | Where-Object {
-        $_.ExecutablePath -eq $Python -and
-        $_.CommandLine -and $_.CommandLine.Contains($Server) -and $_.CommandLine.Contains($Config)
-    })
-}
-
-function Test-PortBusy {
-    $client = New-Object System.Net.Sockets.TcpClient
+$installed=Get-Content -LiteralPath $Config -Raw -Encoding UTF8 | ConvertFrom-Json
+$ModelIds=@($installed.model_name)+@($installed.aliases)
+. (Join-Path $PSScriptRoot 'Model-Lifecycle.ps1')
+function Get-CoderStatus { (Get-CoderSnapshot).detail }
+if($AsJson){
+    [Console]::OutputEncoding=New-Object Text.UTF8Encoding($false)
     try {
-        $pending = $client.BeginConnect('127.0.0.1', $Port, $null, $null)
-        if (-not $pending.AsyncWaitHandle.WaitOne(200)) { return $false }
-        $client.EndConnect($pending)
-        return $true
-    } catch { return $false } finally { $client.Dispose() }
-}
-
-function Get-CoderStatus {
-    $processes = @(Get-CoderProcess)
-    if ($processes.Count -eq 0) {
-        if (Test-PortBusy) { return 'Port 8081 is occupied; Start is blocked.' }
-        return 'Stopped - GPU is free of this Coder server.'
-    }
-    try {
-        $health = Invoke-RestMethod "$BaseUrl/health" -TimeoutSec 1
-        if ($health.service -eq 'strata' -and $health.loaded) { return 'Running - model ready on port 8081.' }
-        return 'Running - model is loading or unloaded.'
-    } catch { return 'Starting - waiting for the server on port 8081.' }
-}
-
-function Start-Coder {
-    # Serialize starts from multiple panels or command-line invocations.
-    $lock = New-Object System.Threading.Mutex($false, 'Local\StrataCoderManualStart8081')
-    $held = $false
-    try {
-        $held = $lock.WaitOne(0)
-        if (-not $held) { throw 'Another Start operation is already in progress.' }
-        if (@(Get-CoderProcess).Count -gt 0) { return 'Coder is already starting or running.' }
-        if (Test-PortBusy) { throw 'Port 8081 is in use. No server was started.' }
-        foreach ($file in @($Python, $Server, $Config)) {
-            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Missing file: $file" }
-        }
-        $arguments = '"{0}" --engine strata --config "{1}" --port {2}' -f $Server, $Config, $Port
-        $process = Start-Process -FilePath $Python -ArgumentList $arguments -WorkingDirectory $StrataRoot -WindowStyle Hidden -RedirectStandardOutput $Stdout -RedirectStandardError $Stderr -PassThru
-        return "Start requested (PID $($process.Id)). Model loading can take several minutes."
-    } finally {
-        if ($held) { $lock.ReleaseMutex() }
-        $lock.Dispose()
-    }
-}
-
-function Stop-Coder {
-    $processes = @(Get-CoderProcess)
-    if ($processes.Count -eq 0) { return 'Coder is already stopped.' }
-    foreach ($process in $processes) {
-        # Match again immediately before stopping. Never kill by executable name or port alone.
-        $verified = @(Get-CoderProcess | Where-Object { $_.ProcessId -eq $process.ProcessId -and $_.CreationDate -eq $process.CreationDate })
-        if ($verified.Count -eq 0) { continue }
-        $result = & "$env:SystemRoot\System32\taskkill.exe" /PID $process.ProcessId /T /F 2>&1
-        if ($LASTEXITCODE -ne 0 -and @(Get-CoderProcess).Count -gt 0) { throw ($result -join "`n") }
-    }
-    return 'Stopped Coder and its child engine processes. Active requests were cancelled.'
+        $message=''
+        if($Action -eq 'Start'){$message=Start-Coder;Start-AwxService $settings $ConfigPath}
+        elseif($Action -eq 'Stop'){$message=Stop-Coder}
+        $snapshot=Get-CoderSnapshot
+        $snapshot|Add-Member -NotePropertyName message -NotePropertyValue $message
+        $snapshot|ConvertTo-Json -Compress
+    } catch { [Console]::Error.WriteLine((@{error=$_.Exception.Message}|ConvertTo-Json -Compress));exit 1 }
+    return
 }
 
 switch ($Action) {

@@ -19,6 +19,18 @@
     return [pscustomobject]@{Process=$process;Output=$output;Errors=$errors;Line=$(if($Stream){$process.StandardOutput.ReadLineAsync()}else{$null})}
 }
 
+function Start-AwxModelOperation([string]$Action) {
+    $start=New-Object Diagnostics.ProcessStartInfo
+    $start.FileName=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    $start.Arguments='-NoProfile -ExecutionPolicy Bypass -File "{0}" -Action {1} -AsJson' -f (Join-Path $PSScriptRoot 'Strata-Control.ps1'),$Action
+    $start.UseShellExecute=$false;$start.CreateNoWindow=$true
+    $start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
+    $start.StandardOutputEncoding=New-Object Text.UTF8Encoding($false)
+    $start.StandardErrorEncoding=New-Object Text.UTF8Encoding($false)
+    $process=New-Object Diagnostics.Process;$process.StartInfo=$start;[void]$process.Start()
+    [pscustomobject]@{Process=$process;Output=$process.StandardOutput.ReadToEndAsync();Errors=$process.StandardError.ReadToEndAsync()}
+}
+
 function Complete-AwxOperation($Operation) {
     try {
         if ($Operation.Process.ExitCode -ne 0) {

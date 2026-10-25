@@ -2,7 +2,7 @@
 
 **Portable local AI for your hardware.** Connect a model, chat, choose a coding client, save instructions and carry project notes across model profiles.
 
-**v0.4.0-alpha.1 · Windows source package · Made by AiBrainWorX**
+**v0.4.0-alpha.2 · Windows source package · Made by AiBrainWorX**
 
 ![AiBrainWorX Model Launcher](media/aibrainworx-model-launcher.png)
 
@@ -18,6 +18,8 @@ Download, extract and run from your chosen folder. No fixed launcher installatio
 4. Choose a project folder. Unreal integration is optional.
 5. Open **Launch.cmd**. In **Models**, refresh the local inventory and save a connection. Start Strata here, or start other backends in their own app.
 6. Open **Chat** for a tool-free conversation. For coding, choose DeepSeek Harness or optional Codex CLI on **Overview**.
+
+The model card shows **Stopped**, amber **Starting / Stopping**, and green **Running** states. Start is highlighted when available; Stop becomes active while an owned Strata model starts or runs. Loading does not freeze the window. Other backends remain controlled in their own apps. Shutdown verifies that the captured process tree exited, including when Windows reports a child that already ended.
 
 Setup offers missing prerequisites from official sources and installs the official client packages into a separate app runtime when approved. Large Strata model downloads need an explicit `DOWNLOAD` confirmation. The tested Coder files alone are approximately 58.4 GB, plus prepared data; other models differ.
 
@@ -104,6 +106,7 @@ python Tests/test_platform_training.py
 python bridge/test_unreal_mcp.py
 powershell -NoProfile -File Tests/Check-Scripts.ps1
 powershell -NoProfile -File Tests/Check-ClientLaunch.ps1
+powershell -NoProfile -File Tests/Check-ModelLifecycle.ps1
 python Tests/check_public_files.py
 ```
 
