@@ -71,9 +71,11 @@ Audio, vision, embeddings and video use dedicated runtimes; cataloguing them doe
 
 ## Performance: measured conditions matter
 
-Our test PC is an **RTX 3060 12 GB, Ryzen 5 5500 and 32 GB RAM**. Four different short prompts on the existing warm Strata engine measured **17.8–20.8 decode tokens/s**, with no cached input in those trials. Each hit its 192-token output cap. Earlier identical-repeat tests reached 30.9 and 36.7 after a 17.4 first request; another earlier desktop request showed 11.8.
+Our test PC is an **RTX 3060 12 GB, Ryzen 5 5500 and 32 GB RAM**. On October 25 at 08:29 Pacific, the already-loaded **Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF, IQ1_M**, through Strata 0.1.48, measured **28.0–35.5 decode tokens/s** across four different short coding requests with zero cached input. Two identical repeats reached **40.5 and 41.0**, each reusing 54 input tokens. All six replies completed normally at 95–136 output tokens, with temperature 0 and reasoning off.
 
-These observations do not promise sustained 20–25 tokens/s. Prompt processing, decode, first-token delay and total task time measure different work. The launcher labels active versus last completed readings. [Method, conditions and all results](docs/performance.md).
+![October 25 completed coding speed check](media/aibrainworx-coding-speed-20261025.png)
+
+First engine token took **1.50–2.25 seconds** on the new requests and **0.14–0.20 seconds** on cached repeats. These were short tests on a warm engine, not a cold-start, sustained-throughput or coding-quality benchmark. No settings were changed for this run, and these numbers do not establish a general speed improvement over earlier tasks. [All six results and latency graphic](docs/benchmarks/2026-10-25-coding-speed.md) · [Method and historical measurements](docs/performance.md).
 
 ## Memory, privacy and moving folders
 

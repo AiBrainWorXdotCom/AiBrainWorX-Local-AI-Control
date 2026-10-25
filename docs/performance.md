@@ -4,6 +4,64 @@ There is no single guaranteed tokens-per-second rate for this setup. Earlier
 20–25 decode-token/s probes, a screenshot showing 11.8, and the audit below are
 different observations. We have removed the fixed-rate marketing headline.
 
+## Latest check: October 25, 2026, 08:29 Pacific
+
+The already-loaded Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF **IQ1_M**, served through
+Strata 0.1.48 on the same RTX 3060 12 GB / Ryzen 5 5500 / 32 GB PC, completed six
+short coding requests. Temperature 0, reasoning off, sequential direct loopback;
+no applications closed or saved engine settings changed.
+
+| Request | Decode tokens/s | First engine token | Complete request | Cached input |
+| --- | ---: | ---: | ---: | ---: |
+| Python merge | 28.0 | 2.250 s | 6.521 s | 0 |
+| TypeScript groupBy | 32.5 | 1.499 s | 5.665 s | 0 |
+| SQL query | 28.1 | 1.691 s | 5.627 s | 0 |
+| Python clamp | 35.5 | 1.570 s | 4.222 s | 0 |
+| Identical clamp repeat | 40.5 | 0.140 s | 2.460 s | 54 |
+| Identical clamp repeat | 41.0 | 0.201 s | 2.494 s | 54 |
+
+All six ended normally, producing 95–136 tokens; none hit the 256/160 output caps.
+The engine and expert cache were warm. Zero cached input means no prompt-token
+reuse, not a cold engine. The three varied Python/TypeScript/SQL tasks had median
+28.1; the fourth, shorter clamp task reached 35.5. Cache reuse, workload and trial
+order remain distinct factors. No general speed improvement or task quality was
+established by comparing these different samples with earlier runs.
+
+![Completed short coding speed check](../media/aibrainworx-coding-speed-20261025.png)
+
+[Full method and latency graphic](benchmarks/2026-10-25-coding-speed.md) ·
+[Numeric observations](benchmarks/2026-10-25-coding-speed.json).
+
+### Beyond the VRAM wall: what this establishes
+
+The full model does not live in the 12 GB card. Strata combines GPU expert
+caching with system-memory and file-backed tiers; see its
+[technical documentation](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md).
+The exact compressed Coder variant is linked in the model source above.
+IQ1_M is a format name, not a statement that every tensor uses exactly one bit.
+
+The new requests were uncached at the prompt-token level, while the engine and
+expert cache were already warm. Repeats reused 54 of 61 input tokens, leaving
+seven to read; they did not completely bypass prefill. The observed 140/201 ms
+first engine tokens are not a latency guarantee for a tool loop, a measurement
+of launcher display latency, or a hosted-API comparison.
+
+No application cleanup, fixed page-file size, new KV format or context-reset
+policy was tested in this run. The existing configuration used a 16K context
+and Strata's `--kv int8`. Do not copy another engine's cache flags blindly.
+Microsoft's [page-file guidance](https://learn.microsoft.com/en-us/troubleshoot/windows-client/performance/introduction-to-the-page-file)
+explains commit-limit requirements; a universal 16 GB cap is not a measured
+speed fix. Context resets can also discard reusable input.
+
+Read the combined [setup and benchmark article](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/).
+
+## Earlier October 25 review
+
+The earlier [performance review](reviews/2026-10-25-performance.md) includes a
+completed 733-output-token source review at 21.9 decode tokens/s and warm short
+probes at 24.8–25.5. Its findings remain pending; this follow-up changes
+documentation and graphics, not application code or engine settings.
+
 ## October 24, 2026 audit
 
 Hardware: RTX 3060 12 GB, Ryzen 5 5500, approximately 32 GB RAM and SSD-backed

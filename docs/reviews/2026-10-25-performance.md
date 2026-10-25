@@ -4,6 +4,15 @@ Reviewed application commit: `a9d0acb`. This is a review, not a claim that the
 findings below have been fixed. Codex orchestrated focused source reviews and
 measurements; the installed Qwen Coder also reviewed selected source.
 
+## Later speed check: 08:29 Pacific
+
+A separate [completed-coding speed check](../benchmarks/2026-10-25-coding-speed.md)
+measured 28.0–35.5 decode tokens/s on four new short coding requests, and
+40.5 / 41.0 on cached repeats. All six replies finished normally. That later
+warm-engine observation does not resolve the code findings below or establish
+a general speed increase. The measurements and graphic below belong to the
+earlier review.
+
 ## Findings
 
 1. **P2 — Recurring status work competes with inference and blocks token display.**
