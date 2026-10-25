@@ -86,3 +86,7 @@ and mocked lifecycle checks passed. These tests do not cover all UI timing or
 real shutdown behavior. No fresh-machine install, live Unreal acceptance,
 Ollama/LM Studio generation, or long agent-quality benchmark was performed.
 Application code and saved engine settings were unchanged by this review.
+
+![October 25 measured Qwen Coder results](../../media/aibrainworx-results-20261025.png)
+
+Rebuild with PowerShell 7: tools/Build-ReviewGraphic.ps1. The older October 24 graphic remains a historical asset.
