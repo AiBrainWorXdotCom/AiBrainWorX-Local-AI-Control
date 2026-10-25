@@ -40,8 +40,9 @@ def safe_file(relative):
     value=Path(relative)
     if value.is_absolute() or '..' in value.parts or ':' in relative or '\\' in relative:
         raise ValueError('Use a path inside the selected Android project.')
-    target=(PROJECT/value).resolve()
-    if not target.is_relative_to(PROJECT):
+    root=PROJECT.resolve()
+    target=(root/value).resolve()
+    if not target.is_relative_to(root):
         raise ValueError('The path leaves the selected project.')
     return target
 

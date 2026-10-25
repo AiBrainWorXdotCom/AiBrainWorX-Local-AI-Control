@@ -7,7 +7,9 @@ different observations. We have removed the fixed-rate marketing headline.
 ## October 24, 2026 audit
 
 Hardware: RTX 3060 12 GB, Ryzen 5 5500, approximately 32 GB RAM and SSD-backed
-model data. Model: `qwen3.8-flash-next-coder-iq1_m`, already loaded in Strata.
+model data. Exact source variant:
+[ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF](https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF),
+**IQ1_M**, served as `qwen3.8-flash-next-coder-iq1_m`, already loaded in Strata.
 No applications were closed and no engine settings were changed. One Windows
 snapshot during the run reported 0.72 GiB of available physical memory.
 
@@ -63,4 +65,8 @@ task-quality evaluations. No apps were closed or engine settings changed.
 
 The observed decode range was **17.8–20.8 tokens/s**. This does not consistently
 meet a 20–25 target. Different hardware and workloads will differ.
+If a thumbnail abbreviates the uncached observation as “~20”, that refers to
+the separate 20.8 explanation sample, not the original 17.4 first request.
+The 30.9 and 36.7 cached repeats are a different short-request series. Other
+model logos represent catalog references, not additional benchmark subjects.
 [All prompts, timestamps, usage and timings](benchmarks/2026-10-24-varied-prompts.json).
