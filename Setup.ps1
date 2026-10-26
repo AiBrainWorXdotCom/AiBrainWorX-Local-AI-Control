@@ -1,25 +1,36 @@
-﻿param([switch]$Plan)
+param([switch]$Plan,[switch]$CheckPrerequisites)
 $ErrorActionPreference = 'Stop'
 $RepoRoot = $PSScriptRoot
 $RuntimeRoot = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'AiBrainWorX\LocalAI'
+. (Join-Path $RepoRoot 'app\Setup-Prerequisites.ps1')
 
 function Ask-Yes([string]$Question) { return (Read-Host "$Question [y/N]") -match '^(y|yes)$' }
 function Write-Utf8([string]$Path,[string]$Text) { [IO.File]::WriteAllText($Path,$Text,(New-Object System.Text.UTF8Encoding($false))) }
 function Refresh-ProcessPath {
-    $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
+    $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') + ';' + $env:Path
+}
+function Find-WorkingCommand([string]$Name) {
+    foreach ($command in @(Get-Command $Name -CommandType Application -All -ErrorAction SilentlyContinue)) {
+        try {
+            $global:LASTEXITCODE=0
+            $version=@(& $command.Source --version 2>$null)
+            if ($LASTEXITCODE -eq 0 -and $version.Count -gt 0) { return $command.Source }
+        } catch { continue }
+    }
+    return $null
 }
 function Require-Command([string]$Name,[string]$Package,[string]$Manual) {
-    $command = Get-Command $Name -ErrorAction SilentlyContinue
-    if ($command) { return $command.Source }
-    Write-Host "Missing $Name. Official installation: $Manual" -ForegroundColor Yellow
+    $command = Find-WorkingCommand $Name
+    if ($command) { return $command }
+    Write-Host "Missing or non-working $Name. Official installation: $Manual" -ForegroundColor Yellow
     if ((Get-Command winget.exe -ErrorAction SilentlyContinue) -and (Ask-Yes "Install $Package using Windows Package Manager?")) {
-        & winget.exe install --exact --id $Package --source winget
+        & winget.exe install --exact --id $Package --source winget | Out-Host
         if ($LASTEXITCODE -ne 0) { throw "Installation of $Package did not finish." }
         Refresh-ProcessPath
-        $command = Get-Command $Name -ErrorAction SilentlyContinue
-        if ($command) { return $command.Source }
+        $command = Find-WorkingCommand $Name
+        if ($command) { return $command }
     }
-    throw "Install $Name from its official source, then run Setup.cmd again."
+    throw "Install $Name from $Manual, close this window and rerun Setup.cmd. See docs/first-run.md."
 }
 function Run-Checked([string]$Command,[string[]]$Arguments) {
     & $Command @Arguments
@@ -37,18 +48,33 @@ Write-Host "`nAiBrainWorX / Local AI setup" -ForegroundColor Cyan
 Write-Host 'This installs or reuses local tools. It does not start the model or change your normal Codex profile.'
 Write-Host 'Upstream licenses: Strata MIT; Harness MIT; Codex CLI Apache-2.0.'
 Write-Host 'Qwen weights have separate terms. Read MODEL-LICENSES.md before choosing a download.'
+Write-Host 'First time? See docs/first-run.md. Answer y to an installation offer, or n to install it yourself.'
 if ($Plan) {
     Write-Host 'PLAN ONLY: check Python and Node; choose Strata, Ollama or LM Studio; reuse or install Strata when selected; optionally download a model; prepare Harness, a local Codex profile and optional Unreal tools.'
     Write-Host 'Tested Coder download: approximately 58.4 GB, plus prepared data. Other models differ.'
     return
 }
 
-$Python = Require-Command 'python.exe' 'Python.Python.3.12' 'https://www.python.org/downloads/windows/'
+if ($CheckPrerequisites) {
+    $missing=@()
+    if (Find-AwxPython) { Write-Host 'Python: OK (working 64-bit 3.10+).' } else { $missing+='Python'; Write-Host 'Python: MISSING or unsupported; Store shortcuts do not count.' }
+    foreach ($name in @('node.exe','npm.cmd')) {
+        if (Find-WorkingCommand $name) { Write-Host "${name}: OK" } else { $missing+=$name; Write-Host "${name}: MISSING or non-working" }
+    }
+    Write-Host 'Read-only check: no installation, model download, configuration write or server start.'
+    if ($missing.Count) { Write-Host 'Run Setup.cmd to install missing tools, or follow docs/first-run.md.'; exit 2 }
+    $global:LASTEXITCODE=0
+    return
+}
+
+try {
+Write-Host "`nStep 1 of 4: Check and install prerequisites" -ForegroundColor Cyan
+$Python = Require-AwxPython
 $Node = Require-Command 'node.exe' 'OpenJS.NodeJS.LTS' 'https://nodejs.org/'
 $Npm = Require-Command 'npm.cmd' 'OpenJS.NodeJS.LTS' 'https://nodejs.org/'
-Run-Checked $Python @('-c','import sys; assert sys.version_info >= (3,10), "Python 3.10 or newer is required"')
 [void][System.IO.Directory]::CreateDirectory($RuntimeRoot)
 
+Write-Host "`nStep 2 of 4: Choose your model server" -ForegroundColor Cyan
 Write-Host '1: Strata (installed GGUF models)'
 Write-Host '2: Ollama local server'
 Write-Host '3: LM Studio local server'
@@ -119,6 +145,7 @@ if (-not (Test-Path -LiteralPath $StrataPython)) { throw 'The source-based Strat
 
 }
 
+Write-Host "`nStep 3 of 4: Prepare coding clients" -ForegroundColor Cyan
 $packages = Join-Path $RuntimeRoot 'agent-packages'
 $harnessInstalled = Test-Path -LiteralPath (Join-Path $packages 'node_modules\@deepseek-ai\dsh\lib\bin.js')
 $codexInstalled = Test-Path -LiteralPath (Join-Path $packages 'node_modules\.bin\codex.cmd')
@@ -129,6 +156,7 @@ if (-not ($harnessInstalled -and $codexInstalled)) {
 $HarnessEntry = Join-Path $packages 'node_modules\@deepseek-ai\dsh\lib\bin.js'
 $CodexCommand = Join-Path $packages 'node_modules\.bin\codex.cmd'
 $CodexEntry = Join-Path $packages 'node_modules\@openai\codex\bin\codex.js'
+Write-Host "`nStep 4 of 4: Choose your project and save local settings" -ForegroundColor Cyan
 $workspaceDefault = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'LocalAI-Workspace'
 $entered = Read-Host "Working project folder [Enter for $workspaceDefault]"
 $WorkspaceRoot = if ($entered) { [IO.Path]::GetFullPath($entered.Trim('"')) } else { $workspaceDefault }
@@ -151,3 +179,9 @@ Run-Checked $Python @((Join-Path $RepoRoot 'app/control_runtime.py'),'prepare','
 Write-Host "`nSetup complete. Open Launch.cmd, start the model, then choose your coding workspace." -ForegroundColor Cyan
 Write-Host 'Model files are reused. Local paths and logs stay in ignored configuration/runtime folders.'
 Write-Host 'Made by AiBrainWorX'
+$global:LASTEXITCODE=0
+} catch {
+    Write-Host "`nSetup did not finish: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host 'You can rerun Setup.cmd after fixing this step. Existing model downloads and settings were kept.'
+    exit 1
+}

@@ -2,11 +2,13 @@
 
 **Portable local AI for your hardware.** Connect a model, chat, choose a coding client, save instructions and carry project notes across model profiles.
 
-**v0.4.0-alpha.3 · Windows source package · Made by AiBrainWorX**
+**v0.4.0-alpha.4 · Windows source package · Made by AiBrainWorX**
 
 ![AiBrainWorX Model Launcher](media/aibrainworx-model-launcher.png)
 
 Download, extract and run from your chosen folder. No fixed launcher installation path or registry registration is required. Python, Node, model servers and weights are separate dependencies. Run **Setup.cmd on each PC**; this is not a standalone executable or a bundle of models.
+
+> **Installation fix — October 26, 2026:** Older ZIPs could mistake Windows' Python Store shortcut for an installed interpreter and fail with “Python was not found.” Download a fresh ZIP for the repaired setup. It verifies Python before using it, finds per-user installations even without PATH, and offers Python installation when needed. [First-time setup and recovery guide](docs/first-run.md).
 
 [Product overview](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/) · [Model library](https://aibrainworx.com/model-library/) · [MIT license](LICENSE) · [Security](SECURITY.md)
 
@@ -20,12 +22,16 @@ Our **Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF, IQ1_M** also contributes local codi
 
 ## Start without Git commands
 
-1. [Download the ZIP](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control/archive/refs/heads/main.zip) and extract it into a permanent folder.
-2. Double-click **Setup.cmd**. Choose Strata, Ollama, LM Studio or a local llama.cpp / llama-swap server.
-3. For Strata, reuse an installation or follow the explicit setup/download prompts. For another backend, install it separately, start its local API and enter an installed model identifier. No Strata installation is needed for those backends.
-4. Choose a project folder. Unreal integration is optional.
-5. Open **Launch.cmd**. In **Models**, refresh the local inventory and save a connection. Start Strata here, or start other backends in their own app.
-6. Open **Chat** for a tool-free conversation. For coding, choose DeepSeek Harness or optional Codex CLI on **Overview**.
+Start on **64-bit Windows 10/11** with an internet connection for initial dependencies. You do not need a GitHub account, Microsoft account, Unreal Engine or Git commands. A local model server and model are required for chat; they are separate downloads. The tested large Strata preset uses an NVIDIA GPU, 12 GB VRAM, 32 GB RAM and about 120 GB free SSD space; this is **one tested preset**, not the requirement for every smaller model or external backend.
+
+1. [Download the ZIP](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control/archive/refs/heads/main.zip). In File Explorer, right-click it → **Extract All**. Open the extracted folder containing `Setup.cmd`; do not run from inside the ZIP.
+2. Double-click **Setup.cmd**. In **Step 1**, answer `y` to install missing Python / Node.js prerequisites through Windows Package Manager, or follow the printed official manual links. Python must be working **64-bit 3.10+** with SQLite and venv; setup offers Python 3.12. Node.js LTS includes npm. Git is offered only if you choose Strata. Installer dialogs may ask for approval; declined/failed installs stop with recovery instructions.
+3. In **Step 2**, choose `1` for Strata, `2` for Ollama, `3` for LM Studio or `4` for a local compatible server. Reuse an existing Strata model or approve its guided setup. Large downloads begin only after you type `DOWNLOAD`. For other backends, install/load the model in that app first, then enter its API address and exact installed model ID.
+4. In **Step 3**, approve the official coding-client packages. In **Step 4**, choose a project folder for the assistant to work in. An empty folder is fine. Unreal integration is optional.
+5. Wait for **Setup complete**, then double-click **Launch.cmd**. Start the selected Strata model and wait for green **Running**. Other backends are started in their own apps.
+6. Open **Chat** to try a message. For coding, choose **DeepSeek Harness** on **Overview**, click **Start**, wait until ready, then **Open chat**. Codex CLI is an alternative client; it is not required to use Harness.
+
+If an installation fails, read the last message, fix that prerequisite and rerun `Setup.cmd`. Existing downloads are retained. [Detailed steps, manual commands, common errors and a no-download prerequisite check](docs/first-run.md).
 
 The model card shows **Stopped**, amber **Starting / Stopping**, and green **Running** states. Start is highlighted when available; Stop becomes active while an owned Strata model starts or runs. Loading does not freeze the window. Other backends remain controlled in their own apps. Shutdown verifies that the captured process tree exited, including when Windows reports a child that already ended.
 
@@ -145,11 +151,14 @@ python Tests/test_desktop_features.py
 python Tests/test_platform_training.py
 python bridge/test_unreal_mcp.py
 powershell -NoProfile -File Tests/Check-Scripts.ps1
+powershell -NoProfile -File Tests/Check-SetupPrerequisites.ps1
 powershell -NoProfile -File Tests/Check-ClientLaunch.ps1
 powershell -NoProfile -File Tests/Check-ModelLifecycle.ps1
 python Tests/check_public_files.py
 ```
 
 Routing, credentials, discovery, streaming, memory, update handling and client preparation have local fake-API contract tests. Live Strata chat returned `PONG` through the new service. Ollama and LM Studio live generation, a fresh-PC bootstrap and live Unreal acceptance have **not** been completed. The new platform bridges were tested with mocks, not live Blender or physical-device inference. This remains an alpha source package.
+
+The Windows prerequisite regression check executes local fixture programs for the Store alias, invalid/old/32-bit interpreters, Python launcher selectors, paths with spaces, probe timeouts, per-user discovery and successful/failed/declined installation flows. These simulate first-run failures without downloading or installing packages. Real installed-tool checks are also run; this does not claim a complete fresh-PC model download and installation.
 
 Original launcher, memory, integration code and skills are **MIT**. Models and separately installed tools retain their own terms and attribution. No weights, third-party runtime binaries, OpenHuman implementation or private session files are included. [Third-party notices](THIRD_PARTY_NOTICES.md).

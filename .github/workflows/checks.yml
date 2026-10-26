@@ -40,3 +40,6 @@ jobs:
       - name: No-download setup plan
         shell: powershell
         run: ./Setup.ps1 -Plan
+      - name: First-run prerequisite recovery
+        shell: powershell
+        run: ./Tests/Check-SetupPrerequisites.ps1

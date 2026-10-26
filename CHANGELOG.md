@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0-alpha.4
+
+- Fix first-run setup accepting the Windows Python Store placeholder as a real interpreter.
+- Verify 64-bit Python 3.10+, SQLite and venv; discover Python through PATH, the Python launcher, registered installs and per-user folders.
+- Recheck prerequisites after installation and keep package-manager output out of saved executable paths.
+- Four numbered setup stages, readable recovery messages, a first-run guide and a read-only prerequisite check.
+- Windows PowerShell 5.1 regression fixtures for missing/invalid prerequisites and install recovery; no test installs or model downloads.
+
 ## 0.4.0-alpha.3
 
 - Full-prompt output budgeting, native Strata counting, bounded text continuation
