@@ -46,7 +46,7 @@ If Windows Package Manager is unavailable, you decline installation or it fails:
 Or run these commands in PowerShell if `winget` is installed:
 
 ```powershell
-winget install --exact --id Python.Python.3.12 --source winget --architecture x64 --scope user
+winget install --exact --id Python.Python.3.12 --source winget --architecture x64 --scope user --custom "Include_launcher=0 InstallLauncherAllUsers=0"
 winget install --exact --id OpenJS.NodeJS.LTS --source winget
 ```
 
@@ -59,6 +59,29 @@ winget install --exact --id Git.Git --source winget
 No Microsoft account is required for the python.org installation. New PATH
 settings may require reopening setup. If `winget` fails, use the official manual
 installers rather than repeatedly running the old ZIP.
+
+### Installer error 1625 on another Windows user
+
+An installation log can say “Organization policies are preventing installation”
+even on a personal PC. In one observed failure, the Python interpreter components
+installed for the new user, but the optional **Python Launcher (`py.exe`)** tried
+to repair an existing elevated/shared installation. Its silent operation could
+not show an elevation prompt, so Windows returned 1625 and rolled back Python.
+
+**0.4.0-alpha.5** appends Python's supported `Include_launcher=0` and
+`InstallLauncherAllUsers=0` options while keeping `--scope user`. This installs
+the interpreter without installing/repairing the optional launcher. The app
+uses the validated interpreter path directly; it does not require `py.exe`.
+Download the fresh ZIP or use the updated Python command above, then rerun setup.
+
+If using the graphical python.org installer, choose **Customize installation**,
+keep pip and the standard library, leave **py launcher** unselected, and install
+for the current user. Do not select an all-users installation just to run this app.
+
+Error 1625 can also indicate a real installation restriction. If the updated
+command is still blocked, stop and have the PC administrator approve/install
+Python. Setup does not disable policies, antivirus, SmartScreen or UAC, and it
+does not automatically retry as administrator.
 
 ## 3. Choose a backend and model
 

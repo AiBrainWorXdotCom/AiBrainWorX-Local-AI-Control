@@ -28,7 +28,12 @@ public class DependencyFixture {
         if(mode=="malformed"){Console.WriteLine("not Python");return 0;}
         if(mode=="args"){Console.WriteLine(Convert.ToBase64String(Encoding.UTF8.GetBytes(String.Join("\n",args))));return 0;}
         if(mode=="launcher" && (args.Length==0 || args[0]!="-3.12")){return 1;}
-        if(args.Length>0 && args[0]=="install"){Console.WriteLine("Simulated installation output, not an executable path.");return mode=="install-failed" ? 7 : 0;}
+        if(args.Length>0 && args[0]=="install"){
+            string command=String.Join("|",args);
+            if(!command.Contains("--id|Python.Python.3.12") || !command.Contains("--source|winget") || !command.Contains("--scope|user") || !command.Contains("--architecture|x64") || !command.Contains("--custom|Include_launcher=0 InstallLauncherAllUsers=0") || command.Contains("--override") || command.Contains("--ignore-security-hash")){Console.WriteLine("Missing ordinary-user installer safeguards.");return 9;}
+            if(mode=="policy-block"){Console.WriteLine("Installer failed with exit code: 1625");return 7;}
+            Console.WriteLine("Simulated installation output, not an executable path.");return mode=="install-failed" ? 7 : 0;
+        }
         string path=Assembly.GetExecutingAssembly().Location.Replace("\\","\\\\").Replace("\"","\\\"");
         Console.WriteLine("ABX_PYTHON={\"executable\":\""+path+"\",\"version\":[3,"+(mode=="old"?"9":"12")+",0],\"bits\":"+(mode=="32bit"?"32":"64")+"}");
         return 0;
@@ -85,6 +90,9 @@ public class DependencyFixture {
     $script:findCount=0;$env:ABX_SETUP_TEST_MODE='install-failed';$failed=$false
     try { Require-AwxPython | Out-Null } catch {$failed=$_.Exception.Message -like '*installation did not finish*'}
     Assert $failed 'A failed install was reported as success.'
+    $script:findCount=0;$env:ABX_SETUP_TEST_MODE='policy-block';$blocked=$false
+    try { Require-AwxPython | Out-Null } catch {$blocked=$_.Exception.Message -like '*1625*security policies unchanged*'}
+    Assert $blocked 'A policy-blocked install did not give an actionable 1625 message.'
     $script:findCount=0;$env:ABX_SETUP_TEST_MODE='good'
     function Ask-Yes { return $false }
     $declined=$false

@@ -96,10 +96,22 @@ function Require-AwxPython {
     $python = Find-AwxPython
     if ($python) { Write-Host 'Python: working 64-bit Python 3.10+ found.' -ForegroundColor Green; return $python }
     Write-Host 'A working 64-bit Python 3.10+ is required. A Microsoft Store shortcut alone is not Python.' -ForegroundColor Yellow
-    Write-Host 'Setup can install Python 3.12 for this Windows user. No Microsoft account is required.'
+    Write-Host 'Setup can install Python 3.12 for this Windows user, without changing the optional shared py.exe launcher.'
+    Write-Host 'No Microsoft account is required.'
     if ((Get-Command winget.exe -CommandType Application -ErrorAction SilentlyContinue) -and (Ask-Yes 'Install Python 3.12 using Windows Package Manager?')) {
-        & winget.exe install --exact --id Python.Python.3.12 --source winget --architecture x64 --scope user | Out-Host
-        if ($LASTEXITCODE -ne 0) { throw 'Python installation did not finish. See docs/first-run.md for the manual installation steps, then rerun Setup.cmd.' }
+        # An existing all-user Python Launcher can make a per-user silent install
+        # request elevation and roll back with MSI 1625. The launcher is optional:
+        # we save/use the interpreter directly and leave shared py.exe untouched.
+        # --custom appends supported options, retaining winget's signed installer,
+        # hash validation and per-user installation defaults.
+        $installOutput=@()
+        & winget.exe install --exact --id Python.Python.3.12 --source winget --architecture x64 --scope user --custom 'Include_launcher=0 InstallLauncherAllUsers=0' | Tee-Object -Variable installOutput | Out-Host
+        if ($LASTEXITCODE -ne 0) {
+            if (($installOutput -join "`n") -match '\b1625\b|0x80070659') {
+                throw 'Windows blocked Python installation (1625). Setup left Windows security policies unchanged. See docs/first-run.md: installer 1625, or ask the PC administrator for an approved Python installation.'
+            }
+            throw 'Python installation did not finish. See docs/first-run.md for the manual installation steps, then rerun Setup.cmd.'
+        }
         Refresh-ProcessPath
         $python = Find-AwxPython
         if ($python) { Write-Host 'Python: installation verified.' -ForegroundColor Green; return $python }

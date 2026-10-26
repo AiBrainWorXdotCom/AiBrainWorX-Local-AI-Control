@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0-alpha.5
+
+- Keep Python installation per-user and omit the optional shared `py.exe` launcher, avoiding its elevation/repair conflict on another Windows account.
+- Preserve winget's installer/hash checks and defaults; no Windows policy changes or automatic elevation.
+- Explain installer error 1625 separately and test the ordinary-user installer arguments and policy-blocked recovery.
+
 ## 0.4.0-alpha.4
 
 - Fix first-run setup accepting the Windows Python Store placeholder as a real interpreter.
