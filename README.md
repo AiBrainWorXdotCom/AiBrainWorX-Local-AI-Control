@@ -8,7 +8,7 @@
 
 Download, extract and run from your chosen folder. No fixed launcher installation path or registry registration is required. Python, Node, model servers and weights are separate dependencies. Run **Setup.cmd on each PC**; this is not a standalone executable or a bundle of models.
 
-[Setup article](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/) · [Model library](https://aibrainworx.com/model-library/) · [MIT license](LICENSE) · [Security](SECURITY.md)
+[Product overview](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/) · [Model library](https://aibrainworx.com/model-library/) · [MIT license](LICENSE) · [Security](SECURITY.md)
 
 ## Built with Codex orchestration and local Qwen
 
@@ -40,7 +40,6 @@ Setup offers missing prerequisites from official sources and installs the offici
 - **AiBrainWorX Memory:** local project notes, facts, decisions, tasks, pinning, user verification labels, archive/restore, context preview and Markdown handoff export.
 - **Update Center:** one read-only check for the launcher, Strata app and matching engine, Harness, recorded model revisions, bundled skills, upstream references and user plugins. Unknown versions remain unverified. Checks never install or restart anything.
 
-![Model connections](media/aibrainworx-models.png)
 
 The context field describes the backend configuration; it does not resize its cache or reload the model. Image capability updates client configuration; built-in Local chat currently accepts text only. Tool calling, reasoning parameters and API compatibility vary by model and runtime. Chat support alone does not establish suitability as a coding agent.
 
@@ -79,8 +78,14 @@ folder. An original shipped baseline enables three-way vendor-file comparison;
 conflicting changes require manual review. Applying a plan is a separate explicit
 step, with candidate-side backups and no service restarts.
 
+![Current Update Center](media/aibrainworx-updates.png)
+
 [Context/output safeguards](docs/context-and-output.md) ·
 [Update Center](docs/update-center.md) · [Plugins and migration](docs/user-plugins.md)
+
+## Separate Linux edition
+
+[Native Linux / WSL alpha](https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control-Linux) reuses the core with its own browser UI, POSIX process controller and local state. It does not replace this Windows application. See that repository for its exact acceptance limits; Windows benchmark results are not Linux measurements.
 
 ## Small PCs through powerful workstations
 
@@ -106,7 +111,6 @@ First engine token took **1.50–2.25 seconds** on the new requests and **0.14�
 
 ## Memory, privacy and moving folders
 
-![Project memory](media/aibrainworx-memory.png)
 
 Original **AiBrainWorX Memory** uses Python SQLite, without a hosted service or embedding download. Profiles pointing at the same project folder share notes across models. Inclusion is opt-in; at most six notes and roughly 4,000 characters are added as reference context. Notes may be stale; “user verified” records the user’s judgment.
 
@@ -122,7 +126,6 @@ Five fixed inspection operations cover project status, actor list, actor details
 
 ## Training, datasets and platform templates
 
-![Offline tiny-model training](media/aibrainworx-training.png)
 
 **Training** provides an experimental offline LoRA worker for small floating-point text checkpoints (1.2B stored-tensor cap). Choose local weights, JSONL, a separate training Python and an output folder; preflight and explicitly enable starts per profile. Coding clients receive the same scoped training tools and read-only bundled workflow guides. No live training, dependency install or model download was performed for this update.
 

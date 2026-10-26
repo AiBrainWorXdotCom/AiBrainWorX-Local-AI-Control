@@ -1,12 +1,15 @@
+<!-- Historical manual build guide; current controls and measurements are linked below. -->
+
 # Local Qwen Coder on a 12 GB GPU: Setup and Measured Performance
 
 *By AiBrainWorX-Ai Â· October 24, 2026 Â· Windows tutorial and build diary*
 
 **A 12 GB RTX 3060. An AMD Ryzen 5 5500. Qwen 3.8 Flash Next Coder, running locally and connected to our game-development tools.**
 
-> **Performance depends on the workload and cache state.** Our fresh audit measured 17.4 decode tokens/s on the first short request, then 30.9 and 36.7 on identical cached repeats. An earlier different request showed 11.8. These measurements do not establish sustained coding-agent throughput. [Read the method and complete results](performance.md).
+> **Latest completed short coding tests:** 28.0–35.5 decode tokens/s on new prompts and 40.5–41.0 on identical cached repeats, warm Strata engine, reasoning off. [All six October 25 results](benchmarks/2026-10-25-coding-speed.md).
 
-![Our measured local generation speed: approximately 20â€“25 tokens per second on short probes, with lower throughput under heavy memory pressure.](../media/aibrainworx-results.png)
+> **Earlier history: performance depends on the workload and cache state.** Our fresh audit measured 17.4 decode tokens/s on the first short request, then 30.9 and 36.7 on identical cached repeats. An earlier different request showed 11.8. These measurements do not establish sustained coding-agent throughput. [Read the method and complete results](performance.md).
+
 
 That is the machine behind this build. At AiBrainWorX, we connected Strata, Codex CLI, DeepSeek Harness and an Unreal Engine project to make a practical local coding workspace. We also built desktop controls because starting an assistant should be easier than remembering a collection of terminal commands.
 
@@ -14,11 +17,10 @@ Pretty gangsta for an older Ryzen 5 and a 12 GB card.
 
 There is an important engineering detail behind that headline: the GPU works alongside **32 GB of system RAM and an SSD**. The model's roughly 58.4 GB of original files do not all fit into VRAM. Strata spreads the work across the GPU, CPU, RAM and storage. That arrangement makes this setup possibleâ€”and memory pressure is also its biggest limitation.
 
-![The AiBrainWorX Local AI Control launcher with Qwen, Harness and Unreal controls.](../media/aibrainworx-model-launcher.png)
 
-*Our actual Windows launcher. Model inference and the agent interface have separate controls. Made by AiBrainWorX.*
+Current UI screenshots and component controls are maintained in the README. The manual connection examples below document the original build; use the current README and focused guides for the latest behavior.
 
-## Current launcher: v0.3.0-alpha.1
+## Current launcher: v0.4.0-alpha.3
 
 **AiBrainWorX Model Launcher** now offers Strata, Ollama, LM Studio and local
 compatible-server connections, tool-free chat, creative presets, original local
@@ -26,7 +28,7 @@ project memory and manual update checks. [Start with the current README](../READ
 or [read the new features guide](models-memory-updates.md). The manual examples
 below document the original Strata setup; weights and backend apps stay separate.
 
-The newer varied-prompt audit measured **17.8–20.8 decode tokens/s** on four short,
+An earlier varied-prompt audit measured **17.8–20.8 decode tokens/s** on four short,
 192-token-capped requests. The cover has no speed claim. See [all results](performance.md).
 
 ## Earlier v0.2 controls
@@ -37,7 +39,6 @@ sliders, and a per-request output cap. Open **Settings**, customize the profile,
 and Save before launching your client. Instructions are added to the client's
 existing system instructions; tools and client permissions stay in place.
 
-![The settings editor, with example paths rather than personal information.](../media/aibrainworx-launch-settings.png)
 
 The main panel shows live generated tokens per second plus CPU, VRAM and RAM
 readings from Strata. An idle reading is explicitly marked as the last completed
@@ -183,7 +184,6 @@ Invoke-RestMethod http://127.0.0.1:8081/v1/chat/completions `
 
 The loopback server in our build requires no inference API key. Keep that assumption tied to this local configuration. An adapter asking for a placeholder key and a server actually enforcing authentication are different settings.
 
-![The branded Qwen Coder control window showing manual model controls.](../media/aibrainworx-qwen-control.png)
 
 *The smaller Qwen panel controls the existing Strata server. Closing a control window leaves the service running; Stop terminates its active requests.*
 
