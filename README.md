@@ -2,7 +2,7 @@
 
 **Portable local AI for your hardware.** Connect a model, chat, choose a coding client, save instructions and carry project notes across model profiles.
 
-**v0.4.0-alpha.2 · Windows source package · Made by AiBrainWorX**
+**v0.4.0-alpha.3 · Windows source package · Made by AiBrainWorX**
 
 ![AiBrainWorX Model Launcher](media/aibrainworx-model-launcher.png)
 
@@ -36,9 +36,9 @@ Setup offers missing prerequisites from official sources and installs the offici
 - **Model profiles:** backend, exact model ID, loopback API, context declaration, image capability and an optional API-key environment-variable name.
 - **Instructions:** editable presets for coding, Unreal, review, stories, adventure games, learning and brainstorming.
 - **Request controls:** optional temperature/top-p sliders, a 64–65,536-token output cap, and explicit reasoning effort when supported by the model/server. Server default remains available.
-- **Local chat:** streamed text, stop reply, new conversation and a draft-memory action. Conversation history stays in app memory; only notes you explicitly save are persisted by this feature.
+- **Local chat:** streamed text, stop reply, new conversation and a draft-memory action. Strata/compatible built-in chat saves a full local transcript and can refresh working context behind the same visible conversation. Project memory remains separate; no notes are automatically marked verified.
 - **AiBrainWorX Memory:** local project notes, facts, decisions, tasks, pinning, user verification labels, archive/restore, context preview and Markdown handoff export.
-- **Updates:** an explicit GitHub version check, including optional prereleases. Review and replace the source package yourself; checking never installs or restarts anything.
+- **Update Center:** one read-only check for the launcher, Strata app and matching engine, Harness, recorded model revisions, bundled skills, upstream references and user plugins. Unknown versions remain unverified. Checks never install or restart anything.
 
 ![Model connections](media/aibrainworx-models.png)
 
@@ -54,6 +54,33 @@ The context field describes the backend configuration; it does not resize its ca
 | llama.cpp / llama-swap | `http://127.0.0.1:8080/v1` | Start and configure separately |
 
 The settings service on **127.0.0.1:8082** forwards Chat Completions and Responses requests to the saved connection. Only loopback HTTP destinations are accepted. Ollama Responses calls must be stateless. Switching connections does not unload the old model; stop it in its owning app to release memory. Incoming client credentials are not forwarded; the service reads a configured environment-variable key instead. Other software on the PC can still access loopback services.
+
+## Long conversations and safe customization
+
+The gateway fits output to the fully rendered prompt and the running server's
+context, with a 256-token reserve. Ordinary streamed text can continue twice,
+with a 4096-token pass limit and 12,288-token total allocation. Tools, JSON and
+Responses are not silently stitched. Strata uses its installed frontend/tokenizer;
+llama.cpp Chat Completions uses its native counting APIs. Other connectors retain
+their existing cap behavior until exact adapters are validated.
+
+Built-in chat can retain one visible conversation while replacing older working
+context with a bounded, unverified handoff. Full transcripts stay in private local
+state. Summarization can lose details and costs a model request; saved project
+memory remains independent and follows its existing checkbox.
+
+**User plugins** live outside the app installation. Approved API-v1 Python/Node
+hooks can extend built-in chat; changed code needs fresh approval. These are
+trusted local programs, not sandboxed programs. Voice/audio hooks and a Harness
+voice extension are not implemented by this release.
+
+The included `migrate-customizations.py` previews transfers into a separate update
+folder. An original shipped baseline enables three-way vendor-file comparison;
+conflicting changes require manual review. Applying a plan is a separate explicit
+step, with candidate-side backups and no service restarts.
+
+[Context/output safeguards](docs/context-and-output.md) ·
+[Update Center](docs/update-center.md) · [Plugins and migration](docs/user-plugins.md)
 
 ## Small PCs through powerful workstations
 

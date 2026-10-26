@@ -14,8 +14,14 @@ import control_core as core
 import model_backends as backends
 import project_memory as memory
 import app_updates
+import update_center
 import local_chat
 import training_local
+import backend_budget
+import guarded_stream
+import session_gateway
+import plugin_host
+from context_policy import BudgetError, can_continue, fit_request
 
 MAX_BODY = 8 * 1024 * 1024
 GET_ROUTES = {'/v1/models', '/models', '/metrics', '/props', '/v1/status'}
@@ -56,6 +62,7 @@ def make_server(config, port=8082, upstream_port=None):
 
         def forward(self, post):
             connection = None
+            chat_session = None
             response_started = False
             try:
                 host = self.headers.get('Host', '')
@@ -80,6 +87,8 @@ def make_server(config, port=8082, upstream_port=None):
                 profile = core.get_profile(state, identity)
                 selected = backends.normalize(profile['model'], config, validate_file=False)
                 target_url = urlsplit(selected['baseUrl'])
+                if target_url.port == self.server.server_port:
+                    raise ValueError('A gateway cannot forward model requests to itself.')
                 if not post and route in ('/metrics','/props','/v1/status') and selected['backend'] != 'strata':
                     return self.reply_json(404, {'error': 'This telemetry endpoint is only available from Strata.'})
                 body = None
@@ -103,17 +112,56 @@ def make_server(config, port=8082, upstream_port=None):
                         return self.reply_json(409, {'error': 'The saved profile model changed. Reopen the client to use its selected model.'})
                     if selected['backend']=='ollama' and (request.get('previous_response_id') or request.get('conversation')):
                         return self.reply_json(400, {'error': 'Ollama requires stateless Responses requests with complete input history.'})
-                    context = memory.recall(config,profile,memory.latest_question(request,route))['text'] if profile.get('useMemory') else ''
-                    request = core.transform_request(request, profile, route, context)
-                    request['model'] = selected['modelId']
-                    if selected['reasoningEffort']:
-                        if route=='/v1/responses':
-                            reasoning=request.get('reasoning') or {}
-                            if not isinstance(reasoning,dict):
-                                raise ValueError('Invalid reasoning configuration.')
-                            request['reasoning']={**reasoning,'effort':selected['reasoningEffort']}
-                        else:
-                            request['reasoning_effort']=selected['reasoningEffort']
+                    def enrich(candidate):
+                        context = memory.recall(config,profile,memory.latest_question(candidate,route))['text'] if profile.get('useMemory') else ''
+                        candidate = core.transform_request(candidate, profile, route, context)
+                        candidate['model'] = selected['modelId']
+                        if selected['reasoningEffort']:
+                            if route=='/v1/responses':
+                                reasoning=candidate.get('reasoning') or {}
+                                if not isinstance(reasoning,dict):
+                                    raise ValueError('Invalid reasoning configuration.')
+                                candidate['reasoning']={**reasoning,'effort':selected['reasoningEffort']}
+                            else:
+                                candidate['reasoning_effort']=selected['reasoningEffort']
+                        return candidate
+                    # Counting occurs AFTER profile instructions, project memory and
+                    # reasoning settings have been applied. Tokenizers never run inference.
+                    strict = selected['backend'] == 'strata' and bool(config.get('StrataRoot'))
+                    strict = strict or (selected['backend'] == 'compatible' and route == '/v1/chat/completions')
+                    backend = backend_budget.Backend(selected, upstream_port, config, route)
+                    if strict:
+                        request, chat_session = session_gateway.prepare(config, profile, selected, request, route, backend, enrich)
+                    else:
+                        request.pop('aibrainworx_session', None)
+                        request = enrich(request)
+                    if strict:
+                        if route == '/v1/chat/completions' and request.get('stream') and can_continue(request):
+                            source = guarded_stream.stream(backend, request, profile['maxOutputTokens'], selected['contextWindow'],
+                                                          auto_continue=profile.get('autoContinue', True))
+                            try:
+                                first = next(source)  # Preflight failures remain proper JSON errors.
+                                self.send_response(200)
+                                self.send_header('Content-Type', 'text/event-stream; charset=utf-8')
+                                self.send_header('Cache-Control', 'no-store')
+                                self.send_header('Connection', 'close')
+                                self.end_headers()
+                                response_started = self.close_connection = True
+                                if chat_session:
+                                    chat_session.record(first)
+                                self.wfile.write(first)
+                                self.wfile.flush()
+                                for item in source:
+                                    if chat_session:
+                                        chat_session.record(item)
+                                    self.wfile.write(item)
+                                    self.wfile.flush()
+                            finally:
+                                source.close()  # A disconnected client never launches another pass.
+                            return
+                        ctx, prompt_count = backend.preflight(request)
+                        request, _ = fit_request(request, prompt_tokens=prompt_count, server_context=ctx,
+                                                 profile_limit=profile['maxOutputTokens'], context_ceiling=selected['contextWindow'])
                     body = json.dumps(request, ensure_ascii=False).encode('utf-8')
                 connection = HTTPConnection('127.0.0.1', upstream_port or target_url.port, timeout=600 if post else 3)
                 headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP_HEADERS | {'host', 'origin', 'accept-encoding','authorization','cookie'}}
@@ -130,6 +178,25 @@ def make_server(config, port=8082, upstream_port=None):
                 self.send_header('Connection', 'close')
                 self.end_headers()
                 self.close_connection = True
+                if chat_session and upstream.status == 200:
+                    if request.get('stream'):
+                        for event in guarded_stream.events(upstream):
+                            item = guarded_stream.frame(event)
+                            chat_session.record(item)
+                            self.wfile.write(item)
+                            self.wfile.flush()
+                        self.wfile.write(b'data: [DONE]\n\n')
+                        self.wfile.flush()
+                    else:
+                        data = upstream.read(MAX_BODY+1)
+                        if len(data) > MAX_BODY:
+                            raise BudgetError('The reply exceeds the local limit.', 'invalid_stream')
+                        reply = json.loads(data)
+                        for choice in reply.get('choices', []):
+                            chat_session.text += choice.get('message', {}).get('content') or ''
+                            chat_session.reason = choice.get('finish_reason') or chat_session.reason
+                        self.wfile.write(data)
+                    return
                 # read1 preserves incremental SSE delivery; read(n) can wait for
                 # a full buffer and make a working model appear unresponsive.
                 while True:
@@ -137,6 +204,14 @@ def make_server(config, port=8082, upstream_port=None):
                     if not chunk:
                         break
                     self.wfile.write(chunk)
+                    self.wfile.flush()
+            except BudgetError as exc:
+                self.close_connection = True
+                if not response_started:
+                    self.reply_json(422, {'error': {'message': str(exc), 'code': exc.code, 'details': exc.details}})
+                else:
+                    self.wfile.write(guarded_stream.frame({'error': {'message': str(exc), 'code': exc.code}}))
+                    self.wfile.write(b'data: [DONE]\n\n')
                     self.wfile.flush()
             except (ValueError, KeyError, TypeError, json.JSONDecodeError):
                 self.close_connection = True
@@ -149,6 +224,8 @@ def make_server(config, port=8082, upstream_port=None):
                 if not response_started:
                     self.reply_json(502, {'error': 'The selected local model server is unavailable. Start its backend and try again.'})
             finally:
+                if chat_session:
+                    chat_session.close()
                 if connection:
                     connection.close()
 
@@ -159,7 +236,7 @@ def make_server(config, port=8082, upstream_port=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','chat','training-preflight','training-start','training-status','training-stop','training-latest'])
+    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','track-update-source','plugins','plugin-approve','chat','training-preflight','training-start','training-status','training-stop','training-latest'])
     parser.add_argument('--config', required=True)
     args = parser.parse_args()
     try:
@@ -169,7 +246,7 @@ def main():
             with make_server(config) as server:
                 server.serve_forever()
             return
-        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','chat','training-preflight','training-start','training-status','training-stop','training-latest') else {}
+        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','track-update-source','plugin-approve','chat','training-preflight','training-start','training-status','training-stop','training-latest') else {}
         profile = lambda: core.get_profile(core.ensure_state(config))
         if args.action=='chat':
             chosen=core.get_profile(core.ensure_state(config),payload.get('profileId'))
@@ -192,7 +269,10 @@ def main():
                       'memory-archive':lambda:memory.archive(config,profile(),payload),
                       'memory-preview':lambda:memory.recall(config,{**profile(),'useMemory':True},payload.get('query','')),
                       'handoff':lambda:memory.handoff(config,profile()),
-                      'updates':lambda:app_updates.check(core.VERSION,payload.get('includePrereleases',True))}
+                      'updates':lambda:update_center.check(config,core.VERSION,payload.get('includePrereleases',True)),
+                      'track-update-source':lambda:update_center.save_model_source(config,payload)}
+        operations['plugins']=lambda:dict(apiVersion=plugin_host.API_VERSION,items=plugin_host.inventory(config))
+        operations['plugin-approve']=lambda:plugin_host.approve(config,payload)
         print(json.dumps(operations[args.action](), ensure_ascii=True))
     except Exception as exc:
         # Known validation messages are actionable; filesystem/network exceptions

@@ -135,11 +135,11 @@ $prefillValue=Ui-Label $overview 'Prompt processing: no sample | First token: no
 # Quick chat uses no agent tools, keeping small and creative models usable.
 $chat=$pages.Chat
 [void](Ui-Label $chat 'Local chat' 32 24 740 34 21 $true)
-$ch=Ui-Label $chat 'Stories, learning and everyday conversations. Ctrl+Enter sends.' 33 65 750 26 10;$ch.ForeColor=$palette.Muted
+$ch=Ui-Label $chat 'Local conversations with automatic handoffs. Project memory stays separate. Ctrl+Enter sends.' 33 65 750 26 10;$ch.ForeColor=$palette.Muted
 $chatOutput=New-Object Windows.Forms.RichTextBox;$chatOutput.SetBounds(32,111,766,365);$chatOutput.BackColor=$palette.Card;$chatOutput.ForeColor=$palette.Text;$chatOutput.Font=New-Object Drawing.Font('Segoe UI',11);$chatOutput.ReadOnly=$true;$chatOutput.BorderStyle='FixedSingle';$chat.Controls.Add($chatOutput)
 $chatInput=Ui-Input $chat '' 32 491 766 76;$chatInput.Multiline=$true;$chatInput.AcceptsReturn=$true;$chatInput.MaxLength=16000;$chatInput.ScrollBars='Vertical'
-$script:chatJob=$null;$script:chatMessages=New-Object Collections.ArrayList;$script:chatProfile=$script:launchState.activeId;$script:chatReply='';$script:chatDone=$false
-function Reset-Chat {if($script:chatJob){return};$script:chatMessages.Clear();$script:chatReply='';$chatOutput.Clear();$script:chatProfile=$script:launchState.activeId}
+$script:chatSession=[guid]::NewGuid().ToString('N');$script:chatFinish='';$script:chatJob=$null;$script:chatMessages=New-Object Collections.ArrayList;$script:chatProfile=$script:launchState.activeId;$script:chatReply='';$script:chatDone=$false
+function Reset-Chat {if($script:chatJob){return};$script:chatSession=[guid]::NewGuid().ToString('N');$script:chatFinish='';$script:chatMessages.Clear();$script:chatReply='';$chatOutput.Clear();$script:chatProfile=$script:launchState.activeId}
 function Send-Chat {
  try{
   if($script:chatJob -or -not $chatInput.Text.Trim()){return}
@@ -147,7 +147,12 @@ function Send-Chat {
   Start-AwxService $settings $ConfigPath
   $text=$chatInput.Text.Trim();[void]$script:chatMessages.Add(@{role='user';content=$text})
   $chatOutput.AppendText("You`r`n"+$text+"`r`n`r`nAssistant`r`n");$chatInput.Clear();$script:chatReply='';$script:chatDone=$false
-  $script:chatJob=Start-AwxOperation $settings $ConfigPath 'chat' @{profileId=$script:launchState.activeId;messages=@($script:chatMessages)} -Stream
+  $chatPayload=@{profileId=$script:launchState.activeId;messages=@($script:chatMessages)}
+  if($script:launchState.active.model.backend -in @('strata','compatible')){
+   $chatPayload.messages=@(@{role='user';content=$text});$chatPayload.sessionId=$script:chatSession;$chatPayload.requestId=[guid]::NewGuid().ToString('N')
+  }
+  $script:chatFinish=''
+  $script:chatJob=Start-AwxOperation $settings $ConfigPath 'chat' $chatPayload -Stream
   $chatSend.Enabled=$false;$chatStop.Enabled=$true;$feedback.Text='Local model is processing the request...'
  }catch{$feedback.Text=$_.Exception.Message}
 }
@@ -163,11 +168,11 @@ function Poll-Chat {
  while($job.Line -and $job.Line.IsCompleted -and $n -lt 60){
   $line=$job.Line.Result
   if($null -eq $line){$job.Line=$null;break}
-  if($line){try{$part=$line|ConvertFrom-Json;if($part.delta){$script:chatReply+=$part.delta;$chatOutput.AppendText($part.delta);$chatOutput.SelectionStart=$chatOutput.TextLength;$chatOutput.ScrollToCaret()};if($part.thinking){$feedback.Text='Thinking... reasoning uses the configured output budget.'};if($part.done){$script:chatDone=$true}}catch{$feedback.Text='The local backend returned an unreadable stream.'}}
+  if($line){try{$part=$line|ConvertFrom-Json;if($part.delta){$script:chatReply+=$part.delta;$chatOutput.AppendText($part.delta);$chatOutput.SelectionStart=$chatOutput.TextLength;$chatOutput.ScrollToCaret()};if($part.thinking){$feedback.Text='Thinking... reasoning uses the configured output budget.'};if($part.done){$script:chatDone=$true;$script:chatFinish=$part.finishReason}}catch{$feedback.Text='The local backend returned an unreadable stream.'}}
   $job.Line=$job.Process.StandardOutput.ReadLineAsync();$n++
  }
  if($job.Process.HasExited -and -not $job.Line){
-  if($script:chatDone){[void]$script:chatMessages.Add(@{role='assistant';content=$script:chatReply});$chatOutput.AppendText("`r`n`r`n");$feedback.Text='Reply complete. Only memories you save are persisted.'}
+  if($script:chatDone){[void]$script:chatMessages.Add(@{role='assistant';content=$script:chatReply});$chatOutput.AppendText("`r`n`r`n");$feedback.Text=if($script:chatFinish -eq 'length'){'Reply paused safely. Ask it to continue when ready.'}elseif($script:launchState.active.model.backend -in @('strata','compatible')){'Reply complete. Conversation saved locally; project memory stays separate.'}else{'Reply complete. Only memories you save are persisted.'}}
   else{if($script:chatMessages.Count){$script:chatMessages.RemoveAt($script:chatMessages.Count-1)};try{$errorData=$job.Errors.Result|ConvertFrom-Json;$feedback.Text=$errorData.error}catch{$feedback.Text='Reply stopped or unavailable. Check the selected local backend.'};$chatOutput.AppendText("`r`n[Reply ended]`r`n`r`n")}
   $job.Process.Dispose();$script:chatJob=$null;$chatSend.Enabled=$true;$chatStop.Enabled=$false
  }
@@ -257,20 +262,54 @@ $memoryList.Add_SelectedIndexChanged({$r=$memoryList.SelectedItem;if($r){$script
 [void](Ui-Button $mem 'Export handoff' 549 574 245 {try{$r=Invoke-AwxOperation $settings $ConfigPath 'handoff';$d=New-Object Windows.Forms.SaveFileDialog;$d.Filter='Markdown handoff (*.md)|*.md';$d.FileName='aibrainworx-project-handoff.md';if($d.ShowDialog($form) -eq 'OK'){[IO.File]::WriteAllText($d.FileName,$r.markdown,(New-Object Text.UTF8Encoding($false)));$feedback.Text='Handoff exported. Review its notes before sharing.'};$d.Dispose()}catch{$feedback.Text=$_.Exception.Message}})
 $memoryEnabled.Add_CheckedChanged({if($script:memoryLoading){return};try{$script:launchState=Invoke-AwxOperation $settings $ConfigPath 'state';$p=$script:launchState.active;$p.useMemory=$memoryEnabled.Checked;$script:launchState=Invoke-AwxOperation $settings $ConfigPath 'save' @{profile=$p;revision=$script:launchState.revision;saveAsNew=$false};$feedback.Text='Memory setting saved for this profile.'}catch{$feedback.Text=$_.Exception.Message}})
 
-# Explicit update checks; no background telemetry or automatic file replacement.
+# Read-only component checks; all network work runs outside the UI thread.
+. (Join-Path $PSScriptRoot 'Plugin-Manager.ps1')
 $updates=$pages.Updates
-[void](Ui-Label $updates 'Updates' 32 24 740 34 21 $true)
-$uh=Ui-Label $updates 'Check the public AiBrainWorX repository when you choose.' 33 65 750 26 10;$uh.ForeColor=$palette.Muted
-$updateBox=Ui-Box $updates 32 120 766 210
-[void](Ui-Label $updateBox 'INSTALLED VERSION' 22 20 700 24 8 $true)
-[void](Ui-Label $updateBox $script:launchState.version 22 52 700 35 23 $true)
-$updateStatus=Ui-Label $updateBox 'Not checked yet' 22 103 710 30 13 $true
-$updateDetail=Ui-Label $updateBox 'No network request is made until you click Check for updates.' 22 143 710 55 10;$updateDetail.ForeColor=$palette.Muted
-$previewUpdates=Ui-Check $updates 'Include alpha / beta versions and the main source package' 32 354 760;$previewUpdates.Checked=$true
-$script:updateJob=$null
-$updateButton=Ui-Button $updates 'Check for updates' 32 404 220 {try{if($script:updateJob){return};$script:updateJob=Start-AwxOperation $settings $ConfigPath 'updates' @{includePrereleases=$previewUpdates.Checked};$updateButton.Enabled=$false;$updateStatus.Text='Checking GitHub...'}catch{$updateDetail.Text=$_.Exception.Message}}
-[void](Ui-Button $updates 'Open downloads + release notes' 272 404 320 {Start-Process 'https://github.com/AiBrainWorXdotCom/AiBrainWorX-Local-AI-Control'})
-$updateHelp=Ui-Label $updates 'Updates are reviewed downloads. This checker never replaces the running app, changes local settings or restarts a model. Keep config.local.json private when moving to a new source folder.' 32 476 766 90 10;$updateHelp.ForeColor=$palette.Muted
+[void](Ui-Label $updates 'Update Center' 32 24 740 34 21 $true)
+$uh=Ui-Label $updates 'Your launcher, runtimes, models and skills. One clear view.' 33 65 750 26 10;$uh.ForeColor=$palette.Muted
+$updateBox=Ui-Box $updates 32 108 766 72
+$updateStatus=Ui-Label $updateBox 'READY WHEN YOU ARE' 20 10 725 25 13 $true
+$updateDetail=Ui-Label $updateBox 'Read-only checks. Nothing downloads or restarts automatically.' 20 39 725 25 9;$updateDetail.ForeColor=$palette.Muted
+$script:updateJob=$null;$script:updateSelection=$null
+$updateButton=Ui-Button $updates 'Check everything' 32 196 220 {try{if($script:updateJob){return};$script:updateJob=Start-AwxOperation $settings $ConfigPath 'updates' @{includePrereleases=$previewUpdates.Checked};$updateButton.Enabled=$false;$updateStatus.Text='CHECKING YOUR WORKSPACE...';$updateDetail.Text='Reading official release feeds, package versions, model cards and skill revisions.'}catch{$updateDetail.Text=$_.Exception.Message}}
+$previewUpdates=Ui-Check $updates 'Include preview releases' 272 204 400;$previewUpdates.Checked=$true
+$updateList=New-Object Windows.Forms.ListView;$updateList.SetBounds(32,250,766,250);$updateList.View='Details';$updateList.FullRowSelect=$true;$updateList.MultiSelect=$false;$updateList.HideSelection=$false;$updateList.BackColor=$palette.Card;$updateList.ForeColor=$palette.Text;$updateList.BorderStyle='None';$updateList.Font=New-Object Drawing.Font('Segoe UI',10)
+$updateList.OwnerDraw=$true;$updateList.ShowItemToolTips=$true
+$updateList.Add_DrawColumnHeader({param($sender,$e);$brush=New-Object Drawing.SolidBrush([Drawing.ColorTranslator]::FromHtml('#26352E'));try{$e.Graphics.FillRectangle($brush,$e.Bounds);[Windows.Forms.TextRenderer]::DrawText($e.Graphics,$e.Header.Text,$form.Font,$e.Bounds,[Drawing.ColorTranslator]::FromHtml('#C5F5D5'),([Windows.Forms.TextFormatFlags]::Left -bor [Windows.Forms.TextFormatFlags]::VerticalCenter))}finally{$brush.Dispose()}})
+$updateList.Add_DrawItem({param($sender,$e);$e.DrawDefault=$true})
+$updateList.Add_DrawSubItem({param($sender,$e);$e.DrawDefault=$true})
+foreach($column in @(@('Component',285),@('Installed',140),@('Latest',140),@('Status',175))){[void]$updateList.Columns.Add($column[0],$column[1])};$updates.Controls.Add($updateList)
+$updateDescription=Ui-Label $updates 'Press Check everything to compare your installed components. Missing provenance is shown as Needs review, never Up to date.' 32 514 766 65 10;$updateDescription.ForeColor=$palette.Muted
+$updateOpen=Ui-Button $updates 'Review selected source' 32 594 240 {if($script:updateSelection -and $script:updateSelection.url -match '^https://(github\.com|huggingface\.co|registry\.npmjs\.org)/'){Start-Process $script:updateSelection.url}};$updateOpen.Enabled=$false
+$updateTrack=Ui-Button $updates 'Connect model card' 288 594 240 {
+ if(-not $script:updateSelection -or -not $script:updateSelection.trackingKey){return}
+ $selected=$script:updateSelection
+ $dialog=New-Object Windows.Forms.Form;$dialog.Text='Track model updates';$dialog.Size=New-Object Drawing.Size(620,330);$dialog.StartPosition='CenterParent';$dialog.BackColor=$palette.Background;$dialog.ForeColor=$palette.Text;$dialog.Font=$form.Font
+ [void](Ui-Label $dialog 'Original Hugging Face model card (owner/repository)' 20 20 570 26 10 $true)
+ $source=Ui-Input $dialog ([string]$selected.sourceRepo) 20 55 560 30
+ [void](Ui-Label $dialog 'Installed commit SHA - optional; leave blank if unknown' 20 101 570 26 10 $true)
+ $revision=Ui-Input $dialog '' 20 136 560 30
+ $hint=Ui-Label $dialog 'This records provenance. It never downloads, verifies or relabels weights.' 20 181 570 35 9;$hint.ForeColor=$palette.Muted
+ $dialog.Tag=@{Source=$source;Revision=$revision;Key=$selected.trackingKey;Feedback=$hint;Settings=$settings;Config=$ConfigPath}
+ [void](Ui-Button $dialog 'Save source' 20 235 170 {param($sender,$e);$d=$sender.FindForm();$v=$d.Tag;try{[void](Invoke-AwxOperation $v.Settings $v.Config 'track-update-source' @{key=$v.Key;repo=$v.Source.Text;revision=$v.Revision.Text});$d.Close()}catch{$v.Feedback.Text=$_.Exception.Message}})
+ [void](Ui-Button $dialog 'Cancel' 410 235 170 {param($sender,$e);$sender.FindForm().Close()})
+ [void]$dialog.ShowDialog($form);$dialog.Dispose()
+};$updateTrack.Enabled=$false
+[void](Ui-Button $updates 'User plugins' 544 594 254 {Show-UserPlugins})
+$updateList.Add_SelectedIndexChanged({
+ if($updateList.SelectedItems.Count){$script:updateSelection=$updateList.SelectedItems[0].Tag;$updateDescription.Text=$script:updateSelection.detail;$updateOpen.Enabled=[bool]$script:updateSelection.url;$updateTrack.Enabled=[bool]$script:updateSelection.trackingKey}
+})
+function Show-UpdateResults($Report){
+ $updateList.BeginUpdate();$updateList.Items.Clear()
+ $labels=@{available='UPDATE AVAILABLE';current='UP TO DATE';ahead='DEVELOPMENT';review='NEEDS REVIEW';unavailable='COULD NOT CHECK';unknown='NOT TRACKED';'no-release'='NO STABLE RELEASE'}
+ foreach($entry in @($Report.components)){
+  $item=New-Object Windows.Forms.ListViewItem([string]$entry.name);[void]$item.SubItems.Add([string]$entry.installed);[void]$item.SubItems.Add([string]$entry.latest);[void]$item.SubItems.Add([string]$labels[$entry.state]);$item.Tag=$entry;$item.ToolTipText=$entry.name+"`r`n"+$entry.detail
+  $item.ForeColor=switch($entry.state){'current'{[Drawing.ColorTranslator]::FromHtml('#B4F7C9')};'available'{[Drawing.ColorTranslator]::FromHtml('#FFD386')};'unavailable'{[Drawing.ColorTranslator]::FromHtml('#FFB5B5')};default{[Drawing.ColorTranslator]::FromHtml('#C4D1E6')}}
+  [void]$updateList.Items.Add($item)
+ }
+ $updateList.EndUpdate();$s=$Report.summary;$updateStatus.Text=('{0} UPDATES  /  {1} TO REVIEW  /  {2} CURRENT' -f $s.available,$s.review,$s.current);$updateDetail.Text=('{0} components reviewed. {1} could not be checked. Select a row for details.' -f @($Report.components).Count,$s.unavailable);$updateDescription.Text=$Report.detail
+}
+if($CaptureImage -and $env:AIBRAINWORX_CAPTURE_UPDATE_REPORT -and (Test-Path -LiteralPath $env:AIBRAINWORX_CAPTURE_UPDATE_REPORT)){Show-UpdateResults (Get-Content -LiteralPath $env:AIBRAINWORX_CAPTURE_UPDATE_REPORT -Raw -Encoding UTF8|ConvertFrom-Json)}
 
 function Edit-Profile {
  try{$script:launchState=Invoke-AwxOperation $settings $ConfigPath 'state';$r=Show-AwxSettings $form $settings $ConfigPath $script:launchState;if($null -ne $r){$script:launchState=$r;Refresh-ProfilePicker;Refresh-Overview;Queue-Status;$feedback.Text='Profile saved locally.'}}catch{$feedback.Text=$_.Exception.Message}
@@ -296,7 +335,7 @@ function Poll-DesktopJobs {
  Poll-Chat
  Poll-Training
  if($script:modelJob -and $script:modelJob.Process.HasExited){try{$r=Complete-AwxOperation $script:modelJob;if($script:scanBackend -eq (Backend-Key)){$modelPicker.Items.Clear();foreach($m in @($r.models)){[void]$modelPicker.Items.Add($m)};$modelNote.Text=$r.note;if($modelPicker.Items.Count){$modelPicker.SelectedIndex=0;$m=$modelPicker.SelectedItem;$contextTokens.Value=$m.contextWindow;if($m.configPath){$modelConfig.Text=$m.configPath};$reasoningPicker.SelectedIndex=if($m.reasoningEffort){[Array]::IndexOf(@('Server default','none','low','medium','high','xhigh'),$m.reasoningEffort)}else{0}}}}catch{$modelNote.Text=$_.Exception.Message}finally{$script:modelJob=$null;$refreshModels.Enabled=$true}}
- if($script:updateJob -and $script:updateJob.Process.HasExited){try{$r=Complete-AwxOperation $script:updateJob;$updateStatus.Text=@{available='Update available';current='You are up to date';ahead='Development version';unavailable='Could not check';'no-release'='No stable release yet'}[$r.state];$updateDetail.Text=$r.detail+$(if($r.latest){"`r`nPublished: "+$r.latest+' / '+$r.channel}else{''})}catch{$updateStatus.Text='Could not check';$updateDetail.Text=$_.Exception.Message}finally{$script:updateJob=$null;$updateButton.Enabled=$true}}
+ if($script:updateJob -and $script:updateJob.Process.HasExited){try{$r=Complete-AwxOperation $script:updateJob;Show-UpdateResults $r}catch{$updateStatus.Text='CHECK INCOMPLETE';$updateDescription.Text=$_.Exception.Message}finally{$script:updateJob=$null;$updateButton.Enabled=$true}}
  if($script:modelActionJob -and $script:modelActionJob.Process.HasExited){
   try{$r=Complete-AwxOperation $script:modelActionJob;if($script:modelActionProfile -eq $script:launchState.activeId){Apply-ModelState $r;$feedback.Text=if($r.message){$r.message}else{$r.detail}}}
   catch{Apply-ModelState ([pscustomobject]@{state='error';canStart=$false;canStop=$false;detail=$_.Exception.Message});$feedback.Text=$_.Exception.Message}

@@ -36,8 +36,10 @@ Project memory is an unencrypted local SQLite database under StateRoot/memory.
 It records only notes you save, with previous revisions on changes. Archive is
 not deletion. Inclusion in model requests is opt-in and bounded, but enabled
 notes are sent to the chosen loopback model server. Do not store secrets there.
-Built-in chat history stays in process memory; the selected backend may keep its
-own logs. Exported handoffs can contain user-written paths or private notes.
+Built-in Strata/compatible chat keeps an unencrypted local transcript in
+StateRoot/conversations.sqlite3 for context handoffs. Working summaries are
+unverified model output; project-memory notes are separate. The selected backend
+may keep its own logs. Exported handoffs can contain private user content.
 
 Update checks contact public GitHub release/version endpoints only on request.
 They never install code, change files or restart the application. Model-guide
@@ -58,3 +60,18 @@ Offline training starts are disabled by default per profile. They spawn only the
 Android tools inspect Gradle/manifest files without evaluating scripts and query only an existing local ADB server for device inventory; serials are hashed. The optional Blender add-on reads on its main thread at 127.0.0.1:9877 and exposes no arbitrary Python or save operation. Coding clients retain their own file/shell permissions.
 
 Video preview accepts explicitly selected local files, never remote playback URLs or automatic media links from model replies. It does not upload media. Codec support depends on the installed Windows player; keep the operating system updated.
+
+
+Update Center requests read public GitHub/Hugging Face/npm metadata. It does not
+install code or weights. No prompt, transcript, credential or personal local path
+is sent by update checks. A recorded Hub revision is not a verified weight hash.
+
+User plugins are opt-in local programs outside the installation folder. They run
+with the user's OS account permissions, not in a sandbox. Declared capabilities
+are consent information, not enforced isolation. Changed source needs approval;
+review dependencies separately. Never enable untrusted plugin code.
+
+Customization migration defaults to preview and targets a separate candidate
+folder. Conflicts require manual review; stale plans are refused. Without an
+original shipped baseline, vendor edits cannot be certified. Private reports,
+backups, local settings and live databases must stay outside Git.

@@ -1,0 +1,10 @@
+{
+  "id": "reply-counter",
+  "name": "Local reply counter (example)",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "runtime": "python",
+  "entry": "main.py",
+  "hooks": ["chat.after_reply"],
+  "capabilities": ["read_chat", "local_files"]
+}

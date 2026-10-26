@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0-alpha.3
+
+- Full-prompt output budgeting, native Strata counting, bounded text continuation
+  and truthful terminal SSE events; tools/structured output retain client control.
+- Stable built-in chat sessions, saved local transcripts and bounded context
+  handoffs, independent of explicit project memory.
+- Read-only component Update Center, model provenance tracking and source reviews.
+- External user-plugin folders, API-v1 chat hooks and explicit source approval.
+- Preview-first customization migration, three-way conflicts and candidate backups.
+- No model, Harness, skill or plugin automatically installed or upgraded.
+
 ## 0.4.0-alpha.1
 
 - Expanded library: 56 model profiles, 36 text suggestions and six dataset guides.

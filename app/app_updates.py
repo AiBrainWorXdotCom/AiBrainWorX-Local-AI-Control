@@ -16,7 +16,7 @@ def version_key(value):
 
 
 def request_json(url):
-    req=urllib.request.Request(url,headers={'Accept':'application/vnd.github+json','User-Agent':'AiBrainWorX-Update-Check'})
+    req=urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'AiBrainWorX-Update-Check'})
     with urllib.request.urlopen(req,timeout=8) as reply:
         raw=reply.read(512*1024+1)
         if len(raw)>512*1024:
@@ -24,9 +24,13 @@ def request_json(url):
         return json.loads(raw)
 
 
-def check(current, include_prereleases=True):
+def check(current, include_prereleases=True, repository=None):
+    repository=repository or REPOSITORY
+    if not re.fullmatch(r'https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',repository):
+        raise ValueError('Use a public GitHub owner/repository update source.')
+    api='https://api.github.com/repos/'+repository.removeprefix('https://github.com/')
     try:
-        releases=request_json(API+'/releases?per_page=20')
+        releases=request_json(api+'/releases?per_page=20')
         candidates=[]
         for release in releases:
             if release.get('draft') or release.get('prerelease') and not include_prereleases:
@@ -38,13 +42,13 @@ def check(current, include_prereleases=True):
                 continue
             if not include_prereleases and key[3]!=3:
                 continue
-            candidates.append((key,tag,'GitHub release',REPOSITORY+'/releases'))
+            candidates.append((key,tag,'GitHub release',repository+'/releases'))
         if include_prereleases:
-            data=request_json(API+'/contents/VERSION?ref=main')
+            data=request_json(api+'/contents/VERSION?ref=main')
             latest=base64.b64decode(data['content']).decode('utf-8').strip()
-            candidates.append((version_key(latest),latest,'main source package',REPOSITORY))
+            candidates.append((version_key(latest),latest,'main source package',repository))
         if not candidates:
-            return dict(state='no-release',current=current,latest='',url=REPOSITORY+'/releases',detail='No versioned stable release is published. Enable alpha/beta checks to compare the main source package.')
+            return dict(state='no-release',current=current,latest='',url=repository+'/releases',detail='No versioned stable release is published. Enable alpha/beta checks to compare the main source package.')
         key,latest,channel,url=max(candidates)
         own=version_key(current)
         state='available' if key>own else 'current' if key==own else 'ahead'
@@ -52,4 +56,4 @@ def check(current, include_prereleases=True):
                     detail={'available':'An update is available. Review changes and download the source ZIP; your files have not been changed.',
                             'current':'This copy matches the published version.','ahead':'This development copy is newer than the published version.'}[state])
     except (OSError,ValueError,KeyError,TypeError):
-        return dict(state='unavailable',current=current,latest='',url=REPOSITORY,detail='Could not verify updates. Check the connection or try again later; this does not confirm you are up to date.')
+        return dict(state='unavailable',current=current,latest='',url=repository,detail='Could not verify updates. Check the connection or try again later; this does not confirm you are up to date.')

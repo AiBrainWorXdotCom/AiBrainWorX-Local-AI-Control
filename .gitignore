@@ -34,3 +34,4 @@ cookies.txt
 application-frames/
 .video-build/
 *.mp4
+.aibrainworx-migration-backups/

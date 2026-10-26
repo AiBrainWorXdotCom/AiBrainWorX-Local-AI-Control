@@ -71,6 +71,8 @@ def normalize(value, config, validate_file=True):
     if backend not in DEFAULT_URLS:
         raise ValueError('Choose Strata, Ollama, LM Studio or another local compatible server.')
     model['baseUrl'] = local_url(model.get('baseUrl', DEFAULT_URLS[backend]))
+    if config and urlsplit(model['baseUrl']).port in (config.get('GatewayPort'), config.get('AppPort')):
+        raise ValueError('A model connection cannot target the launcher or its gateway.')
     model['modelId'] = model_name(model.get('modelId'))
     context = model.get('contextWindow', 16384)
     if type(context) is not int or not 4096 <= context <= 1048576:

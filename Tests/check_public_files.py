@@ -19,7 +19,8 @@ RULES = {
     "credential-url": re.compile(r"https?://[^/\s:@]+:[^/\s@]+@|[?&#](?:access_token|api_key|auth_token)=[A-Za-z0-9_.-]{16,}", re.I),
 }
 PRIVATE_NAMES = {"auth.json", "cookies.txt", "config.local.json"}
-PRIVATE_SUFFIXES = {".pem", ".key", ".pfx", ".p12", ".gguf", ".uasset", ".umap", ".sqlite", ".sqlite3", ".bak"}
+PRIVATE_SUFFIXES = {".pem", ".key", ".pfx", ".p12", ".gguf", ".uasset", ".umap", ".sqlite", ".sqlite3", ".bak", ".log"}
+PRIVATE_DIRS = {'.state', '.runtime', '.windows-fix', '.validation-state', '.venv', '.aibrainworx-migration-backups'}
 
 
 def git(*args):
@@ -36,7 +37,8 @@ def main():
             continue
         name = raw.decode("utf-8")
         path = Path(name)
-        if path.name.lower() in PRIVATE_NAMES or path.suffix.lower() in PRIVATE_SUFFIXES or ".local." in path.name.lower():
+        if (path.name.lower() in PRIVATE_NAMES or path.suffix.lower() in PRIVATE_SUFFIXES
+                or ".local." in path.name.lower() or PRIVATE_DIRS.intersection(path.parts)):
             failures.append((name, 0, "private-file"))
             continue
         data = git("show", ":" + name) if staged else (ROOT / name).read_bytes()
@@ -49,7 +51,7 @@ def main():
             continue
         for number, line in enumerate(content.splitlines(), 1):
             for label, pattern in RULES.items():
-                if pattern.search(line):
+                if pattern.search(line.replace('\\\\', '\\')):
                     failures.append((name, number, label))
     for name, number, label in failures:
         print(f"BLOCKED {name}:{number}: {label} (value suppressed)")

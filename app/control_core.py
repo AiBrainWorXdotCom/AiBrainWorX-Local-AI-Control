@@ -100,7 +100,7 @@ def default_profile(config):
                 enginePython=config.get('EnginePython', ''), unrealProjectName=config.get('UnrealProjectName', ''),
                 preset='general', useInstructions=False, instructions=presets()[0]['text'],
                 overrideSampling=False, temperature=.7, topP=.9, maxOutputTokens=4096,
-                model=backends.default_model(config), useMemory=False, useAndroid=False, useBlender=False,
+                model=backends.default_model(config), useMemory=False, autoContinue=True, useAndroid=False, useBlender=False,
                 allowTraining=False, training=dict(training_local.DEFAULTS))
 
 
@@ -116,6 +116,7 @@ def ensure_state(config):
         if 'model' not in profile:
             profile['model'] = backends.default_model(config)
         profile.setdefault('useMemory', False)
+        profile.setdefault('autoContinue', True)
         profile.setdefault('useAndroid', False)
         profile.setdefault('useBlender', False)
         profile.setdefault('allowTraining', False)
@@ -162,9 +163,10 @@ def validate_profile(value, config=None):
     projects = list(Path(value['workspaceRoot']).glob('*.uproject'))
     value['unrealProjectName'] = projects[0].stem if len(projects) == 1 else ''
     value.setdefault('useAndroid',False)
+    value.setdefault('autoContinue',True)
     value.setdefault('useBlender',False);value.setdefault('allowTraining',False)
     value['training']=training_local.validate_settings(value.get('training',{}))
-    for field in ('useInstructions', 'overrideSampling', 'useMemory', 'useAndroid','useBlender','allowTraining'):
+    for field in ('useInstructions', 'overrideSampling', 'useMemory', 'autoContinue', 'useAndroid','useBlender','allowTraining'):
         if type(value.get(field)) is not bool:
             raise ValueError('Invalid checkbox value.')
     text = value.get('instructions', '')
@@ -276,7 +278,7 @@ def prepare_clients(config):
     home.mkdir(parents=True, exist_ok=True)
     selected = backends.normalize(profile['model'], config)
     model = selected['modelId']
-    endpoint = f'http://127.0.0.1:8082/profiles/{identity}/v1'
+    endpoint = f"http://127.0.0.1:{config.get('GatewayPort',8082)}/profiles/{identity}/v1"
     harness = home / 'harness'
     target = harness / 'profiles/web'
     write_json(target / 'package.json', {'name': 'aibrainworx-profile', 'private': True, 'dependencies': {}, 'dsh': {'profile': {'bundles': ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app']}}})
@@ -361,7 +363,7 @@ def diagnose(config):
     add('Workspace', Path(profile['workspaceRoot']).is_dir(), 'Selected project folder exists.' if Path(profile['workspaceRoot']).is_dir() else 'Choose an existing project folder.')
     readiness = backends.status(config, profile)
     add('Model / '+readiness['backend'], readiness['ready'], readiness['detail'])
-    for name, port in (('Launch settings service', 8082),):
+    for name, port in (('Launch settings service', config.get('GatewayPort',8082)),):
         try:
             health = fetch_json(f'http://127.0.0.1:{port}/health')
             ok = health.get('service') == 'strata' and health.get('loaded', False) if port == 8081 else health.get('service') == 'aibrainworx-control' and health.get('dataIdentity') == data_identity(config)
