@@ -113,7 +113,7 @@ def make_server(config, port=8082, upstream_port=None):
                     if selected['backend']=='ollama' and (request.get('previous_response_id') or request.get('conversation')):
                         return self.reply_json(400, {'error': 'Ollama requires stateless Responses requests with complete input history.'})
                     def enrich(candidate):
-                        context = memory.recall(config,profile,memory.latest_question(candidate,route))['text'] if profile.get('useMemory') else ''
+                        context = memory.recall(config,profile,memory.latest_question(candidate,route),policy=plugin_host.memory_policy(config))['text'] if profile.get('useMemory') else ''
                         candidate = core.transform_request(candidate, profile, route, context)
                         candidate['model'] = selected['modelId']
                         if selected['reasoningEffort']:
@@ -236,7 +236,7 @@ def make_server(config, port=8082, upstream_port=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','track-update-source','plugins','plugin-approve','plugin-panels','plugin-remove','plugin-archives','plugin-restore','chat','training-preflight','training-start','training-status','training-stop','training-latest'])
+    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','track-update-source','plugins','plugin-approve','plugin-memory-policy','plugin-memory-policy-status','plugin-panels','plugin-remove','plugin-archives','plugin-restore','chat','training-preflight','training-start','training-status','training-stop','training-latest'])
     parser.add_argument('--config', required=True)
     args = parser.parse_args()
     try:
@@ -251,7 +251,7 @@ def main():
             with make_server(config, port=port) as server:
                 server.serve_forever()
             return
-        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','track-update-source','plugin-approve','plugin-panels','plugin-remove','plugin-restore','chat','training-preflight','training-start','training-status','training-stop','training-latest') else {}
+        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','track-update-source','plugin-approve','plugin-memory-policy','plugin-panels','plugin-remove','plugin-restore','chat','training-preflight','training-start','training-status','training-stop','training-latest') else {}
         profile = lambda: core.get_profile(core.ensure_state(config))
         if args.action=='chat':
             chosen=core.get_profile(core.ensure_state(config),payload.get('profileId'))
@@ -272,13 +272,15 @@ def main():
                       'memory-list':lambda:dict(items=memory.items(config,profile(),payload.get('query',''),payload.get('archived',False))),
                       'memory-save':lambda:memory.save(config,profile(),payload),
                       'memory-archive':lambda:memory.archive(config,profile(),payload),
-                      'memory-preview':lambda:memory.recall(config,{**profile(),'useMemory':True},payload.get('query','')),
+                      'memory-preview':lambda:memory.recall(config,{**profile(),'useMemory':True},payload.get('query',''),policy=plugin_host.memory_policy(config)),
                       'handoff':lambda:memory.handoff(config,profile()),
                       'updates':lambda:update_center.check(config,core.VERSION,payload.get('includePrereleases',True),
                           progress=update_center.progress_writer(config,payload['progressId']) if payload.get('progressId') else None),
                       'track-update-source':lambda:update_center.save_model_source(config,payload)}
         operations['plugins']=lambda:dict(apiVersion=plugin_host.API_VERSION,items=plugin_host.inventory(config))
         operations['plugin-approve']=lambda:plugin_host.approve(config,payload)
+        operations['plugin-memory-policy']=lambda:plugin_host.set_memory_policy(config,payload)
+        operations['plugin-memory-policy-status']=lambda:dict(level=plugin_host.memory_policy(config))
         # HELP-PLUGINS: panel hooks are opt-in trusted local code, separate from
         # inference. They receive no chat, workspace path or project name.
         operations['plugin-panels']=lambda:plugin_host.panels(config,payload)

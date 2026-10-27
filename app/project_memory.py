@@ -105,10 +105,16 @@ def latest_question(body, route):
     return ''
 
 
-def recall(config, profile, query=''):
+def recall(config, profile, query='', *, policy='legacy'):
     if not profile.get('useMemory'):
         return dict(text='', records=[], characters=0, note='Project memory is disabled for this profile.')
+    if policy == 'off':
+        return dict(text='', records=[], characters=0, note='The memory policy blocks disclosure to the model.')
+    if policy not in ('legacy', 'verified', 'all'):
+        raise ValueError('Invalid memory disclosure policy.')
     rows = items(config, profile)
+    if policy == 'verified':
+        rows = [row for row in rows if row['verified']]
     terms = set(re.findall(r'[^\W_]{2,}', query.casefold())[:12])
     def score(row):
         text = (row['title']+' '+row['body']).casefold()

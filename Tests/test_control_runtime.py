@@ -15,6 +15,8 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'app'))
 import control_core as core
 import control_runtime as runtime
+import plugin_host as plugins
+import project_memory as memory
 
 
 class Profiles(unittest.TestCase):
@@ -227,6 +229,38 @@ class Gateway(Profiles):
         second = self.received.get(timeout=1)[1]
         self.assertEqual(first['messages'], [])
         self.assertIn('Other instructions', second['messages'][0]['content'])
+
+
+    def test_harness_gateway_enforces_memory_disclosure_permissions(self):
+        profile = core.default_profile(self.config)
+        profile['useMemory'] = True
+        self.save(profile)
+        memory.save(self.config, profile, {'title':'Approved note','body':'verified-alpha','verified':True})
+        memory.save(self.config, profile, {'title':'Unverified note','body':'unverified-beta'})
+        folder = Path(self.config['StateRoot'])/'plugins'/'memory-policy'
+        folder.mkdir(parents=True)
+        shutil.copy(core.ROOT/'examples/plugins/memory-policy/plugin.json', folder/'plugin.json')
+        # Installed but not reviewed is fail closed.
+        conn, res = self.request({'messages':[{'role':'user','content':'notes'}]})
+        self.assertEqual(res.status, 200); res.read(); conn.close()
+        self.assertNotIn('verified-alpha', json.dumps(self.received.get(timeout=1)[1]))
+        item = next(row for row in plugins.inventory(self.config) if row['id']=='memory-policy')
+        plugins.approve(self.config, {'id':item['id'],'fingerprint':item['fingerprint'],'enabled':True,'acceptLocalCodeRisk':True})
+        plugins.set_memory_policy(self.config, {'level':'verified'})
+        conn, res = self.request({'messages':[{'role':'user','content':'notes'}], 'tools':[{'type':'function','function':{'name':'inspect'}}]})
+        self.assertEqual(res.status, 200); res.read(); conn.close()
+        request = self.received.get(timeout=1)[1]
+        self.assertIn('verified-alpha', json.dumps(request)); self.assertNotIn('unverified-beta', json.dumps(request))
+        self.assertTrue(request['tools'])
+        plugins.set_memory_policy(self.config, {'level':'all'})
+        conn, res = self.request({'messages':[{'role':'user','content':'notes'}]})
+        self.assertEqual(res.status, 200); res.read(); conn.close()
+        self.assertIn('unverified-beta', json.dumps(self.received.get(timeout=1)[1]))
+        plugins.set_memory_policy(self.config, {'level':'off'})
+        conn, res = self.request({'messages':[{'role':'user','content':'notes'}]})
+        self.assertEqual(res.status, 200); res.read(); conn.close()
+        self.assertNotIn('verified-alpha', json.dumps(self.received.get(timeout=1)[1]))
+        self.assertEqual(len(memory.items(self.config, profile)), 2)
 
 
 if __name__ == '__main__':

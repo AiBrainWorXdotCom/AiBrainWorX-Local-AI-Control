@@ -5,9 +5,9 @@ function Show-UserPlugins {
  $intro=Ui-Label $dialog 'Plugins stay outside the launcher installation. App updates leave them intact. Changed code needs fresh approval.' 24 68 870 48 10;$intro.ForeColor=$palette.Muted
  $list=New-Object Windows.Forms.ListBox;$list.SetBounds(24,130,300,340);$list.DisplayMember='name';$list.BackColor=$palette.Card;$list.ForeColor=$palette.Text;$dialog.Controls.Add($list)
  $preview=Ui-Input $dialog 'No plugins installed. Put a reviewed plugin folder in your user plugin directory, then refresh. Voice/audio hooks are not implemented in API v1.' 344 130 550 340;$preview.Multiline=$true;$preview.ReadOnly=$true;$preview.ScrollBars='Vertical'
- $consent=Ui-Check $dialog 'I trust this local code to run with my account permissions (not sandboxed).' 24 488 870
+ $consent=Ui-Check $dialog 'I approve this extension. Python/Node plugins run with my account permissions.' 24 488 870
  $dialog.Tag=@{List=$list;Preview=$preview;Consent=$consent;Settings=$settings;Config=$ConfigPath;PluginHome=(Join-Path $settings.StateRoot 'plugins')}
- $list.Add_SelectedIndexChanged({param($sender,$e);$m=$sender.SelectedItem;if($m){$v=$sender.FindForm().Tag;$v.Consent.Checked=$false;$v.Preview.Text=$m.name+"`r`n"+'State: '+$m.state+"`r`n"+'Plugin version: '+$m.version+' / Host API: '+$m.apiVersion+"`r`n`r`n"+'Declared capabilities: '+(@($m.capabilities)-join ', ')+"`r`n"+'Hooks: '+(@($m.hooks)-join ', ')+"`r`n`r`n"+'These are trusted local programs, not a security sandbox. Review source and dependencies before enabling. Incompatible plugins remain disabled and their files are preserved.'}})
+ $list.Add_SelectedIndexChanged({param($sender,$e);$m=$sender.SelectedItem;if($m){$v=$sender.FindForm().Tag;$v.Consent.Checked=$false;$v.Preview.Text=$m.name+"`r`n"+'State: '+$m.state+"`r`n"+'Plugin version: '+$m.version+' / Host API: '+$m.apiVersion+"`r`n`r`n"+'Declared capabilities: '+(@($m.capabilities)-join ', ')+"`r`n"+'Hooks: '+(@($m.hooks)-join ', ')+"`r`n`r`n"+$(if($m.runtime -eq 'builtin'){'This is a fixed host-managed memory policy; it executes no plugin code. Set its disclosure level with Memory permissions. Other local programs are not sandboxed.'}else{'Python and Node plugins are trusted local programs, not a security sandbox. Review source and dependencies before enabling. Incompatible plugins remain disabled.'})}})
  function Refresh-UserPluginList($d){$v=$d.Tag;$r=Invoke-AwxOperation $v.Settings $v.Config 'plugins';$v.List.Items.Clear();foreach($item in @($r.items)){if($item){[void]$v.List.Items.Add($item)}}}
  [void](Ui-Button $dialog 'Refresh' 24 540 130 {param($sender,$e);try{Refresh-UserPluginList $sender.FindForm()}catch{$sender.FindForm().Tag.Preview.Text=$_.Exception.Message}})
  [void](Ui-Button $dialog 'Open plugin folder' 166 540 180 {param($sender,$e);$v=$sender.FindForm().Tag;[void][IO.Directory]::CreateDirectory($v.PluginHome);Start-Process $v.PluginHome})
@@ -15,11 +15,26 @@ function Show-UserPlugins {
  [void](Ui-Button $dialog 'Disable' 550 540 130 {param($sender,$e);$d=$sender.FindForm();$v=$d.Tag;$m=$v.List.SelectedItem;if(-not $m){return};try{[void](Invoke-AwxOperation $v.Settings $v.Config 'plugin-approve' @{id=$m.id;fingerprint=$m.fingerprint;enabled=$false});Refresh-UserPluginList $d}catch{$v.Preview.Text=$_.Exception.Message}})
  [void](Ui-Button $dialog 'Remove from launcher' 24 582 220 {param($sender,$e);$d=$sender.FindForm();$v=$d.Tag;$m=$v.List.SelectedItem;if(-not $m){return};try{[void](Invoke-AwxOperation $v.Settings $v.Config 'plugin-remove' @{id=$m.id;fingerprint=$m.fingerprint});Refresh-UserPluginList $d;$v.Preview.Text='Plugin removed from the launcher. Its source and data were archived and can be restored disabled.'}catch{$v.Preview.Text=$_.Exception.Message}})
  [void](Ui-Button $dialog 'Restore archived...' 256 582 220 {param($sender,$e);Show-ArchivedPlugins $sender.FindForm()})
+ [void](Ui-Button $dialog 'Memory permissions...' 488 582 206 {param($sender,$e);Show-MemoryPluginPolicy $sender.FindForm()})
  [void](Ui-Button $dialog 'Close' 714 540 180 {param($sender,$e);$sender.FindForm().Close()})
  try{Refresh-UserPluginList $dialog}catch{$preview.Text=$_.Exception.Message}
  [void]$dialog.ShowDialog($form);$dialog.Dispose()
  if(Get-Command Reset-Activity -ErrorAction SilentlyContinue){Reset-Activity;Queue-Activity -Force}
 }
+
+function Show-MemoryPluginPolicy($Owner){
+ $d=New-Object Windows.Forms.Form;$d.Text='Memory permissions';$d.ClientSize=New-Object Drawing.Size(680,330);$d.StartPosition='CenterParent';$d.BackColor=$palette.Background;$d.ForeColor=$palette.Text;$d.Font=$form.Font
+ [void](Ui-Label $d 'MEMORY DISCLOSURE' 20 18 640 32 16 $true)
+ [void](Ui-Label $d 'The host controls which saved project notes can be sent to the model. Your project memory switch must also be enabled. This does not sandbox other plugins or control client tools.' 20 58 635 65 10)
+ $choice=New-Object Windows.Forms.ComboBox;$choice.DropDownStyle='DropDownList';$choice.SetBounds(20,137,620,32);[void]$choice.Items.Add('Off - do not send saved notes');[void]$choice.Items.Add('User-verified notes only');[void]$choice.Items.Add('All saved project notes');$d.Controls.Add($choice)
+ $status=Ui-Label $d 'Review and enable Memory access policy before changing its level.' 20 188 630 52 10;$status.ForeColor=$palette.Muted
+ try{$current=Invoke-AwxOperation $settings $ConfigPath 'plugin-memory-policy-status';$choice.SelectedIndex=switch($current.level){'verified'{1} 'all'{2} default{0}}}catch{$choice.SelectedIndex=0}
+ $d.Tag=@{Choice=$choice;Status=$status}
+ [void](Ui-Button $d 'Save permissions' 20 260 250 {param($sender,$e);$w=$sender.FindForm();$levels=@('off','verified','all');try{$result=Invoke-AwxOperation $settings $ConfigPath 'plugin-memory-policy' @{level=$levels[$w.Tag.Choice.SelectedIndex]};$w.Tag.Status.Text=$result.note}catch{$w.Tag.Status.Text=$_.Exception.Message}})
+ [void](Ui-Button $d 'Close' 390 260 250 {param($sender,$e);$sender.FindForm().Close()})
+ [void]$d.ShowDialog($Owner);$d.Dispose()
+}
+
 
 function Show-ArchivedPlugins($Owner){
  $d=New-Object Windows.Forms.Form;$d.Text='Restore an archived plugin';$d.ClientSize=New-Object Drawing.Size(640,390);$d.StartPosition='CenterParent';$d.BackColor=$palette.Background;$d.ForeColor=$palette.Text;$d.Font=$form.Font

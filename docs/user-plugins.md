@@ -56,3 +56,33 @@ copied during use. Private plans and backups must stay out of Git.
 ## Activity and hot lifecycle controls
 
 See [Activity monitoring](activity-monitor.md) for the opt-in read-only monitor. Disable, remove-to-archive and restore work without restarting the app or model. Restored code stays disabled; private plugin data survives app source replacement.
+
+
+## Built-in memory access policy (optional)
+
+`examples/plugins/memory-policy` is a declarative host-managed plugin: its
+manifest cannot run Python, Node or other plugin-provided code. Copy just its
+folder into the persistent user plugin folder, review it and enable it. In
+**Memory permissions**, choose **Off**, **User-verified notes only**, or **All
+saved project notes**. The default is Off, and the project's existing memory
+checkbox must also be enabled. User-verified means marked by the user, not
+independently fact-checked. Existing project isolation, explicit note editing,
+revision history and bounded recall remain in place.
+
+This gate applies to new built-in Chat and managed DeepSeek Harness/Codex
+requests sent through the AiBrainWorX profile gateway. It does not control
+direct requests to a backend, files accessible to the client, other external
+services, third-party plugins, or a model's independent tool permissions. It
+does not automatically create or approve memories. It does not extend a model's
+context length or add Harness session rollover.
+
+Installing the plugin without approval, disabling it, changing its manifest or
+removing it via the launcher blocks memory disclosure rather than reverting to
+all notes. The user's saved notes remain untouched. Restore the plugin and
+review/enable it to select another level. A system where this plugin was never
+installed retains its existing memory behavior. Levels control the host's
+disclosure of notes and do not provide an operating-system sandbox.
+
+The design was inspired by the review, provenance and scoping concepts in
+[OpenBot](https://github.com/CopilotKit/OpenBot), an MIT-licensed project;
+this implementation does not embed OpenBot or CopilotKit Intelligence.

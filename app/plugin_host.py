@@ -16,8 +16,8 @@ import uuid
 import control_core as core
 
 API_VERSION = 1
-HOOKS = {'chat.before_send', 'chat.after_reply', 'monitor.sample'}
-CAPABILITIES = {'read_chat', 'modify_chat', 'local_files', 'network', 'audio_capture', 'audio_playback', 'read_system'}
+HOOKS = {'chat.before_send', 'chat.after_reply', 'monitor.sample', 'memory.recall'}
+CAPABILITIES = {'read_chat', 'modify_chat', 'local_files', 'network', 'audio_capture', 'audio_playback', 'read_system', 'memory_read'}
 PLUGIN_ID = re.compile(r'^[a-z][a-z0-9-]{1,63}$')
 ARCHIVE_ID = re.compile(r'^(?P<id>[a-z][a-z0-9-]{1,63})-[a-f0-9]{32}$')
 PANEL_STATES = {'ok', 'warning', 'error', 'unknown', 'unavailable', 'running', 'stopped', 'idle', 'generating', 'available'}
@@ -47,14 +47,24 @@ def inspect(config, directory, *, folder_id=None):
     if not isinstance(hooks, list) or set(hooks)-HOOKS or not isinstance(permissions, list) or set(permissions)-CAPABILITIES:
         raise ValueError('Unsupported plugin hooks or declared capabilities.')
     runtime, entry = data.get('runtime'), data.get('entry', '')
-    if runtime not in ('python', 'node') or not isinstance(entry, str):
-        raise ValueError('Choose a Python or Node plugin entry.')
-    relative = Path(entry)
-    if relative.is_absolute() or '..' in relative.parts or ('monitor.sample' in hooks and any(part in ('node_modules', '.venv', '__pycache__', '.git') for part in relative.parts)):
-        raise ValueError('Plugin entry must stay in its folder.')
-    target = directory/relative
-    if not target.is_file() or not target.resolve().is_relative_to(directory.resolve()):
-        raise ValueError('Plugin entry is missing or outside its folder.')
+    # Only this exact host-implemented data-only plugin may use the builtin
+    # runtime. A manifest never imports, interprets or executes plugin code.
+    builtin = runtime == 'builtin' and identity == 'memory-policy' and entry == 'memory-policy-v1' and hooks == ['memory.recall'] and permissions == ['memory_read']
+    if (runtime == 'builtin' and not builtin) or (identity == 'memory-policy' and not builtin):
+        raise ValueError('Unknown or invalid built-in memory policy plugin.')
+    if builtin:
+        if {item.name for item in directory.iterdir()} != {'plugin.json'}:
+            raise ValueError('The built-in memory policy contains only its manifest.')
+        target = manifest
+    else:
+        if runtime not in ('python', 'node') or not isinstance(entry, str) or 'memory.recall' in hooks or 'memory_read' in permissions:
+            raise ValueError('Choose a supported plugin runtime and hooks.')
+        relative = Path(entry)
+        if relative.is_absolute() or '..' in relative.parts or ('monitor.sample' in hooks and any(part in ('node_modules', '.venv', '__pycache__', '.git') for part in relative.parts)):
+            raise ValueError('Plugin entry must stay in its folder.')
+        target = directory/relative
+        if not target.is_file() or not target.resolve().is_relative_to(directory.resolve()):
+            raise ValueError('Plugin entry is missing or outside its folder.')
     fingerprint = hashlib.sha256()
     files, size = 0, 0
     for path in sorted(directory.rglob('*')):
@@ -112,6 +122,47 @@ def approve(config, payload):
         saved[identity] = {'enabled': enabled, 'fingerprint': plugin['fingerprint'], 'revision': uuid.uuid4().hex}
         core.write_json(Path(config['StateRoot'])/'plugin-approvals.local.json', saved)
     return {'note': 'Plugin enabled.' if enabled else 'Plugin disabled; its files were preserved.'}
+
+
+def memory_policy(config):
+    """Return a host-enforced disclosure level; no plugin code is executed.
+
+    A never-installed plugin preserves the existing explicit memory switch. An
+    installed, removed, disabled, invalid or changed plugin fails closed.
+    """
+    directory = home(config)/'memory-policy'
+    if not directory.exists() and not directory.is_symlink():
+        # A previously approved/removed policy must not reveal memories again.
+        try:
+            return 'off' if 'memory-policy' in approvals(config) else 'legacy'
+        except (OSError, ValueError, TypeError):
+            return 'off'
+    try:
+        plugin = inspect(config, directory)
+        saved = approvals(config).get('memory-policy', {})
+        if not isinstance(saved, dict) or saved.get('enabled') is not True or saved.get('fingerprint') != plugin['fingerprint'] or not plugin['compatible']:
+            return 'off'
+        path = Path(config['StateRoot'])/'plugin-data'/'memory-policy'/'policy.json'
+        if not path.is_file():
+            return 'off'
+        value = core.read_json(path)
+        level = value.get('level') if isinstance(value, dict) else None
+        return level if level in ('off', 'verified', 'all') else 'off'
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return 'off'
+
+
+def set_memory_policy(config, payload):
+    level = payload.get('level')
+    if level not in ('off', 'verified', 'all'):
+        raise ValueError('Choose Off, user-verified only, or all saved notes.')
+    with core.state_lock(config):
+        plugin = inspect(config, home(config)/'memory-policy')
+        saved = approvals(config).get('memory-policy', {})
+        if not isinstance(saved, dict) or saved.get('enabled') is not True or saved.get('fingerprint') != plugin['fingerprint'] or not plugin['compatible']:
+            raise ValueError('Review and enable the memory policy plugin first.')
+        core.write_json(Path(config['StateRoot'])/'plugin-data'/'memory-policy'/'policy.json', {'level': level})
+    return {'level': level, 'note': 'Memory disclosure setting saved. The project memory switch still controls inclusion.'}
 
 
 def _safe_plugin_location(config, root_name, child=None):

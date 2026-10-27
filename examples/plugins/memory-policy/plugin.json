@@ -1,0 +1,10 @@
+{
+  "id": "memory-policy",
+  "name": "Memory access policy",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "runtime": "builtin",
+  "entry": "memory-policy-v1",
+  "hooks": ["memory.recall"],
+  "capabilities": ["memory_read"]
+}
