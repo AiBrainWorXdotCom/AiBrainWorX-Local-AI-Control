@@ -121,6 +121,40 @@ If a step fails, read its final message, fix that prerequisite and rerun setup.
 Existing model files/downloads are retained. Do not share `config.local.json`,
 private logs or client histories when asking for help.
 
+## What setup looks like
+
+The following shortened, path-redacted text comes from an actual **isolated
+setup replay**. The replay used automated answers and reused Python, Node and
+previously installed test clients. It did not download model weights. Your
+choices and package-download output will differ.
+
+```text
+Step 1 of 4: Check and install prerequisites
+Python: OK (working 64-bit 3.10+).
+
+Step 2 of 4: Choose your model server
+1: Strata (installed GGUF models)
+2: Ollama local server
+3: LM Studio local server
+4: llama.cpp / llama-swap local compatible server
+
+Step 3 of 4: Prepare coding clients
+Step 4 of 4: Choose your project and save local settings
+Setup complete. Open Launch.cmd to choose your coding workspace.
+```
+
+These are real screenshots of the application **after setup**, not screenshots
+of the installer console. The first screenshot shows the model and Harness ready;
+the test used a separate Harness port, so its port number differs from the default.
+
+![Real Windows launcher workspace after the isolated setup test](../media/aibrainworx-model-launcher.png)
+
+The optional Update Center checks components without installing changes.
+
+![Real Windows launcher Update Center during the October 26 test](../media/aibrainworx-updates.png)
+
+This screenshot was captured before the alpha.6 release was published; its update status reflects that moment.
+
 ## Check prerequisites without installing anything
 
 Open PowerShell in the extracted project folder and run:

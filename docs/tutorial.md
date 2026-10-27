@@ -6,7 +6,7 @@
 
 **A 12 GB RTX 3060. An AMD Ryzen 5 5500. Qwen 3.8 Flash Next Coder, running locally and connected to our game-development tools.**
 
-> **Latest completed short coding tests:** 28.0–35.5 decode tokens/s on new prompts and 40.5–41.0 on identical cached repeats, warm Strata engine, reasoning off. [All six October 25 results](benchmarks/2026-10-25-coding-speed.md).
+> **Latest short coding test, October 26:** 17.4 decode tokens/s in an uncached warmup; six cached repeats measured 31.8–46.0, with the 46.0 run ending at its output limit. The highest normally completed cached run was 45.1. These are individual Windows measurements, not guaranteed speeds. [Full conditions and results](validation/2026-10-26-activity.md).
 
 > **Earlier history: performance depends on the workload and cache state.** Our fresh audit measured 17.4 decode tokens/s on the first short request, then 30.9 and 36.7 on identical cached repeats. An earlier different request showed 11.8. These measurements do not establish sustained coding-agent throughput. [Read the method and complete results](performance.md).
 
@@ -18,9 +18,11 @@ Pretty gangsta for an older Ryzen 5 and a 12 GB card.
 There is an important engineering detail behind that headline: the GPU works alongside **32 GB of system RAM and an SSD**. The model's roughly 58.4 GB of original files do not all fit into VRAM. Strata spreads the work across the GPU, CPU, RAM and storage. That arrangement makes this setup possibleâ€”and memory pressure is also its biggest limitation.
 
 
+For the current four-step setup, real post-install screenshots and a redacted console excerpt, see the [first-time setup guide](first-run.md).
+
 Current UI screenshots and component controls are maintained in the README. The manual connection examples below document the original build; use the current README and focused guides for the latest behavior.
 
-## Current launcher: v0.4.0-alpha.3
+## Earlier launcher: v0.4.0-alpha.3
 
 **AiBrainWorX Model Launcher** now offers Strata, Ollama, LM Studio and local
 compatible-server connections, tool-free chat, creative presets, original local

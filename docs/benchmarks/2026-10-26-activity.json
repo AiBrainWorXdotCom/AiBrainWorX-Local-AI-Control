@@ -1,0 +1,70 @@
+{
+  "method": "Warm engine; one warmup, six alternating identical short coding requests. Temperature 0, reasoning off, max 256. Light samples every five seconds; process/GPU snapshots not enabled.",
+  "warmup": {
+    "outputTokens": 237,
+    "elapsedSeconds": 17.3118,
+    "decodeTokensPerSecond": 17.4,
+    "cachedInput": 0,
+    "finish": "stop"
+  },
+  "samples": [
+    {
+      "outputTokens": 243,
+      "elapsedSeconds": 8.049,
+      "decodeTokensPerSecond": 31.8,
+      "cachedInput": 37,
+      "finish": "stop",
+      "lightMonitor": false
+    },
+    {
+      "outputTokens": 243,
+      "elapsedSeconds": 7.0802,
+      "decodeTokensPerSecond": 35.7,
+      "cachedInput": 37,
+      "finish": "stop",
+      "lightMonitor": true
+    },
+    {
+      "outputTokens": 243,
+      "elapsedSeconds": 5.9723,
+      "decodeTokensPerSecond": 41.8,
+      "cachedInput": 37,
+      "finish": "stop",
+      "lightMonitor": false
+    },
+    {
+      "outputTokens": 243,
+      "elapsedSeconds": 5.5793,
+      "decodeTokensPerSecond": 45.1,
+      "cachedInput": 37,
+      "finish": "stop",
+      "lightMonitor": true
+    },
+    {
+      "outputTokens": 256,
+      "elapsedSeconds": 5.7135,
+      "decodeTokensPerSecond": 46.0,
+      "cachedInput": 37,
+      "finish": "length",
+      "lightMonitor": false
+    },
+    {
+      "outputTokens": 243,
+      "elapsedSeconds": 5.6251,
+      "decodeTokensPerSecond": 44.5,
+      "cachedInput": 37,
+      "finish": "stop",
+      "lightMonitor": true
+    }
+  ],
+  "lightSampleWallSeconds": [
+    0.1959,
+    0.2118,
+    0.1945,
+    0.1932,
+    0.2111,
+    0.202
+  ],
+  "medianWithoutMonitor": 41.8,
+  "medianWithMonitor": 44.5
+}

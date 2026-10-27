@@ -140,13 +140,23 @@ Choose a quantization your backend explicitly supports. Weights, cache, vision f
 
 Audio, vision, embeddings and video use dedicated runtimes; cataloguing them does not enable generation in built-in text Chat. Gemma access/terms require separate review and acceptance. The site also has five clearly labeled research profiles. A server model appearing in an editorial profile is not a desktop compatibility claim or a bundled download. See [model licensing](MODEL-LICENSES.md).
 
-## Performance: measured conditions matter
+## Performance: our latest measured test
 
-Our test PC is an **RTX 3060 12 GB, Ryzen 5 5500 and 32 GB RAM**. On October 25 at 08:29 Pacific, the already-loaded **Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF, IQ1_M**, through Strata 0.1.48, measured **28.0–35.5 decode tokens/s** across four different short coding requests with zero cached input. Two identical repeats reached **40.5 and 41.0**, each reusing 54 input tokens. All six replies completed normally at 95–136 output tokens, with temperature 0 and reasoning off.
+On October 26, our **RTX 3060 12 GB, Ryzen 5 5500 and 32 GB RAM** ran
+**Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF, IQ1_M** with Strata 0.2.4 and engine
+0.1.48. A warm-engine, uncached warmup measured **17.4 decode tokens/s**. Six
+short identical requests with 37 cached input tokens measured **31.8–46.0 tokens/s**;
+the 46.0 run hit its 256-token output limit. The highest normally completed
+cached run measured **45.1 tokens/s**. These are individual Windows observations,
+not guaranteed speeds or a Linux benchmark.
 
-![October 25 completed coding speed check](media/aibrainworx-coding-speed-20261025.png)
+![Latest Qwen coding test on Windows: uncached warmup and six cached runs, including one truncated run](media/aibrainworx-coder-20261026.png)
 
-First engine token took **1.50–2.25 seconds** on the new requests and **0.14–0.20 seconds** on cached repeats. These were short tests on a warm engine, not a cold-start, sustained-throughput or coding-quality benchmark. No settings were changed for this run, and these numbers do not establish a general speed improvement over earlier tasks. [All six results and latency graphic](docs/benchmarks/2026-10-25-coding-speed.md) · [Method and historical measurements](docs/performance.md).
+Temperature was 0 and reasoning was off. The comparison alternated light Activity
+monitoring off/on; it does not show that monitoring increased speed. Read the
+[full method and results](docs/validation/2026-10-26-activity.md),
+[machine-readable measurements](docs/benchmarks/2026-10-26-activity.json), and
+[earlier October 25 results](docs/benchmarks/2026-10-25-coding-speed.md).
 
 ## Memory, privacy and moving folders
 
