@@ -17,7 +17,7 @@ $form=New-Object Windows.Forms.Form
 $form.Text='AiBrainWorX Model Launcher  |  '+$script:launchState.version
 $form.Icon=New-Object Drawing.Icon((Join-Path (Split-Path $PSScriptRoot -Parent) 'media/aibrainworx-green.ico'))
 $form.ClientSize=New-Object Drawing.Size(1040,690)
-$form.MinimumSize=New-Object Drawing.Size(1056,729)
+$form.MinimumSize=New-Object Drawing.Size(1040,690)
 $form.StartPosition='CenterScreen';$form.BackColor=$palette.Background;$form.ForeColor=$palette.Text
 $form.Font=New-Object Drawing.Font('Segoe UI',9);$form.AutoScaleMode='None'
 $tips=New-Object Windows.Forms.ToolTip
@@ -42,14 +42,14 @@ function Ui-Document($Title,$Text){
  $t=Ui-Input $d $Text 16 16 800 510;$t.Multiline=$true;$t.ReadOnly=$true;$t.ScrollBars='Vertical';$t.Font=New-Object Drawing.Font('Consolas',10);$t.Anchor='Top,Bottom,Left,Right'
  [void]$d.ShowDialog($form);$d.Dispose()
 }
-$side=Ui-Box $form 0 0 184 666;$side.Anchor='Top,Bottom,Left';$side.BackColor=[Drawing.ColorTranslator]::FromHtml('#111318')
+$side=Ui-Box $form 0 0 200 666;$side.Anchor='Top,Bottom,Left';$side.BackColor=[Drawing.ColorTranslator]::FromHtml('#111318');$side.AutoScroll=$true;$side.AutoScrollMinSize=New-Object Drawing.Size(176,704)
 $logo=New-Object Windows.Forms.PictureBox;$logo.SetBounds(13,19,158,41);$logo.SizeMode='Zoom';$logo.Image=[Drawing.Image]::FromFile((Join-Path (Split-Path $PSScriptRoot -Parent) 'media/aibrainworx-wordmark-green.png'));$side.Controls.Add($logo)
 $brand=Ui-Label $side 'LOCAL AI WORKSPACE' 21 65 150 22 8;$brand.ForeColor=$palette.Muted
-$content=New-Object Windows.Forms.Panel;$content.SetBounds(184,0,856,666);$content.Anchor='Top,Bottom,Left,Right';$form.Controls.Add($content)
+$content=New-Object Windows.Forms.Panel;$content.SetBounds(200,0,840,666);$content.Anchor='Top,Bottom,Left,Right';$form.Controls.Add($content)
 $bar=New-Object Windows.Forms.StatusStrip;$bar.BackColor=$palette.Card;$bar.ForeColor=$palette.Muted
 $feedback=New-Object Windows.Forms.ToolStripStatusLabel;$feedback.Text='Ready';$feedback.Spring=$true;$feedback.TextAlign='MiddleLeft';[void]$bar.Items.Add($feedback);$form.Controls.Add($bar)
 $pages=@{};$nav=@{}
-foreach($name in @('Overview','Chat','Models','Memory','Training','Updates')){$p=New-Object Windows.Forms.Panel;$p.Dock='Fill';$p.Visible=$false;$content.Controls.Add($p);$pages[$name]=$p}
+foreach($name in @('Overview','Chat','Models','Memory','Training','Updates','Activity')){$p=New-Object Windows.Forms.Panel;$p.Bounds=New-Object Drawing.Rectangle(0,0,840,666);$p.Dock='Fill';$p.Visible=$false;$p.AutoScroll=$true;$content.Controls.Add($p);$pages[$name]=$p}
 function Show-Page([string]$Name){
  foreach($key in $pages.Keys){$pages[$key].Visible=$key -eq $Name;$nav[$key].BackColor=if($key -eq $Name){$palette.Button}else{$side.BackColor}}
  $pages[$Name].BringToFront();if($Name -ne 'Chat' -and $script:videoHost){try{$script:videoHost.Player.controls.pause()}catch{}}
@@ -57,19 +57,25 @@ function Show-Page([string]$Name){
  if($Name -eq 'Training'){Refresh-Training}
  if($Name -eq 'Chat' -and $script:chatProfile -ne $script:launchState.activeId){Reset-Chat}
  if($Name -eq 'Memory'){Refresh-Memory}
+ if($Name -eq 'Activity'){Queue-Activity -Force}
 }
-$y=112
-foreach($name in @('Overview','Chat','Models','Memory','Training','Updates')){
- $b=Ui-Button $side $name 12 $y 160 {param($sender,$e);Show-Page $sender.Tag};$b.Tag=$name;$b.TextAlign='MiddleLeft';$b.Padding=New-Object Windows.Forms.Padding(12,0,0,0);$b.FlatAppearance.BorderSize=0;$nav[$name]=$b;$y+=44
+$y=102
+foreach($name in @('Overview','Chat','Models','Memory','Training','Updates','Activity')){
+ $b=Ui-Button $side $name 12 $y 160 {param($sender,$e);Show-Page $sender.Tag};$b.Tag=$name;$b.TextAlign='MiddleLeft';$b.Padding=New-Object Windows.Forms.Padding(12,0,0,0);$b.FlatAppearance.BorderSize=0;$nav[$name]=$b;$y+=39
 }
-[void](Ui-Button $side 'Profiles + prompts' 12 372 160 {Edit-Profile})
-[void](Ui-Button $side 'Diagnostics' 12 416 160 {try{Show-AwxDiagnostics $form $settings $ConfigPath}catch{$feedback.Text=$_.Exception.Message}})
-$version=Ui-Label $side ('v'+$script:launchState.version) 20 581 150 22 8;$version.ForeColor=$palette.Muted;$version.Anchor='Bottom,Left'
-$byline=Ui-Label $side 'Made by AiBrainWorX' 20 608 150 24 8;$byline.ForeColor=$palette.Muted;$byline.Anchor='Bottom,Left'
+[void](Ui-Button $side 'Profiles + prompts' 12 384 160 {Edit-Profile})
+[void](Ui-Button $side 'Diagnostics' 12 424 160 {try{Show-AwxDiagnostics $form $settings $ConfigPath}catch{$feedback.Text=$_.Exception.Message}})
+$coreCaption=Ui-Label $side 'CORE SERVICES' 20 552 150 20 8 $true;$coreCaption.ForeColor=$palette.Muted
+$modelLed=Ui-Label $side ([char]0x25CF) 19 576 18 22 11;$modelLed.ForeColor=$palette.Muted
+$modelLedText=Ui-Label $side 'Model: checking' 39 577 135 22 9
+$harnessLed=Ui-Label $side ([char]0x25CF) 19 601 18 22 11;$harnessLed.ForeColor=$palette.Muted
+$harnessLedText=Ui-Label $side 'Harness: checking' 39 602 135 22 9
+$version=Ui-Label $side ('v'+$script:launchState.version) 20 646 150 22 8;$version.ForeColor=$palette.Muted
+$byline=Ui-Label $side 'Made by AiBrainWorX' 20 674 150 24 8;$byline.ForeColor=$palette.Muted
 
 . (Join-Path $PSScriptRoot 'Model-Library.ps1')
 . (Join-Path $PSScriptRoot 'Skills.ps1')
-[void](Ui-Button $side 'Skills + templates' 12 460 160 {Show-WorkflowLibrary})
+[void](Ui-Button $side 'Skills + templates' 12 464 160 {Show-WorkflowLibrary})
 [void](Ui-Button $side 'Support development' 12 504 160 {Start-Process 'https://ko-fi.com/aibrainworx'})
 
 # Overview: operational controls, no website hero or marketing sections.
@@ -93,6 +99,7 @@ function Apply-ModelState($Snapshot) {
  $script:modelSnapshot=$Snapshot;$script:modelSnapshotProfile=$script:launchState.activeId;$script:modelSnapshotKey=($script:launchState.active.model|ConvertTo-Json -Compress)
  $managed=$script:launchState.active.model.backend -eq 'strata';$view=Get-AwxModelPresentation $Snapshot $managed
  $connectionState.Text=$view.label;$connectionState.BackColor=[Drawing.ColorTranslator]::FromHtml($view.background);$connectionState.ForeColor=[Drawing.ColorTranslator]::FromHtml($view.foreground)
+ $modelLedText.Text='Model: '+$view.state;$modelLed.ForeColor=switch($view.state){'running'{[Drawing.ColorTranslator]::FromHtml('#91E7AB')};{$_ -in @('error','conflict','unavailable')}{[Drawing.ColorTranslator]::FromHtml('#FF9F9F')};{$_ -in @('starting','stopping','checking')}{[Drawing.ColorTranslator]::FromHtml('#FFD386')};default{$palette.Muted}};$tips.SetToolTip($modelLedText,$view.detail)
  $modelEndpoint.Text=$view.detail;$tips.SetToolTip($modelEndpoint,$script:launchState.active.model.baseUrl);$tips.SetToolTip($connectionState,$view.detail)
  $modelProgress.Visible=$view.busy;$modelStart.Enabled=$view.startEnabled;$modelStop.Enabled=$view.stopEnabled
  $modelStart.Text=if(-not $managed){'Start in backend app'}elseif($view.state -eq 'starting'){'Starting...'}elseif($view.state -eq 'running'){'Model running'}else{'Start model'}
@@ -105,7 +112,7 @@ function Begin-ModelAction([string]$Action) {
  if($script:modelActionJob){return}
  $script:modelStateRevision++
  try{
-  $script:modelActionJob=Start-AwxModelOperation $Action;$script:modelActionProfile=$script:launchState.activeId
+  $script:modelActionJob=Start-AwxModelOperation $Action -ConfigPath $ConfigPath;$script:modelActionProfile=$script:launchState.activeId
   $state=if($Action -eq 'Start'){'starting'}else{'stopping'}
   $detail=if($Action -eq 'Start'){'Starting model. Loading can take several minutes.'}else{'Stopping the model and verifying its engine processes have exited...'}
   Apply-ModelState ([pscustomobject]@{state=$state;canStart=$false;canStop=$false;detail=$detail});$feedback.Text=$detail
@@ -264,15 +271,36 @@ $memoryEnabled.Add_CheckedChanged({if($script:memoryLoading){return};try{$script
 
 # Read-only component checks; all network work runs outside the UI thread.
 . (Join-Path $PSScriptRoot 'Plugin-Manager.ps1')
+$activity=$pages.Activity
+[void](Ui-Label $activity 'Activity' 32 24 740 34 21 $true)
+$activityIntro=Ui-Label $activity 'Optional monitors. Live cached model stats; process snapshots only when requested.' 33 65 766 28 10;$activityIntro.ForeColor=$palette.Muted
+$activityPicker=Ui-Combo $activity @() 32 107 500;$activityPicker.DisplayMember='name'
+[void](Ui-Button $activity 'User plugins' 550 103 248 {Show-UserPlugins})
+$activityStatus=Ui-Label $activity 'Choose a reviewed monitor in User plugins.' 32 150 766 24 10 $true
+function New-ActivityList($Parent,$Y,$Height,$Columns){
+ $list=New-Object Windows.Forms.ListView;$list.SetBounds(32,$Y,766,$Height);$list.View='Details';$list.FullRowSelect=$true;$list.BackColor=$palette.Card;$list.ForeColor=$palette.Text;$list.BorderStyle='FixedSingle';$list.Font=$form.Font
+ foreach($column in $Columns){[void]$list.Columns.Add($column[0],$column[1])};$Parent.Controls.Add($list);return $list
+}
+$activityMetrics=New-ActivityList $activity 184 132 @(@('Metric',290),@('Value',290),@('State',160))
+$activityServices=New-ActivityList $activity 330 82 @(@('Service',220),@('State',140),@('Detail',380))
+$activityRefresh=Ui-Button $activity 'Refresh processes' 32 427 190 {Queue-Activity -InspectProcesses};$activityRefresh.Enabled=$false
+$activityGpu=Ui-Check $activity 'Include GPU process stats (driver dependent)' 240 431 550
+$processCaption=if($CaptureImage -or $CaptureFrames){'Process names hidden for capture. Actual sampled values are retained.'}else{'No process sample yet. Refresh processes to collect one snapshot.'}
+$activityProcessCaption=Ui-Label $activity $processCaption 32 472 766 24 9;$activityProcessCaption.ForeColor=$palette.Muted
+$activityProcesses=New-ActivityList $activity 503 136 @(@('Process',245),@('PID',90),@('CPU %',110),@('RAM MB',140),@('GPU MB',145))
+$activityNote=Ui-Label $activity 'Core model and Harness status stays available in the sidebar and Workspace.' 32 651 766 52 9;$activityNote.ForeColor=$palette.Muted
+$script:activityJob=$null;$script:activityEpoch=0;$script:activityNext=[datetime]::MinValue;$script:activityCanPoll=$false;$script:activityLoading=$false;$script:activityPendingProcesses=$false;$script:activityPendingRefresh=$false;$script:activityProcessCache=@{};$script:activityHideNames=[bool]($CaptureImage -or $CaptureFrames);$script:cachedModelMetrics=$null;$script:captureProcessSnapshotCompleted=$false;$script:captureProcessWaitTicks=0
+$activityPicker.Add_SelectedIndexChanged({Render-Activity})
 $updates=$pages.Updates
 [void](Ui-Label $updates 'Update Center' 32 24 740 34 21 $true)
 $uh=Ui-Label $updates 'Your launcher, runtimes, models and skills. One clear view.' 33 65 750 26 10;$uh.ForeColor=$palette.Muted
 $updateBox=Ui-Box $updates 32 108 766 72
 $updateStatus=Ui-Label $updateBox 'READY WHEN YOU ARE' 20 10 725 25 13 $true
 $updateDetail=Ui-Label $updateBox 'Read-only checks. Nothing downloads or restarts automatically.' 20 39 725 25 9;$updateDetail.ForeColor=$palette.Muted
-$script:updateJob=$null;$script:updateSelection=$null
-$updateButton=Ui-Button $updates 'Check everything' 32 196 220 {try{if($script:updateJob){return};$script:updateJob=Start-AwxOperation $settings $ConfigPath 'updates' @{includePrereleases=$previewUpdates.Checked};$updateButton.Enabled=$false;$updateStatus.Text='CHECKING YOUR WORKSPACE...';$updateDetail.Text='Reading official release feeds, package versions, model cards and skill revisions.'}catch{$updateDetail.Text=$_.Exception.Message}}
+$script:updateJob=$null;$script:updateSelection=$null;$script:updateProgressId='';$script:updateProgressPath='';$script:updateProgressNext=[datetime]::MinValue;$script:updateLastProgress=$null
+$updateButton=Ui-Button $updates 'Check everything' 32 196 220 {try{if($script:updateJob){return};Remove-AwxUpdateProgress;$script:updateProgressId=[guid]::NewGuid().ToString('N');$script:updateProgressPath=Join-Path (Join-Path $settings.StateRoot 'update-checks') ($script:updateProgressId+'.local.json');$script:updateLastProgress=$null;$script:updateProgressNext=[datetime]::MinValue;$updateProgress.Value=0;$updateProgress.Visible=$true;$script:updateJob=Start-AwxOperation $settings $ConfigPath 'updates' @{includePrereleases=$previewUpdates.Checked;progressId=$script:updateProgressId};$updateButton.Enabled=$false;$updateStatus.Text='CHECKING YOUR WORKSPACE...';$updateDetail.Text='Preparing real source check jobs...'}catch{$updateStatus.Text='CHECK INCOMPLETE';$updateDetail.Text=$_.Exception.Message;$updateButton.Enabled=$true;Remove-AwxUpdateProgress}}
 $previewUpdates=Ui-Check $updates 'Include preview releases' 272 204 400;$previewUpdates.Checked=$true
+$updateProgress=New-Object Windows.Forms.ProgressBar;$updateProgress.SetBounds(32,236,766,8);$updateProgress.Minimum=0;$updateProgress.Maximum=100;$updateProgress.Style='Continuous';$updateProgress.Visible=$false;$updates.Controls.Add($updateProgress)
 $updateList=New-Object Windows.Forms.ListView;$updateList.SetBounds(32,250,766,250);$updateList.View='Details';$updateList.FullRowSelect=$true;$updateList.MultiSelect=$false;$updateList.HideSelection=$false;$updateList.BackColor=$palette.Card;$updateList.ForeColor=$palette.Text;$updateList.BorderStyle='None';$updateList.Font=New-Object Drawing.Font('Segoe UI',10)
 $updateList.OwnerDraw=$true;$updateList.ShowItemToolTips=$true
 $updateList.Add_DrawColumnHeader({param($sender,$e);$brush=New-Object Drawing.SolidBrush([Drawing.ColorTranslator]::FromHtml('#26352E'));try{$e.Graphics.FillRectangle($brush,$e.Bounds);[Windows.Forms.TextRenderer]::DrawText($e.Graphics,$e.Header.Text,$form.Font,$e.Bounds,[Drawing.ColorTranslator]::FromHtml('#C5F5D5'),([Windows.Forms.TextFormatFlags]::Left -bor [Windows.Forms.TextFormatFlags]::VerticalCenter))}finally{$brush.Dispose()}})
@@ -323,19 +351,23 @@ function Refresh-ProfilePicker {
 $profilePicker.Add_SelectedIndexChanged({if($script:loadingProfiles -or $profilePicker.SelectedIndex -lt 0){return};try{if($script:chatJob){throw 'Stop the active reply before switching profiles.'};$script:launchState=Invoke-AwxOperation $settings $ConfigPath 'select' @{id=$script:launchState.profiles[$profilePicker.SelectedIndex].id};Refresh-Overview;if($pages.Training.Visible){Refresh-Training};Queue-Status}catch{$feedback.Text=$_.Exception.Message;Refresh-ProfilePicker}})
 function Refresh-Overview {
  $m=$script:launchState.active.model;$modelName.Text=$m.modelId;$modelCaption.Text='MODEL / '+$m.backend.ToUpper()
+ $activityModelKey=$script:launchState.activeId+'|'+($m|ConvertTo-Json -Compress);if($script:activityModelKey -ne $activityModelKey){$script:activityModelKey=$activityModelKey;$script:cachedModelMetrics=$null;Reset-Activity;if($pages.Activity.Visible){Queue-Activity -Force}}
  if($script:modelSnapshotProfile -eq $script:launchState.activeId -and $script:modelSnapshotKey -eq ($m|ConvertTo-Json -Compress) -and $script:modelSnapshot){Apply-ModelState $script:modelSnapshot}else{Apply-ModelState ([pscustomobject]@{state='checking';canStart=$false;canStop=$false;detail='Checking the selected local model...'})}
  $terminal=$workspacePicker.SelectedIndex -eq 1;$workspaceStart.Enabled=-not $terminal;$workspaceStop.Enabled=-not $terminal;$workspaceOpen.Text=if($terminal){'Open CLI'}else{'Open chat'}
  $clientStatus.Text=if($terminal){'Uses the selected local model. Close its terminal to end the client.'}else{Get-HarnessStatus}
+ if(-not $terminal){$script:cachedHarnessStatus=$clientStatus.Text};$harnessText=if($script:cachedHarnessStatus){$script:cachedHarnessStatus}else{'Not checked. Select DeepSeek Harness to refresh client health.'};$harnessState=if($harnessText -like 'Running*'){'running'}elseif($harnessText -like 'Starting*'){'starting'}elseif($harnessText -like 'Stopped*'){'stopped'}elseif($harnessText -like 'Not checked*'){'not checked'}else{'needs review'};$harnessLedText.Text='Harness: '+$harnessState;$harnessLed.ForeColor=switch($harnessState){'running'{[Drawing.ColorTranslator]::FromHtml('#91E7AB')};'starting'{[Drawing.ColorTranslator]::FromHtml('#FFD386')};{$_ -in @('stopped','not checked')}{$palette.Muted};default{[Drawing.ColorTranslator]::FromHtml('#FF9F9F')}};$tips.SetToolTip($harnessLedText,($(if($terminal){'Last checked in DeepSeek Harness mode. '})+$harnessText))
  if($m.backend -ne 'strata'){$speedValue.Text='Decode: no telemetry from this connector';$prefillValue.Text='Prompt / first-token metrics unavailable from this connector';$gpuLive.Text='VRAM: no telemetry';$cpuLive.Text='CPU: no telemetry';$ramLive.Text='RAM: no telemetry'}
 }
 $workspacePicker.Add_SelectedIndexChanged({Refresh-Overview})
 $script:statusJob=$null;$script:metricsTask=$null;$script:metricsClient=New-Object Net.Http.HttpClient;$script:metricsClient.Timeout=[TimeSpan]::FromSeconds(2)
-function Queue-Status {if(-not $script:statusJob -and -not $script:modelActionJob){$script:statusJob=if($script:launchState.active.model.backend -eq 'strata'){Start-AwxModelOperation 'Status'}else{Start-AwxOperation $settings $ConfigPath 'model-status'};$script:statusProfile=$script:launchState.activeId;$script:statusModel=$script:launchState.active.model.modelId;$script:statusRevision=$script:modelStateRevision;$script:statusModelConfig=($script:launchState.active.model|ConvertTo-Json -Compress)}}
+function Queue-Status {if(-not $script:statusJob -and -not $script:modelActionJob){$script:statusJob=if($script:launchState.active.model.backend -eq 'strata'){Start-AwxModelOperation 'Status' -ConfigPath $ConfigPath}else{Start-AwxOperation $settings $ConfigPath 'model-status'};$script:statusProfile=$script:launchState.activeId;$script:statusModel=$script:launchState.active.model.modelId;$script:statusRevision=$script:modelStateRevision;$script:statusModelConfig=($script:launchState.active.model|ConvertTo-Json -Compress)}}
 function Poll-DesktopJobs {
  Poll-Chat
  Poll-Training
+ Poll-Activity
+ Poll-UpdateProgress
  if($script:modelJob -and $script:modelJob.Process.HasExited){try{$r=Complete-AwxOperation $script:modelJob;if($script:scanBackend -eq (Backend-Key)){$modelPicker.Items.Clear();foreach($m in @($r.models)){[void]$modelPicker.Items.Add($m)};$modelNote.Text=$r.note;if($modelPicker.Items.Count){$modelPicker.SelectedIndex=0;$m=$modelPicker.SelectedItem;$contextTokens.Value=$m.contextWindow;if($m.configPath){$modelConfig.Text=$m.configPath};$reasoningPicker.SelectedIndex=if($m.reasoningEffort){[Array]::IndexOf(@('Server default','none','low','medium','high','xhigh'),$m.reasoningEffort)}else{0}}}}catch{$modelNote.Text=$_.Exception.Message}finally{$script:modelJob=$null;$refreshModels.Enabled=$true}}
- if($script:updateJob -and $script:updateJob.Process.HasExited){try{$r=Complete-AwxOperation $script:updateJob;Show-UpdateResults $r}catch{$updateStatus.Text='CHECK INCOMPLETE';$updateDescription.Text=$_.Exception.Message}finally{$script:updateJob=$null;$updateButton.Enabled=$true}}
+ if($script:updateJob -and $script:updateJob.Process.HasExited){try{Poll-UpdateProgress;$r=Complete-AwxOperation $script:updateJob;Show-UpdateResults $r;$updateProgress.Value=100}catch{$updateProgress.Value=[Math]::Min(99,$updateProgress.Value);$updateStatus.Text='CHECK INCOMPLETE';$updateDescription.Text=$_.Exception.Message;$updateDetail.Text='The check did not finish. Completed jobs remain visible in the progress bar.'}finally{$script:updateJob=$null;$updateButton.Enabled=$true;Remove-AwxUpdateProgress}}
  if($script:modelActionJob -and $script:modelActionJob.Process.HasExited){
   try{$r=Complete-AwxOperation $script:modelActionJob;if($script:modelActionProfile -eq $script:launchState.activeId){Apply-ModelState $r;$feedback.Text=if($r.message){$r.message}else{$r.detail}}}
   catch{Apply-ModelState ([pscustomobject]@{state='error';canStart=$false;canStop=$false;detail=$_.Exception.Message});$feedback.Text=$_.Exception.Message}
@@ -343,26 +375,46 @@ function Poll-DesktopJobs {
  }
  if($script:statusJob -and $script:statusJob.Process.HasExited){try{$r=Complete-AwxOperation $script:statusJob;if(-not $script:modelActionJob -and $script:statusRevision -eq $script:modelStateRevision -and $script:statusModelConfig -eq ($script:launchState.active.model|ConvertTo-Json -Compress) -and $script:statusProfile -eq $script:launchState.activeId -and $script:statusModel -eq $script:launchState.active.model.modelId){Apply-ModelState $r}}catch{if(-not $script:modelActionJob){Apply-ModelState ([pscustomobject]@{state='error';canStart=$false;canStop=$false;detail=$_.Exception.Message})}}finally{$script:statusJob=$null}}
  if($script:metricsTask -and $script:metricsTask.IsCompleted){try{$m=$script:metricsTask.Result|ConvertFrom-Json;if($script:launchState.active.model.backend -eq 'strata'){
+  $script:cachedModelMetrics=$m
   $speedValue.Text=if($m.live.state -eq 'generating' -and $null -ne $m.live.tok_s){'Decode rate: {0:N1} tokens/s' -f $m.live.tok_s}elseif(@($m.requests).Count -gt 0 -and $null -ne $m.requests[0].decode_tok_s){'Idle | Last decode rate: {0:N1} tokens/s' -f $m.requests[0].decode_tok_s}else{'Speed: no completed request'}
   if(@($m.requests).Count -gt 0){$last=$m.requests[0];$prefill=if($last.prompt_ms -gt 0 -and $null -ne $last.prompt_read){'{0:N0} tokens/s' -f ($last.prompt_read*1000/$last.prompt_ms)}else{'no sample'};$ttft=if($null -ne $last.first_engine_token_s){'{0:N2}s' -f $last.first_engine_token_s}else{'no sample'};$prefillValue.Text='Last prompt processing: '+$prefill+' | First token: '+$ttft+' | Cached input: '+$last.reused}
   if($null -ne $m.hardware.gpu_mem_total){$gpuLive.Text='VRAM {0:N1} / {1:N1} GB' -f ($m.hardware.gpu_mem_used/1GB),($m.hardware.gpu_mem_total/1GB)}
   if($null -ne $m.hardware.cpu){$cpuLive.Text='CPU usage {0:N0}%' -f $m.hardware.cpu}
   if($null -ne $m.hardware.ram_total){$ramLive.Text='RAM {0:N1} / {1:N1} GB' -f ($m.hardware.ram_used/1GB),($m.hardware.ram_total/1GB)}
- }}catch{if($script:launchState.active.model.backend -eq 'strata'){$speedValue.Text='Speed: model telemetry unavailable'}}finally{$script:metricsTask=$null}}
+ }}catch{$script:cachedModelMetrics=$null;if($script:launchState.active.model.backend -eq 'strata'){$speedValue.Text='Speed: model telemetry unavailable'}}finally{$script:metricsTask=$null}}
 }
 $timer=New-Object Windows.Forms.Timer;$timer.Interval=150;$script:pollTicks=0
 $timer.Add_Tick({Poll-DesktopJobs;if($script:pollTicks%20 -eq 0 -and $pages.Training.Visible -and $script:trainingIdentity -and -not $script:trainingTask){Queue-Training 'training-status'};$script:pollTicks++;if($script:pollTicks%20 -eq 0){Queue-Status;if($script:launchState.active.model.backend -eq 'strata' -and -not $script:metricsTask){$script:metricsTask=$script:metricsClient.GetStringAsync('http://127.0.0.1:8081/metrics')};Refresh-Overview}})
+# Stretch the existing native controls into the larger workspace. Small screens retain
+# readable text and scroll to the remaining controls instead of compressing them.
+function Set-AwxResponsiveAnchors($Container){
+ foreach($control in $Container.Controls){
+  if($control.Width -ge 360 -and $control.Right -ge 600){$control.Anchor='Top,Left,Right'}elseif($control.Left -ge 500 -and $control.Right -ge 700){$control.Anchor='Top,Right'}
+  if($control -is [Windows.Forms.Panel]){Set-AwxResponsiveAnchors $control}
+ }
+}
+foreach($page in $pages.Values){Set-AwxResponsiveAnchors $page;$bottom=0;foreach($control in $page.Controls){$bottom=[Math]::Max($bottom,$control.Bottom)};$page.AutoScrollMinSize=New-Object Drawing.Size(810,($bottom+16))}
+$resource.Add_Resize({$column=[int](($resource.ClientSize.Width-72)/3);for($i=0;$i -lt 3;$i++){foreach($label in @(@($gpuValue,$cpuValue,$ramValue)[$i],@($gpuLive,$cpuLive,$ramLive)[$i])){$label.Left=18+$i*($column+18);$label.Width=$column}}})
+$workingArea=[Windows.Forms.Screen]::FromPoint([Windows.Forms.Cursor]::Position).WorkingArea
+$windowFrameWidth=$form.Width-$form.ClientSize.Width;$windowFrameHeight=$form.Height-$form.ClientSize.Height
+$form.ClientSize=New-Object Drawing.Size(([Math]::Min(1260,$workingArea.Width-$windowFrameWidth)),([Math]::Min(800,$workingArea.Height-$windowFrameHeight)))
+$form.StartPosition='Manual';$form.Location=New-Object Drawing.Point(($workingArea.X+[Math]::Max(0,[int](($workingArea.Width-$form.Width)/2))),($workingArea.Y+[Math]::Max(0,[int](($workingArea.Height-$form.Height)/2))))
 Refresh-ProfilePicker;Refresh-Overview;Show-Page 'Overview'
 $form.Add_Shown({
  [void][AwxDesktopWindow]::ShowWindow($form.Handle,5)
  $dark=1;try{[void][AwxDesktopWindow]::DwmSetWindowAttribute($form.Handle,20,[ref]$dark,4)}catch{}
  Queue-Status;$script:metricsTask=$script:metricsClient.GetStringAsync('http://127.0.0.1:8081/metrics');$timer.Start()
- if($CaptureImage -and $CapturePage -ne 'Overview'){Show-Page $CapturePage;if($CapturePage -eq 'Models'){$modelConfig.Text='C:\AI\Strata\strata-example.json'};if($CapturePage -eq 'Training'){$trainPython.Text='C:\AI\TrainingEnv\Scripts\python.exe';$trainModel.Text='C:\AI\Models\TinyText';$trainDataset.Text='C:\AI\Datasets\train.jsonl';$trainOutput.Text='C:\AI\Training'}}
+ if(($CaptureImage -or $CaptureFrames) -and $CapturePage -ne 'Overview'){Show-Page $CapturePage;if($CapturePage -eq 'Models'){$modelConfig.Text='C:\AI\Strata\strata-example.json'};if($CapturePage -eq 'Training'){$trainPython.Text='C:\AI\TrainingEnv\Scripts\python.exe';$trainModel.Text='C:\AI\Models\TinyText';$trainDataset.Text='C:\AI\Datasets\train.jsonl';$trainOutput.Text='C:\AI\Training'}}
+ # This explicit capture option is the same one-shot demand as Refresh processes.
+ if($CaptureProcessSnapshot){$activityGpu.Checked=$false;Queue-Activity -InspectProcesses}
  if($CaptureSettingsImage){[void](Show-AwxSettings $form $settings $ConfigPath $script:launchState $CaptureSettingsImage);$form.Close();return}
  if($CaptureImage -or $CaptureFrames){$script:captureIndex=0;$script:captureTimer=New-Object Windows.Forms.Timer;$script:captureTimer.Interval=200
   if($CaptureFrames){[void][IO.Directory]::CreateDirectory($CaptureFrames)}
-  $script:captureTimer.Add_Tick({$script:captureIndex++;if(-not $CaptureFrames -and $script:captureIndex -lt 30){return};$bitmap=New-Object Drawing.Bitmap($form.Width,$form.Height);try{$form.DrawToBitmap($bitmap,(New-Object Drawing.Rectangle(0,0,$form.Width,$form.Height)));if($CaptureFrames){$bitmap.Save((Join-Path $CaptureFrames ('frame-{0:D4}.png' -f ($script:captureIndex-1))),[Drawing.Imaging.ImageFormat]::Png)}elseif($CaptureImage){$bitmap.Save($CaptureImage,[Drawing.Imaging.ImageFormat]::Png)}}finally{$bitmap.Dispose()};if(-not $CaptureFrames -or $script:captureIndex -ge 60){$script:captureTimer.Stop();$script:captureTimer.Dispose();$form.Close()}});$script:captureTimer.Start()
+  $script:captureTimer.Add_Tick({
+   if($CaptureProcessSnapshot -and -not $script:captureProcessSnapshotCompleted){$script:captureProcessWaitTicks++;if($script:captureProcessWaitTicks -lt 150){return};$activityProcessCaption.Text='Process names hidden for capture. Snapshot request is still incomplete.';$script:captureProcessSnapshotCompleted=$true}
+   $script:captureIndex++;if(-not $CaptureFrames -and $script:captureIndex -lt 30){return};$bitmap=New-Object Drawing.Bitmap($form.Width,$form.Height);try{$form.DrawToBitmap($bitmap,(New-Object Drawing.Rectangle(0,0,$form.Width,$form.Height)));if($CaptureFrames){$bitmap.Save((Join-Path $CaptureFrames ('frame-{0:D4}.png' -f ($script:captureIndex-1))),[Drawing.Imaging.ImageFormat]::Png)}elseif($CaptureImage){$bitmap.Save($CaptureImage,[Drawing.Imaging.ImageFormat]::Png)}}finally{$bitmap.Dispose()};if(-not $CaptureFrames -or $script:captureIndex -ge 60){$script:captureTimer.Stop();$script:captureTimer.Dispose();$form.Close()}
+  });$script:captureTimer.Start()
  }
 })
-$form.Add_FormClosed({$timer.Stop();$timer.Dispose();foreach($job in @($script:modelJob,$script:updateJob,$script:statusJob,$script:chatJob,$script:trainingTask)){if($job){if(-not $job.Process.HasExited){$job.Process.Kill()};$job.Process.Dispose()}};$script:metricsClient.CancelPendingRequests();$script:metricsClient.Dispose();if($script:videoHost){try{$script:videoHost.Player.controls.stop();$script:videoHost.Dispose()}catch{}};$tips.Dispose();$logo.Image.Dispose();$form.Icon.Dispose()})
+$form.Add_FormClosed({$timer.Stop();$timer.Dispose();foreach($job in @($script:modelJob,$script:updateJob,$script:statusJob,$script:chatJob,$script:trainingTask,$script:activityJob)){if($job){if(-not $job.Process.HasExited){$job.Process.Kill()};$job.Process.Dispose()}};Remove-AwxUpdateProgress;$script:metricsClient.CancelPendingRequests();$script:metricsClient.Dispose();if($script:videoHost){try{$script:videoHost.Player.controls.stop();$script:videoHost.Dispose()}catch{}};$tips.Dispose();$logo.Image.Dispose();$form.Icon.Dispose()})
 [void]$form.ShowDialog();$form.Dispose()

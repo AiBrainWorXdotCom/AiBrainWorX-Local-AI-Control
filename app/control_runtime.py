@@ -236,17 +236,22 @@ def make_server(config, port=8082, upstream_port=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','track-update-source','plugins','plugin-approve','chat','training-preflight','training-start','training-status','training-stop','training-latest'])
+    parser.add_argument('action', choices=['state', 'save', 'select', 'prepare', 'diagnose', 'serve','models','model-status','memory-list','memory-save','memory-archive','memory-preview','handoff','updates','track-update-source','plugins','plugin-approve','plugin-panels','plugin-remove','plugin-archives','plugin-restore','chat','training-preflight','training-start','training-status','training-stop','training-latest'])
     parser.add_argument('--config', required=True)
     args = parser.parse_args()
     try:
         config = core.load_config(args.config)
         if args.action == 'serve':
             core.ensure_state(config)
-            with make_server(config) as server:
+            # HELP-ISOLATION: a test install can use its own gateway port. The
+            # listener stays loopback-only; production defaults remain unchanged.
+            port = config.get('GatewayPort', 8082)
+            if type(port) is not int or not 1 <= port <= 65535:
+                raise ValueError('Choose a valid private gateway port.')
+            with make_server(config, port=port) as server:
                 server.serve_forever()
             return
-        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','track-update-source','plugin-approve','chat','training-preflight','training-start','training-status','training-stop','training-latest') else {}
+        payload = json.loads(sys.stdin.buffer.read().decode('utf-8-sig') or '{}') if args.action in ('save', 'select','models','memory-list','memory-save','memory-archive','memory-preview','updates','track-update-source','plugin-approve','plugin-panels','plugin-remove','plugin-restore','chat','training-preflight','training-start','training-status','training-stop','training-latest') else {}
         profile = lambda: core.get_profile(core.ensure_state(config))
         if args.action=='chat':
             chosen=core.get_profile(core.ensure_state(config),payload.get('profileId'))
@@ -269,10 +274,17 @@ def main():
                       'memory-archive':lambda:memory.archive(config,profile(),payload),
                       'memory-preview':lambda:memory.recall(config,{**profile(),'useMemory':True},payload.get('query','')),
                       'handoff':lambda:memory.handoff(config,profile()),
-                      'updates':lambda:update_center.check(config,core.VERSION,payload.get('includePrereleases',True)),
+                      'updates':lambda:update_center.check(config,core.VERSION,payload.get('includePrereleases',True),
+                          progress=update_center.progress_writer(config,payload['progressId']) if payload.get('progressId') else None),
                       'track-update-source':lambda:update_center.save_model_source(config,payload)}
         operations['plugins']=lambda:dict(apiVersion=plugin_host.API_VERSION,items=plugin_host.inventory(config))
         operations['plugin-approve']=lambda:plugin_host.approve(config,payload)
+        # HELP-PLUGINS: panel hooks are opt-in trusted local code, separate from
+        # inference. They receive no chat, workspace path or project name.
+        operations['plugin-panels']=lambda:plugin_host.panels(config,payload)
+        operations['plugin-remove']=lambda:plugin_host.remove(config,payload)
+        operations['plugin-archives']=lambda:plugin_host.archives(config)
+        operations['plugin-restore']=lambda:plugin_host.restore(config,payload)
         print(json.dumps(operations[args.action](), ensure_ascii=True))
     except Exception as exc:
         # Known validation messages are actionable; filesystem/network exceptions

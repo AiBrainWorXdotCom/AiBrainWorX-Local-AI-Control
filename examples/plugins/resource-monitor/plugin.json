@@ -1,0 +1,10 @@
+{
+  "id": "resource-monitor",
+  "name": "Resource monitor (optional example)",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "runtime": "python",
+  "entry": "main.py",
+  "hooks": ["monitor.sample"],
+  "capabilities": ["read_system"]
+}

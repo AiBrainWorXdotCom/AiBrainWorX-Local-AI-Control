@@ -43,3 +43,13 @@ jobs:
       - name: First-run prerequisite recovery
         shell: powershell
         run: ./Tests/Check-SetupPrerequisites.ps1
+
+      - name: Activity and snapshot contracts
+        shell: powershell
+        run: ./Tests/Check-ActivityUi.ps1
+      - name: Isolated setup contracts
+        shell: powershell
+        run: ./Tests/Check-SetupIsolation.ps1
+      - name: Private model config propagation
+        shell: powershell
+        run: ./Tests/Check-ModelConfigIsolation.ps1

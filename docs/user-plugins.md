@@ -5,7 +5,7 @@ application/update folder. Replacing app source therefore does not replace plugi
 No migration or update check installs or enables one automatically.
 
 The first plugin interface is `apiVersion: 1`, with `chat.before_send` and
-`chat.after_reply` JSON hooks for built-in chat. Python and Node entries run as
+`chat.after_reply` JSON hooks for built-in chat, plus the additive `monitor.sample` hook for bounded Activity panels. Python and Node entries run as
 local programs only after explicit approval of their source fingerprint and
 declared capabilities. Source edits require fresh approval. An unsupported API
 version leaves files intact and disables execution. This versioned contract needs
@@ -17,7 +17,7 @@ do not enforce operating-system isolation. Dependencies also need separate revie
 Timeouts and response-size checks do not make hostile code safe to run.
 
 Voice capture/playback can be declared for review, but the current host does not
-provide microphone, speech, persistent audio or UI-panel hooks. No voice plugin or
+provide microphone, speech or persistent audio hooks. Activity panels are plain validated data, not executable UI. No voice plugin or
 voice model is installed by this change. Adding voice to the actual Harness UI
 also needs its supported extension interface; a built-in-chat plugin does not
 magically patch an external client.
@@ -33,7 +33,7 @@ Plugins receive JSON on stdin and return `{"apiVersion":1,"data":{...}}` on
 stdout. Use `AIBRAINWORX_PLUGIN_DATA` for settings/data, outside the reviewed
 source folder. Changing settings there does not invalidate source approval.
 Keep model weights, recordings and dependencies outside the small reviewed source
-folder. The hook timeout is three seconds; persistent audio requires a future
+folder. Chat hook timeout is three seconds; monitor sampling has a five-second bound. Persistent audio requires a future
 host interface rather than loading a large speech model inside a hook.
 
 ## Existing direct modifications
@@ -51,3 +51,8 @@ config can be planned; vendor edits remain unverified. Secrets, databases, binar
 models and large voice assets are not automatically transferred. Existing external
 state remains referenced by local configuration; live SQLite databases are not
 copied during use. Private plans and backups must stay out of Git.
+
+
+## Activity and hot lifecycle controls
+
+See [Activity monitoring](activity-monitor.md) for the opt-in read-only monitor. Disable, remove-to-archive and restore work without restarting the app or model. Restored code stays disabled; private plugin data survives app source replacement.

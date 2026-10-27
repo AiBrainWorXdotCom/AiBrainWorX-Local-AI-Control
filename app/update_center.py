@@ -1,5 +1,5 @@
 """Read-only component update inventory. Downloads metadata, never software/weights."""
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import base64
 import hashlib
@@ -258,13 +258,38 @@ def user_plugins(config):
     return rows
 
 
-def check(config, current, previews=True, root=None):
+def progress_path(config, identity):
+    """HELP-UPDATES: private progress records identify this check, never a download."""
+    if not isinstance(identity, str) or not re.fullmatch(r'[a-f0-9]{32}', identity):
+        raise ValueError('Choose a valid update-check identifier.')
+    directory = Path(config['StateRoot'])/'update-checks'
+    if directory.exists() and (directory.is_symlink() or (hasattr(directory, 'is_junction') and directory.is_junction())):
+        raise ValueError('Update progress directory must not be a link.')
+    return directory/(identity+'.local.json')
+
+
+def progress_writer(config, identity):
+    path = progress_path(config, identity)
+    def save(value):
+        core.write_json(path, value)
+    return save
+
+
+def check(config, current, previews=True, root=None, progress=None):
     root = Path(root or core.ROOT)
     state = core.ensure_state(config)
     jobs = [lambda: launcher(current, previews, config), lambda: strata(config),
             lambda: harness(config, previews), lambda: skills(root), lambda: user_plugins(config)]
     jobs += [lambda entry=entry: model(entry) for entry in model_sources(config, state)]
-    rows = []
+    rows, results = [], {}
+    def notify(completed):
+        if progress:
+            try:
+                progress(dict(completed=completed, total=len(jobs),
+                              state='complete' if completed == len(jobs) else 'checking', unit='checks'))
+            except OSError:
+                pass  # A progress-file failure cannot change a source check result.
+    notify(0)
     with ThreadPoolExecutor(max_workers=4) as executor:
         def run(job):
             try:
@@ -272,8 +297,14 @@ def check(config, current, previews=True, root=None):
             except Exception:
                 return row('Component check', 'Diagnostics', state='unavailable',
                            detail='A component check could not complete. Local installations were preserved.')
-        for result in executor.map(run, jobs):
-            rows.extend(result if isinstance(result, list) else [result])
+        futures = {executor.submit(run, job): index for index, job in enumerate(jobs)}
+        for future in as_completed(futures):
+            results[futures[future]] = future.result()
+            notify(len(results))
+    # Preserve the inventory's stable order while reporting real completion order.
+    for index in range(len(jobs)):
+        result = results[index]
+        rows.extend(result if isinstance(result, list) else [result])
     summary = {name: sum(r['state'] == name for r in rows) for name in
                ('available', 'current', 'ahead', 'review', 'unavailable', 'unknown', 'no-release')}
     return dict(checkedAt=datetime.now(timezone.utc).isoformat(), components=rows, summary=summary,

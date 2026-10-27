@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0-alpha.6
+
+- Roomier native workspace, labeled core-service LEDs and opt-in Activity monitoring.
+- Hot disable, archived removal and disabled restore preserve plugin data and invalidate stale results.
+- Real per-transfer CLI bars and honest unknown-size output; update source checks show actual X/Y progress.
+- Private public-output capture mode and separate source/runtime/workspace test options with configurable gateway/Harness ports.
+- Forward explicit config paths through model-control children; retain existing prerequisite safeguards.
+- Tested fresh private client installation, real Windows/Linux snapshots and short cached Qwen monitor comparison. See the validation record for limits.
+
+
 ## 0.4.0-alpha.5
 
 - Keep Python installation per-user and omit the optional shared `py.exe` launcher, avoiding its elevation/repair conflict on another Windows account.

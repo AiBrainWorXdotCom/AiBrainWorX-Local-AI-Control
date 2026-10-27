@@ -1,6 +1,6 @@
-﻿param([ValidateSet('Gui', 'Start', 'Stop', 'Status')][string]$Action = 'Gui', [string]$CaptureImage = '', [switch]$AsJson)
+﻿param([ValidateSet('Gui', 'Start', 'Stop', 'Status')][string]$Action = 'Gui', [string]$CaptureImage = '', [switch]$AsJson, [string]$ConfigPath = (Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json'))
 $ErrorActionPreference = 'Stop'
-$ConfigPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json'
+$ConfigPath=$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ConfigPath)
 . (Join-Path $PSScriptRoot 'Settings.ps1')
 . (Join-Path $PSScriptRoot 'Control.ps1')
 $settings = Read-AwxSettings $ConfigPath

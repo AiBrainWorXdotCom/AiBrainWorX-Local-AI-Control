@@ -1,4 +1,4 @@
-﻿function Start-AwxOperation($Settings,[string]$ConfigPath,[string]$Action,$Payload=$null,[switch]$Stream) {
+function Start-AwxOperation($Settings,[string]$ConfigPath,[string]$Action,$Payload=$null,[switch]$Stream) {
     $start = New-Object System.Diagnostics.ProcessStartInfo
     $start.FileName = $Settings.PythonExecutable
     $start.Arguments = '"{0}" {1} --config "{2}"' -f (Join-Path $PSScriptRoot 'control_runtime.py'),$Action,$ConfigPath
@@ -19,10 +19,12 @@
     return [pscustomobject]@{Process=$process;Output=$output;Errors=$errors;Line=$(if($Stream){$process.StandardOutput.ReadLineAsync()}else{$null})}
 }
 
-function Start-AwxModelOperation([string]$Action) {
+function Start-AwxModelOperation([ValidateSet('Start','Stop','Status')][string]$Action,[ValidateNotNullOrEmpty()][string]$ConfigPath=(Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json')) {
+    $ConfigPath=$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ConfigPath)
     $start=New-Object Diagnostics.ProcessStartInfo
     $start.FileName=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-    $start.Arguments='-NoProfile -ExecutionPolicy Bypass -File "{0}" -Action {1} -AsJson' -f (Join-Path $PSScriptRoot 'Strata-Control.ps1'),$Action
+    # HELP-ISOLATION: a private launcher config must follow every lifecycle child.
+    $start.Arguments='-NoProfile -ExecutionPolicy Bypass -File "{0}" -Action {1} -AsJson -ConfigPath "{2}"' -f (Join-Path $PSScriptRoot 'Strata-Control.ps1'),$Action,$ConfigPath
     $start.UseShellExecute=$false;$start.CreateNoWindow=$true
     $start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
     $start.StandardOutputEncoding=New-Object Text.UTF8Encoding($false)
@@ -49,7 +51,11 @@ function Invoke-AwxOperation($Settings,[string]$ConfigPath,[string]$Action,$Payl
 }
 
 function Start-AwxService($Settings,[string]$ConfigPath) {
-    $mutex = New-Object Threading.Mutex($false,'Local\AiBrainWorXControl8082')
+    # HELP-ISOLATION: separate test workspaces use a distinct loopback port and mutex.
+    $gatewayPort=if($Settings.GatewayPort){[int]$Settings.GatewayPort}else{8082}
+    if($gatewayPort -lt 1 -or $gatewayPort -gt 65535){throw 'Invalid gateway port.'}
+    $healthUrl='http://127.0.0.1:'+$gatewayPort+'/health'
+    $mutex = New-Object Threading.Mutex($false,('Local\AiBrainWorXControl'+$gatewayPort))
     $held = $false
     try {
     $held = $mutex.WaitOne(5000)
@@ -57,11 +63,11 @@ function Start-AwxService($Settings,[string]$ConfigPath) {
     $scriptPath = Join-Path $PSScriptRoot 'control_runtime.py'
     $expected = Invoke-AwxOperation $Settings $ConfigPath 'state'
     $health=$null
-    try { $health = Invoke-RestMethod 'http://127.0.0.1:8082/health' -TimeoutSec 1 } catch {}
+    try { $health = Invoke-RestMethod $healthUrl -TimeoutSec 1 } catch {}
     if($health) {
         if ($health.service -eq 'aibrainworx-control' -and $health.dataIdentity -eq $expected.dataIdentity) {
             if ($health.version -eq $expected.version) { return }
-            $connections=@(Get-NetTCPConnection -LocalPort 8082 -State Established -ErrorAction SilentlyContinue)
+            $connections=@(Get-NetTCPConnection -LocalPort $gatewayPort -State Established -ErrorAction SilentlyContinue)
             if($connections.Count){throw 'Wait for active model requests to finish before updating the settings service.'}
             $owned=@(Get-CimInstance Win32_Process -Filter "Name = 'python.exe'" | Where-Object {$_.ExecutablePath -eq $Settings.PythonExecutable -and $_.CommandLine -and $_.CommandLine.IndexOf(('"'+$scriptPath+'"'),[StringComparison]::OrdinalIgnoreCase) -ge 0 -and $_.CommandLine.IndexOf(('"'+$ConfigPath+'"'),[StringComparison]::OrdinalIgnoreCase) -ge 0 -and $_.CommandLine.Contains(' serve ')})
             if($owned.Count -ne 1){throw 'An older settings service needs to be closed before this update can start.'}
@@ -70,13 +76,13 @@ function Start-AwxService($Settings,[string]$ConfigPath) {
             Stop-Process -Id $owned[0].ProcessId
             Start-Sleep -Milliseconds 200
         } else {
-        throw 'Port 8082 belongs to another application.'
+        throw ('Port '+$gatewayPort+' belongs to another application.')
         }
     } else {
         $socket = New-Object Net.Sockets.TcpClient
         try {
-            $pending = $socket.BeginConnect('127.0.0.1',8082,$null,$null)
-            if ($pending.AsyncWaitHandle.WaitOne(100) -and $socket.Connected) { throw 'Port 8082 is occupied. Diagnostics can help identify the conflict.' }
+            $pending = $socket.BeginConnect('127.0.0.1',$gatewayPort,$null,$null)
+            if ($pending.AsyncWaitHandle.WaitOne(100) -and $socket.Connected) { throw ('Port '+$gatewayPort+' is occupied. Diagnostics can help identify the conflict.') }
         } finally { $socket.Dispose() }
     }
     $arguments = '"{0}" serve --config "{1}"' -f $scriptPath,$ConfigPath
@@ -86,7 +92,7 @@ function Start-AwxService($Settings,[string]$ConfigPath) {
     for ($attempt=0; $attempt -lt 20; $attempt++) {
         Start-Sleep -Milliseconds 150
         try {
-            $health=Invoke-RestMethod 'http://127.0.0.1:8082/health' -TimeoutSec 1
+            $health=Invoke-RestMethod $healthUrl -TimeoutSec 1
             if ($health.service -eq 'aibrainworx-control' -and $health.dataIdentity -eq $expected.dataIdentity -and $health.version -eq $expected.version) { return }
         } catch {}
     }

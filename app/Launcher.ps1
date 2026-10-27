@@ -1,9 +1,12 @@
-﻿param([ValidateSet('Gui','Start','Stop','Status','Open','UnrealStatus')][string]$Action = 'Gui', [string]$CaptureImage = '', [string]$CaptureFrames = '', [ValidateSet('Harness','Codex')][string]$Workspace = 'Harness', [string]$CaptureSettingsImage = '', [ValidateSet('Overview','Chat','Models','Memory','Training','Updates')][string]$CapturePage='Overview')
+﻿param([ValidateSet('Gui','Start','Stop','Status','Open','UnrealStatus')][string]$Action = 'Gui', [string]$CaptureImage = '', [string]$CaptureFrames = '', [switch]$CaptureProcessSnapshot, [ValidateSet('Harness','Codex')][string]$Workspace = 'Harness', [string]$CaptureSettingsImage = '', [ValidateSet('Overview','Chat','Models','Memory','Training','Updates','Activity')][string]$CapturePage='Overview', [string]$ConfigPath = (Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json'))
 $ErrorActionPreference = 'Stop'
-$ConfigPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'config.local.json'
+if($CaptureProcessSnapshot -and ($Action -ne 'Gui' -or $CaptureSettingsImage -or -not ($CaptureImage -or $CaptureFrames) -or $CapturePage -ne 'Activity')){throw 'CaptureProcessSnapshot requires only an Activity image or frame capture in Gui mode.'}
+$ConfigPath=$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ConfigPath)
 . (Join-Path $PSScriptRoot 'Settings.ps1')
 . (Join-Path $PSScriptRoot 'Control.ps1')
 $settings = Read-AwxSettings $ConfigPath
+$HarnessPort=if($null -ne $settings.HarnessPort){[int]$settings.HarnessPort}else{3080}
+if($HarnessPort -lt 1 -or $HarnessPort -gt 65535){throw 'HarnessPort must be between 1 and 65535.'}
 $script:launchState = Invoke-AwxOperation $settings $ConfigPath 'state'
 $Node = $settings.NodeExecutable
 $Entry = $settings.HarnessEntry
@@ -11,21 +14,21 @@ $Project = $settings.WorkspaceRoot
 $Python = $settings.PythonExecutable
 $Bridge = Join-Path (Split-Path $PSScriptRoot -Parent) 'bridge\unreal_mcp.py'
 $QwenControl = Join-Path $PSScriptRoot 'Strata-Control.ps1'
-$BaseUrl = 'http://127.0.0.1:3080'
+$BaseUrl = 'http://127.0.0.1:'+$HarnessPort
 $Stdout = Join-Path $settings.StateRoot 'logs\harness-stdout.log'
 $Stderr = Join-Path $settings.StateRoot 'logs\harness-stderr.log'
 
 function Get-HarnessProcess {
     @(Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" | Where-Object {
         $_.ExecutablePath -eq $Node -and $_.CommandLine -and
-        $_.CommandLine.Contains($Entry) -and $_.CommandLine.Contains('--port 3080')
+        $_.CommandLine.Contains($Entry) -and $_.CommandLine -match ('(?:^|\s)--port\s+'+[regex]::Escape([string]$HarnessPort)+'(?:\s|$)')
     })
 }
 
 function Test-HarnessPort {
     $client = New-Object System.Net.Sockets.TcpClient
     try {
-        $pending = $client.BeginConnect('127.0.0.1',3080,$null,$null)
+        $pending = $client.BeginConnect('127.0.0.1',$HarnessPort,$null,$null)
         if (-not $pending.AsyncWaitHandle.WaitOne(200)) { return $false }
         $client.EndConnect($pending)
         return $true
@@ -34,13 +37,13 @@ function Test-HarnessPort {
 
 function Get-HarnessStatus {
     if (@(Get-HarnessProcess).Count -eq 0) {
-        if (Test-HarnessPort) { return 'Port 3080 belongs to another process. Start is blocked.' }
+        if (Test-HarnessPort) { return ('Port {0} belongs to another process. Start is blocked.' -f $HarnessPort) }
         return 'Stopped - click Start Harness when needed.'
     }
     if (Test-HarnessPort) {
         try {
             $run = Get-Content -LiteralPath (Join-Path $settings.StateRoot 'harness-runtime.local.json') -Raw | ConvertFrom-Json
-            if ($run.ProfileId -eq $script:launchState.activeId -and @((Get-HarnessProcess) | Where-Object {$_.ProcessId -eq $run.Pid}).Count) { return 'Running - local Harness is ready on port 3080.' }
+            if ($run.ProfileId -eq $script:launchState.activeId -and @((Get-HarnessProcess) | Where-Object {$_.ProcessId -eq $run.Pid}).Count) { return ('Running - local Harness is ready on port {0}.' -f $HarnessPort) }
         } catch {}
         return 'Running - stop/start Harness once to apply saved profiles.'
     }
@@ -53,19 +56,19 @@ function Get-QwenStatus {
 }
 
 function Start-Harness {
-    $mutex = New-Object System.Threading.Mutex($false,'Local\DeepSeekHarnessManual3080')
+    $mutex = New-Object System.Threading.Mutex($false,('Local\DeepSeekHarnessManual'+$HarnessPort))
     $held = $false
     try {
         $held = $mutex.WaitOne(0)
         if (-not $held) { throw 'Another Harness start is in progress.' }
         if (@(Get-HarnessProcess).Count -gt 0) { return (Get-HarnessStatus) }
-        if (Test-HarnessPort) { throw 'Port 3080 is already occupied. No second server was started.' }
+        if (Test-HarnessPort) { throw ('Port {0} is already occupied. No second server was started.' -f $HarnessPort) }
         $prepared = Invoke-AwxOperation $settings $ConfigPath 'prepare'
         Start-AwxService $settings $ConfigPath
         foreach ($file in @($Node,$Entry,$Python,$Bridge)) {
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Missing installed component: $file" }
         }
-        $arguments = '"{0}" web --no-open --host 127.0.0.1 --port 3080' -f $Entry
+        $arguments = '"{0}" web --no-open --host 127.0.0.1 --port {1}' -f $Entry,$HarnessPort
         # Windows PowerShell 5.1, also used by the Qwen panel, has no -Environment switch.
         # Temporarily supply a placeholder to this process's child; preserve the caller's value.
         $previousKey = [Environment]::GetEnvironmentVariable('AIBRAINWORX_API_KEY','Process')
@@ -100,7 +103,7 @@ function Open-Harness {
     if (@(Get-HarnessProcess).Count -eq 0 -or -not (Test-HarnessPort)) { throw 'Start Harness and wait for Running before opening it.' }
     # Harness authenticates its browser with a process URL. Never display that credential in status output.
     $log = if (Test-Path -LiteralPath $Stdout) { Get-Content -LiteralPath $Stdout -Raw } else { '' }
-    $match = [regex]::Match($log,'http://127\.0\.0\.1:3080/[^\s\x1b]*')
+    $match = [regex]::Match($log,([regex]::Escape($BaseUrl)+'/[^\s\x1b]*'))
     if (-not $match.Success) { throw 'The browser sign-in URL is not ready. Try Open Harness again shortly.' }
     Start-Process -FilePath $match.Value | Out-Null
     return 'Harness opened in your browser.'

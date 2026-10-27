@@ -1,4 +1,12 @@
 # Windows PowerShell 5.1 compatible. Loading this file performs no installation.
+# HELP: DEPENDENCIES - importing helpers/probing a Store alias must never start a
+# runtime download. Require-AwxPython is the separate, explicitly consented gate.
+function Write-AwxPrerequisiteOutput([string]$Text,[ConsoleColor]$ForegroundColor) {
+    $options=@{Object=$Text}
+    if ($PSBoundParameters.ContainsKey('ForegroundColor')) { $options.ForegroundColor=$ForegroundColor }
+    if (Get-Command Write-SetupConsole -ErrorAction SilentlyContinue) { Write-SetupConsole @options }
+    else { Write-Host @options }
+}
 function ConvertTo-AwxNativeArgument([string]$Value) {
     # CommandLineToArgvW quoting, including embedded quotes and trailing slashes.
     return '"' + [regex]::Replace([regex]::Replace($Value,'(\\*)"','$1$1\"'),'(\\+)$','$1$1') + '"'
@@ -94,10 +102,11 @@ function Find-AwxPython { return Select-AwxPython @(Get-AwxPythonCandidates) }
 
 function Require-AwxPython {
     $python = Find-AwxPython
-    if ($python) { Write-Host 'Python: working 64-bit Python 3.10+ found.' -ForegroundColor Green; return $python }
-    Write-Host 'A working 64-bit Python 3.10+ is required. A Microsoft Store shortcut alone is not Python.' -ForegroundColor Yellow
-    Write-Host 'Setup can install Python 3.12 for this Windows user, without changing the optional shared py.exe launcher.'
-    Write-Host 'No Microsoft account is required.'
+    if ($python) { Write-AwxPrerequisiteOutput 'Python: working 64-bit Python 3.10+ found.' -ForegroundColor Green; return $python }
+    if ($script:AwxSetupIsolated) { throw 'Isolated setup needs an existing working 64-bit Python 3.10+. No global Python installation was attempted.' }
+    Write-AwxPrerequisiteOutput 'A working 64-bit Python 3.10+ is required. A Microsoft Store shortcut alone is not Python.' -ForegroundColor Yellow
+    Write-AwxPrerequisiteOutput 'Setup can install Python 3.12 for this Windows user, without changing the optional shared py.exe launcher.'
+    Write-AwxPrerequisiteOutput 'No Microsoft account is required.'
     if ((Get-Command winget.exe -CommandType Application -ErrorAction SilentlyContinue) -and (Ask-Yes 'Install Python 3.12 using Windows Package Manager?')) {
         # An existing all-user Python Launcher can make a per-user silent install
         # request elevation and roll back with MSI 1625. The launcher is optional:
@@ -105,8 +114,13 @@ function Require-AwxPython {
         # --custom appends supported options, retaining winget's signed installer,
         # hash validation and per-user installation defaults.
         $installOutput=@()
-        & winget.exe install --exact --id Python.Python.3.12 --source winget --architecture x64 --scope user --custom 'Include_launcher=0 InstallLauncherAllUsers=0' | Tee-Object -Variable installOutput | Out-Host
-        if ($LASTEXITCODE -ne 0) {
+        $oldPreference=$ErrorActionPreference
+        try {
+            $ErrorActionPreference='Continue'
+            & winget.exe install --exact --id Python.Python.3.12 --source winget --architecture x64 --scope user --custom 'Include_launcher=0 InstallLauncherAllUsers=0' 2>&1 | Tee-Object -Variable installOutput | ForEach-Object { Write-AwxPrerequisiteOutput $_ }
+            $installExit=$LASTEXITCODE
+        } finally { $ErrorActionPreference=$oldPreference }
+        if ($installExit -ne 0) {
             if (($installOutput -join "`n") -match '\b1625\b|0x80070659') {
                 throw 'Windows blocked Python installation (1625). Setup left Windows security policies unchanged. See docs/first-run.md: installer 1625, or ask the PC administrator for an approved Python installation.'
             }
@@ -114,7 +128,7 @@ function Require-AwxPython {
         }
         Refresh-ProcessPath
         $python = Find-AwxPython
-        if ($python) { Write-Host 'Python: installation verified.' -ForegroundColor Green; return $python }
+        if ($python) { Write-AwxPrerequisiteOutput 'Python: installation verified.' -ForegroundColor Green; return $python }
     }
     throw 'Install 64-bit Python from https://www.python.org/downloads/windows/ (include pip and venv). Close this window and rerun Setup.cmd. See docs/first-run.md. Existing files were kept.'
 }

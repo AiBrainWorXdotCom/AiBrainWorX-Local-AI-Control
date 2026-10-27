@@ -2,7 +2,7 @@
 
 **Portable local AI for your hardware.** Connect a model, chat, choose a coding client, save instructions and carry project notes across model profiles.
 
-**v0.4.0-alpha.5 · Windows source package · Made by AiBrainWorX**
+**v0.4.0-alpha.6 · Windows source package · Made by AiBrainWorX**
 
 ![AiBrainWorX Model Launcher](media/aibrainworx-model-launcher.png)
 
@@ -38,6 +38,37 @@ If an installation fails, read the last message, fix that prerequisite and rerun
 The model card shows **Stopped**, amber **Starting / Stopping**, and green **Running** states. Start is highlighted when available; Stop becomes active while an owned Strata model starts or runs. Loading does not freeze the window. Other backends remain controlled in their own apps. Shutdown verifies that the captured process tree exited, including when Windows reports a child that already ended.
 
 Setup offers missing prerequisites from official sources and installs the official client packages into a separate app runtime when approved. Large Strata model downloads need an explicit `DOWNLOAD` confirmation. The tested Coder files alone are approximately 58.4 GB, plus prepared data; other models differ.
+
+## Setup CLI, progress and isolated tests
+
+Strata downloads show a bar and the real percentage reported for each engine file
+or model transfer. Unknown-size transfers show downloaded bytes and activity;
+hashing, extraction and other steps may show text status. Git, npm and Windows
+Package Manager keep their native progress where available. There is no estimated
+overall installation percentage. Existing download consent and resume behavior
+are preserved.
+
+```powershell
+Get-Help .\Setup.ps1 -Detailed
+.\Setup.ps1 -Plan
+.\Setup.ps1 -CheckPrerequisites
+.\Setup.ps1 -RuntimeRoot C:\InstallTest\runtime -WorkspaceRoot C:\InstallTest\workspace -GatewayPort 18082 -HarnessPort 13080 -PublicOutput
+```
+
+`-Plan` and `-CheckPrerequisites` are read-only: no download, installation, settings
+write or server start. For an isolated installation, run from a clean **separate
+source copy** with dedicated runtime and workspace folders. `-RuntimeRoot` disables
+global prerequisite installation and avoids the production Strata folder; existing
+Python, Node and Git may be reused. Settings still belong to that source copy.
+Choose unused, distinct gateway and Harness ports for a separate test launch;
+their normal defaults remain 8082 and 3080. Setup saves them without starting services.
+`-PublicOutput` masks private console paths and project names and hides typed
+answers; saved local settings remain private. Review screenshots before sharing.
+
+A fresh runtime on an existing PC does not establish a fresh-machine bootstrap.
+Reusing model weights does not test their full download. Tutorial captures must
+describe the steps actually performed. [Progress, privacy and isolated acceptance
+details](docs/install-progress.md).
 
 ## Customize before launch
 
@@ -154,6 +185,8 @@ python Tests/test_platform_training.py
 python bridge/test_unreal_mcp.py
 powershell -NoProfile -File Tests/Check-Scripts.ps1
 powershell -NoProfile -File Tests/Check-SetupPrerequisites.ps1
+powershell -NoProfile -File Tests/Check-SetupIsolation.ps1
+python -m unittest discover -s Tests -p test_setup_progress.py
 powershell -NoProfile -File Tests/Check-ClientLaunch.ps1
 powershell -NoProfile -File Tests/Check-ModelLifecycle.ps1
 python Tests/check_public_files.py
@@ -164,3 +197,7 @@ Routing, credentials, discovery, streaming, memory, update handling and client p
 The Windows prerequisite regression check executes local fixture programs for the Store alias, invalid/old/32-bit interpreters, Python launcher selectors, paths with spaces, probe timeouts, per-user discovery and successful/failed/declined installation flows. These simulate first-run failures without downloading or installing packages. Real installed-tool checks are also run; this does not claim a complete fresh-PC model download and installation.
 
 Original launcher, memory, integration code and skills are **MIT**. Models and separately installed tools retain their own terms and attribution. No weights, third-party runtime binaries, OpenHuman implementation or private session files are included. [Third-party notices](THIRD_PARTY_NOTICES.md).
+
+## Activity and installation visibility
+
+Labeled model/Harness LEDs, a larger Windows workspace, optional read-only Activity panels and actual X/Y update-check progress make service state easier to see. Process/GPU inspection is explicit, and plugin disable/archive/restore works without restarting the launcher. [Guide](docs/activity-monitor.md) · [Isolated-install and overhead results](docs/validation/2026-10-26-activity.md).
