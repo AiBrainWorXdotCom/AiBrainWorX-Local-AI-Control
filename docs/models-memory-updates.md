@@ -30,7 +30,7 @@ Ollama requires complete stateless Responses input histories.
 
 33 source-model suggestions cover small text models, stories, learning, puzzles,
 writing and reasoning. The launcher includes readable summaries offline and
-links to [AiBrainWorX model profiles](https://aibrainworx.com/model-library/).
+links to [OpenSourceCoder.com model profiles](https://opensourcecoder.com/models/).
 Original Hugging Face cards remain available for complete documentation/files.
 Names, creators, license metadata and reviewed revision IDs are retained.
 

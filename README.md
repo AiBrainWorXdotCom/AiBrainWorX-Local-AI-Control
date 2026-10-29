@@ -1,5 +1,7 @@
 # AiBrainWorX Model Launcher
 
+Made by **AiBrainWorX**. **[OpenSourceCoder.com](https://opensourcecoder.com/)** is our website and developer hub for this launcher, model profiles, setup guides and community showcases. [AiBrainWorX.com](https://aibrainworx.com/) publishes our AI research, news and hardware tests.
+
 **Portable local AI for your hardware.** Connect a model, chat, choose a coding client, save instructions and carry project notes across model profiles.
 
 **v0.4.0-alpha.6 · Windows source package · Made by AiBrainWorX**
@@ -12,7 +14,7 @@ Download, extract and run from your chosen folder. No fixed launcher installatio
 
 > **Normal-user follow-up:** Python setup now skips the optional `py.exe` launcher. Repairing an existing shared launcher could request administrator elevation and roll back an otherwise valid per-user install with error **1625**. The interpreter is installed for the current user; setup does not change Windows policies or other users' Python installations.
 
-[Product overview](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/) · [Model library](https://aibrainworx.com/model-library/) · [MIT license](LICENSE) · [Security](SECURITY.md)
+[Product overview](https://aibrainworx.com/qwen-38-coder-12gb-gpu-ryzen5-strata-codex-unreal/) · [OpenSourceCoder.com model library](https://opensourcecoder.com/models/) · [MIT license](LICENSE) · [Security](SECURITY.md)
 
 ## Built with Codex orchestration and local Qwen
 
