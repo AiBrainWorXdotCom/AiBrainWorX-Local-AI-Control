@@ -47,7 +47,7 @@ class Features(unittest.TestCase):
             self.assertTrue(detail['launcher'])
             self.assertEqual(detail['creator'],m['creator'])
             self.assertEqual(detail['source'],m['modelCard'])
-            self.assertEqual(m['detailsUrl'],'https://aibrainworx.com/model-library/'+detail['slug']+'/')
+            self.assertEqual(m['detailsUrl'],'https://opensourcecoder.com/models/'+detail['slug']+'/')
             self.assertTrue(detail['summary'] and detail['localNote'] and detail['revision'])
         research=indexed['deepseek-ai/DeepSeek-V4.1-Flash-1017']
         self.assertFalse(research['launcher'])

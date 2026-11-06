@@ -9,7 +9,7 @@
     "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-0-6b/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-0-6b/"
   },
   {
     "id": "Qwen/Qwen3-1.7B",
@@ -21,7 +21,7 @@
     "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-1-7b/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-1-7b/"
   },
   {
     "id": "Qwen/Qwen3-4B",
@@ -33,7 +33,7 @@
     "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-4b/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-4b/"
   },
   {
     "id": "Qwen/Qwen3-8B",
@@ -45,7 +45,7 @@
     "revision": "b968826d9c46dd6066d109eabc6255188de91218",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-8b/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-8b/"
   },
   {
     "id": "Qwen/Qwen3-14B",
@@ -57,7 +57,7 @@
     "revision": "40c069824f4251a91eefaf281ebe4c544efd3e18",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-14b/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-14b/"
   },
   {
     "id": "Qwen/Qwen3-32B",
@@ -69,7 +69,7 @@
     "revision": "9216db5781bf21249d130ec9da846c4624c16137",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-32b/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-32b/"
   },
   {
     "id": "Qwen/Qwen3-30B-A3B",
@@ -81,7 +81,7 @@
     "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-30b-a3b/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-30b-a3b/"
   },
   {
     "id": "Qwen/Qwen3-4B-Instruct-2507",
@@ -93,7 +93,7 @@
     "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-4b-instruct-2507/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-4b-instruct-2507/"
   },
   {
     "id": "Qwen/Qwen3-30B-A3B-Instruct-2507",
@@ -105,7 +105,7 @@
     "revision": "0d7cf23991f47feeb3a57ecb4c9cee8ea4a17bfe",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen3-30b-a3b-instruct-2507/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen3-30b-a3b-instruct-2507/"
   },
   {
     "id": "HuggingFaceTB/SmolLM2-135M-Instruct",
@@ -117,7 +117,7 @@
     "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-135m-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/huggingfacetb-smollm2-135m-instruct/"
   },
   {
     "id": "HuggingFaceTB/SmolLM2-360M-Instruct",
@@ -129,7 +129,7 @@
     "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-360m-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/huggingfacetb-smollm2-360m-instruct/"
   },
   {
     "id": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
@@ -141,7 +141,7 @@
     "revision": "31b70e2e869a7173562077fd711b654946d38674",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm2-1-7b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/huggingfacetb-smollm2-1-7b-instruct/"
   },
   {
     "id": "HuggingFaceTB/SmolLM3-3B",
@@ -153,7 +153,7 @@
     "revision": "a07cc9a04f16550a088caea529712d1d335b0ac1",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/huggingfacetb-smollm3-3b/"
+    "detailsUrl": "https://opensourcecoder.com/models/huggingfacetb-smollm3-3b/"
   },
   {
     "id": "mistralai/Mistral-7B-Instruct-v0.3",
@@ -165,7 +165,7 @@
     "revision": "c170c708c41dac9275d15a8fff4eca08d52bab71",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-7b-instruct-v0-3/"
+    "detailsUrl": "https://opensourcecoder.com/models/mistralai-mistral-7b-instruct-v0-3/"
   },
   {
     "id": "mistralai/Mistral-Nemo-Instruct-2407",
@@ -177,7 +177,7 @@
     "revision": "04d8a90549d23fc6bd7f642064003592df51e9b3",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-nemo-instruct-2407/"
+    "detailsUrl": "https://opensourcecoder.com/models/mistralai-mistral-nemo-instruct-2407/"
   },
   {
     "id": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
@@ -189,7 +189,7 @@
     "revision": "68faf511d618ef198fef186659617cfd2eb8e33a",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mistral-small-3-1-24b-instruct-2503/"
+    "detailsUrl": "https://opensourcecoder.com/models/mistralai-mistral-small-3-1-24b-instruct-2503/"
   },
   {
     "id": "mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -201,7 +201,7 @@
     "revision": "eba92302a2861cdc0098cc54bc9f17cb2c47eb61",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/mistralai-mixtral-8x7b-instruct-v0-1/"
+    "detailsUrl": "https://opensourcecoder.com/models/mistralai-mixtral-8x7b-instruct-v0-1/"
   },
   {
     "id": "ibm-granite/granite-3.3-2b-instruct",
@@ -213,7 +213,7 @@
     "revision": "707f574c62054322f6b5b04b6d075f0a8f05e0f0",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-3-3-2b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/ibm-granite-granite-3-3-2b-instruct/"
   },
   {
     "id": "ibm-granite/granite-3.3-8b-instruct",
@@ -225,7 +225,7 @@
     "revision": "51dd4bc2ade4059a6bd87649d68aa11e4fb2529b",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-3-3-8b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/ibm-granite-granite-3-3-8b-instruct/"
   },
   {
     "id": "ibm-granite/granite-4.0-h-tiny",
@@ -237,7 +237,7 @@
     "revision": "791e0d3d28c86e106c9b6e0b4cecdee0375b6124",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/ibm-granite-granite-4-0-h-tiny/"
+    "detailsUrl": "https://opensourcecoder.com/models/ibm-granite-granite-4-0-h-tiny/"
   },
   {
     "id": "allenai/OLMo-2-1124-7B-Instruct",
@@ -249,7 +249,7 @@
     "revision": "470b1fba1ae01581f270116362ee4aa1b97f4c84",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/allenai-olmo-2-1124-7b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/allenai-olmo-2-1124-7b-instruct/"
   },
   {
     "id": "allenai/OLMo-2-0325-32B-Instruct",
@@ -261,7 +261,7 @@
     "revision": "b96024342a77a69aa0dda815c3454a671f477463",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/allenai-olmo-2-0325-32b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/allenai-olmo-2-0325-32b-instruct/"
   },
   {
     "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
@@ -273,7 +273,7 @@
     "revision": "ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-1-5b/"
+    "detailsUrl": "https://opensourcecoder.com/models/deepseek-ai-deepseek-r1-distill-qwen-1-5b/"
   },
   {
     "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
@@ -285,7 +285,7 @@
     "revision": "916b56a44061fd5cd7d6a8fb632557ed4f724f60",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-7b/"
+    "detailsUrl": "https://opensourcecoder.com/models/deepseek-ai-deepseek-r1-distill-qwen-7b/"
   },
   {
     "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
@@ -297,7 +297,7 @@
     "revision": "1df8507178afcc1bef68cd8c393f61a886323761",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-14b/"
+    "detailsUrl": "https://opensourcecoder.com/models/deepseek-ai-deepseek-r1-distill-qwen-14b/"
   },
   {
     "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
@@ -309,7 +309,7 @@
     "revision": "711ad2ea6aa40cfca18895e8aca02ab92df1a746",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/deepseek-ai-deepseek-r1-distill-qwen-32b/"
+    "detailsUrl": "https://opensourcecoder.com/models/deepseek-ai-deepseek-r1-distill-qwen-32b/"
   },
   {
     "id": "microsoft/Phi-4-mini-instruct",
@@ -321,7 +321,7 @@
     "revision": "cfbefacb99257ffa30c83adab238a50856ac3083",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/microsoft-phi-4-mini-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/microsoft-phi-4-mini-instruct/"
   },
   {
     "id": "microsoft/Phi-3-mini-4k-instruct",
@@ -333,7 +333,7 @@
     "revision": "f39ac1d28e925b323eae81227eaba4464caced4e",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/microsoft-phi-3-mini-4k-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/microsoft-phi-3-mini-4k-instruct/"
   },
   {
     "id": "Qwen/Qwen2.5-0.5B-Instruct",
@@ -345,7 +345,7 @@
     "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-0-5b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen2-5-0-5b-instruct/"
   },
   {
     "id": "Qwen/Qwen2.5-1.5B-Instruct",
@@ -357,7 +357,7 @@
     "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-1-5b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen2-5-1-5b-instruct/"
   },
   {
     "id": "Qwen/Qwen2.5-7B-Instruct",
@@ -369,7 +369,7 @@
     "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-7b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen2-5-7b-instruct/"
   },
   {
     "id": "Qwen/Qwen2.5-14B-Instruct",
@@ -381,7 +381,7 @@
     "revision": "cf98f3b3bbb457ad9e2bb7baf9a0125b6b88caa8",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-14b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen2-5-14b-instruct/"
   },
   {
     "id": "Qwen/Qwen2.5-32B-Instruct",
@@ -393,7 +393,7 @@
     "revision": "5ede1c97bbab6ce5cda5812749b4c0bdf79b18dd",
     "checked": "2026-10-24",
     "note": "Source-model license metadata checked. Choose a compatible local quantization in your backend and verify that artifact and any base-model terms. Weights are not bundled or downloaded.",
-    "detailsUrl": "https://aibrainworx.com/model-library/qwen-qwen2-5-32b-instruct/"
+    "detailsUrl": "https://opensourcecoder.com/models/qwen-qwen2-5-32b-instruct/"
   },
   {
     "id": "google/gemma-3-270m-it",
@@ -404,7 +404,7 @@
     "modelCard": "https://huggingface.co/google/gemma-3-270m-it",
     "revision": "ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
     "checked": "2026-10-24",
-    "detailsUrl": "https://aibrainworx.com/model-library/google-gemma-3-270m-it/",
+    "detailsUrl": "https://opensourcecoder.com/models/google-gemma-3-270m-it/",
     "note": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled."
   },
   {
@@ -416,7 +416,7 @@
     "modelCard": "https://huggingface.co/google/gemma-3-1b-it",
     "revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
     "checked": "2026-10-24",
-    "detailsUrl": "https://aibrainworx.com/model-library/google-gemma-3-1b-it/",
+    "detailsUrl": "https://opensourcecoder.com/models/google-gemma-3-1b-it/",
     "note": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled."
   },
   {
@@ -428,7 +428,7 @@
     "modelCard": "https://huggingface.co/google/functiongemma-270m-it",
     "revision": "39eccb091651513a5dfb56892d3714c1b5b8276c",
     "checked": "2026-10-24",
-    "detailsUrl": "https://aibrainworx.com/model-library/google-functiongemma-270m-it/",
+    "detailsUrl": "https://opensourcecoder.com/models/google-functiongemma-270m-it/",
     "note": "Gemma terms apply; review and accept access conditions yourself. No weights or license acceptance are bundled."
   }
 ]
