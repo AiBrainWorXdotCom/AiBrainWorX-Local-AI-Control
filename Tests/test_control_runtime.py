@@ -85,6 +85,7 @@ class Profiles(unittest.TestCase):
     def test_managed_clients_are_literal_and_separate(self):
         prepared = core.prepare_clients(self.config)
         home = Path(prepared['HarnessHome'])
+        self.assertFalse(prepared['HarnessBillionContext'])
         rows = core.read_json(home / 'profiles/web/cordis.patch.yml')
         self.assertIn('/profiles/default/v1', rows[0]['config']['providers']['local_strata']['baseURL'])
         self.assertTrue(Path(prepared['CodexHome']).is_relative_to(self.root / 'runtime'))
@@ -93,6 +94,47 @@ class Profiles(unittest.TestCase):
         self.assertIn('/profiles/default/v1', text)
         self.assertNotIn('[mcp_servers.unreal_local]', text)
         self.assertEqual(tomllib.loads(text)['model_provider'], 'local_strata')
+
+    def test_harness_installed_plugins_survive_profile_preparation(self):
+        target = self.root / 'runtime/managed-clients/default/harness/profiles/web'
+        original = {'name': 'user-profile', 'private': True,
+                    'dependencies': {'billion-context': '0.1.212', 'another-plugin': '^1.2.3'},
+                    'customField': {'keep': True},
+                    'dsh': {'other': {'retain': 'yes'}, 'profile': {
+                        'bundles': ['billion-context', 'another-plugin'], 'otherConfig': 7}}}
+        core.write_json(target / 'package.json', original)
+        lock = target / 'pnpm-lock.yaml'
+        lock.write_text('existing lock file', encoding='utf-8')
+        prepared = core.prepare_clients(self.config)
+        self.assertTrue(prepared['HarnessBillionContext'])
+        self.assertTrue(Path(prepared['HarnessContextSessionDir']).is_relative_to(self.root / 'runtime/managed-clients/default'))
+        self.assertEqual(prepared['Model']['contextWindow'], 16384)
+        manifest = core.read_json(target / 'package.json')
+        self.assertEqual(manifest['dependencies'], original['dependencies'])
+        self.assertEqual(manifest['name'], original['name'])
+        self.assertEqual(manifest['customField'], original['customField'])
+        self.assertEqual(manifest['dsh']['other'], original['dsh']['other'])
+        self.assertEqual(manifest['dsh']['profile']['otherConfig'], 7)
+        self.assertEqual(manifest['dsh']['profile']['bundles'], [
+            '@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', 'billion-context', 'another-plugin'])
+        self.assertEqual(lock.read_text(encoding='utf-8'), 'existing lock file')
+        core.prepare_clients(self.config)
+        self.assertEqual(core.read_json(target / 'package.json'), manifest)
+
+    def test_invalid_harness_manifest_is_never_replaced(self):
+        target = self.root / 'runtime/managed-clients/default/harness/profiles/web'
+        target.mkdir(parents=True)
+        path = target / 'package.json'
+        bad_manifests = ['not json', '[]', '{"dependencies": []}',
+                         '{"dependencies": {"plugin": 3}}', '{"dsh": []}',
+                         '{"dsh": {"profile": []}}',
+                         '{"dsh": {"profile": {"bundles": [1]}}}']
+        for contents in bad_manifests:
+            with self.subTest(contents=contents):
+                path.write_text(contents, encoding='utf-8')
+                with self.assertRaisesRegex(ValueError, 'existing file was not changed'):
+                    core.prepare_clients(self.config)
+                self.assertEqual(path.read_text(encoding='utf-8'), contents)
 
     def test_relocation_regenerates_unreal_bridge_path(self):
         moved = self.root / 'moved launcher'

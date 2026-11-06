@@ -60,6 +60,7 @@ write or server start. For an isolated installation, run from a clean **separate
 source copy** with dedicated runtime and workspace folders. `-RuntimeRoot` disables
 global prerequisite installation and avoids the production Strata folder; existing
 Python, Node and Git may be reused. Settings still belong to that source copy.
+Strata's own settings and component directories are also isolated for setup calls.
 Choose unused, distinct gateway and Harness ports for a separate test launch;
 their normal defaults remain 8082 and 3080. Setup saves them without starting services.
 `-PublicOutput` masks private console paths and project names and hides typed
@@ -97,7 +98,10 @@ The settings service on **127.0.0.1:8082** forwards Chat Completions and Respons
 
 The gateway fits output to the fully rendered prompt and the running server's
 context, with a 256-token reserve. Ordinary streamed text can continue twice,
-with a 4096-token pass limit and 12,288-token total allocation. Tools, JSON and
+with an 8192-token pass limit and 12,288-token total allocation. The profile
+and client may request a lower cap, and prompt size can reduce the available
+output. The default profile cap remains 4096; raise it in Profiles + prompts
+to request longer passes. Tools, JSON and
 Responses are not silently stitched. Strata uses its installed frontend/tokenizer;
 llama.cpp Chat Completions uses its native counting APIs. Other connectors retain
 their existing cap behavior until exact adapters are validated.
@@ -110,7 +114,9 @@ memory remains independent and follows its existing checkbox.
 **User plugins** live outside the app installation. Approved API-v1 Python/Node
 hooks can extend built-in chat; changed code needs fresh approval. These are
 trusted local programs, not sandboxed programs. Voice/audio hooks and a Harness
-voice extension are not implemented by this release.
+voice extension are not implemented by this release. An optional, separate
+[Billion-Context extension for DeepSeek Harness](docs/billion-context.md) is
+experimental; it runs third-party code and needs validation with your model.
 
 The included `migrate-customizations.py` previews transfers into a separate update
 folder. An original shipped baseline enables three-way vendor-file comparison;

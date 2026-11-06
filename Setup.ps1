@@ -165,12 +165,24 @@ function Run-Checked([string]$Command,[string[]]$Arguments) {
 }
 function Invoke-StrataSetup([string[]]$Arguments) {
     $oldRedactions=$env:AWX_SETUP_REDACTIONS_JSON
+    $oldStrataSettings=[Environment]::GetEnvironmentVariable('STRATA_SETTINGS_FILE','Process')
+    $oldStrataComponents=[Environment]::GetEnvironmentVariable('STRATA_COMPONENTS_DIR','Process')
     try {
+        # Strata's --check can discover and move data from other installs. Give
+        # isolated tests their own settings and component roots before any check.
+        if ($script:AwxSetupIsolated) {
+            [Environment]::SetEnvironmentVariable('STRATA_SETTINGS_FILE',(Join-Path $RuntimeRoot 'strata-settings.local.json'),'Process')
+            [Environment]::SetEnvironmentVariable('STRATA_COMPONENTS_DIR',(Join-Path $RuntimeRoot 'strata-components'),'Process')
+        }
         $env:AWX_SETUP_REDACTIONS_JSON=$script:SetupRedactions | ConvertTo-Json -Compress
         $display=@();if ($PublicOutput) { $display+='--public-output' }
         & $StrataPython -u (Join-Path $RepoRoot 'app/setup_progress.py') @display --script (Join-Path $StrataRoot 'setup.py') -- @Arguments
         if ($LASTEXITCODE -ne 0) { throw 'Strata setup is incomplete. Its resumable downloads are retained.' }
-    } finally { [Environment]::SetEnvironmentVariable('AWX_SETUP_REDACTIONS_JSON',$oldRedactions,'Process') }
+    } finally {
+        [Environment]::SetEnvironmentVariable('AWX_SETUP_REDACTIONS_JSON',$oldRedactions,'Process')
+        [Environment]::SetEnvironmentVariable('STRATA_SETTINGS_FILE',$oldStrataSettings,'Process')
+        [Environment]::SetEnvironmentVariable('STRATA_COMPONENTS_DIR',$oldStrataComponents,'Process')
+    }
 }
 function Save-Backup([string]$Path) {
     if (Test-Path -LiteralPath $Path) {

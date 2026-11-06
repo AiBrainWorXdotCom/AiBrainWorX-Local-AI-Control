@@ -53,6 +53,45 @@ try {
     try { Require-Command 'node.exe' 'OpenJS.NodeJS.LTS' 'https://nodejs.org/' | Out-Null } catch { $failed=$_.Exception.Message -like '*No global prerequisite installation*' }
     Assert $failed 'Isolated missing-Node handling did not fail without offering an install.'
     [void][IO.Directory]::CreateDirectory($temporary)
+    # The real Strata --check can discover/move other installations unless it
+    # receives a private settings file. Verify the actual child environment.
+    $fakeStrata=Join-Path $temporary 'fake-strata'
+    $isolatedRuntime=Join-Path $temporary 'private-runtime'
+    [void][IO.Directory]::CreateDirectory($fakeStrata)
+    [void][IO.Directory]::CreateDirectory($isolatedRuntime)
+    $report=Join-Path $temporary 'strata-env.json'
+    $fakeScript=@'
+import json, os, pathlib
+pathlib.Path(os.environ['AWX_TEST_REPORT']).write_text(json.dumps({
+    'settings': os.environ.get('STRATA_SETTINGS_FILE'),
+    'components': os.environ.get('STRATA_COMPONENTS_DIR')}), encoding='utf-8')
+'@
+    [IO.File]::WriteAllText((Join-Path $fakeStrata 'setup.py'),$fakeScript,(New-Object Text.UTF8Encoding($false)))
+    $savedSettings=[Environment]::GetEnvironmentVariable('STRATA_SETTINGS_FILE','Process')
+    $savedComponents=[Environment]::GetEnvironmentVariable('STRATA_COMPONENTS_DIR','Process')
+    $savedReport=[Environment]::GetEnvironmentVariable('AWX_TEST_REPORT','Process')
+    try {
+        [Environment]::SetEnvironmentVariable('STRATA_SETTINGS_FILE','caller-settings','Process')
+        [Environment]::SetEnvironmentVariable('STRATA_COMPONENTS_DIR','caller-components','Process')
+        [Environment]::SetEnvironmentVariable('AWX_TEST_REPORT',$report,'Process')
+        $RuntimeRoot=$isolatedRuntime; $StrataRoot=$fakeStrata; $RepoRoot=$root
+        $StrataPython=(Get-Command python.exe -ErrorAction Stop).Source
+        $PublicOutput=$false; $script:AwxSetupIsolated=$true
+        Invoke-StrataSetup @('--check')
+        $seen=Get-Content -LiteralPath $report -Raw | ConvertFrom-Json
+        Assert ($seen.settings -ceq (Join-Path $isolatedRuntime 'strata-settings.local.json')) 'Strata settings were not isolated.'
+        Assert ($seen.components -ceq (Join-Path $isolatedRuntime 'strata-components')) 'Strata components were not isolated.'
+        Assert ($env:STRATA_SETTINGS_FILE -ceq 'caller-settings' -and $env:STRATA_COMPONENTS_DIR -ceq 'caller-components') 'Strata environment was not restored.'
+        $script:AwxSetupIsolated=$false
+        Invoke-StrataSetup @('--check')
+        $seen=Get-Content -LiteralPath $report -Raw | ConvertFrom-Json
+        Assert ($seen.settings -ceq 'caller-settings' -and $seen.components -ceq 'caller-components') 'Normal setup did not retain caller settings.'
+    } finally {
+        [Environment]::SetEnvironmentVariable('STRATA_SETTINGS_FILE',$savedSettings,'Process')
+        [Environment]::SetEnvironmentVariable('STRATA_COMPONENTS_DIR',$savedComponents,'Process')
+        [Environment]::SetEnvironmentVariable('AWX_TEST_REPORT',$savedReport,'Process')
+    }
+    $PublicOutput=$true
     $batch=Join-Path $temporary 'public-output-fixture.cmd'
     [IO.File]::WriteAllText($batch,"@echo off`r`necho fixture stdout C:\Fixture\Private Owner\config SecretProject`r`necho fixture stderr E:\Private Runtime\cache 1>&2`r`nexit /b 0`r`n",(New-Object Text.UTF8Encoding($false)))
     $script:SetupPython=$null

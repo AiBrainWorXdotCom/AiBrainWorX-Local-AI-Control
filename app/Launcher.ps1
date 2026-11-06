@@ -4,6 +4,7 @@ if($CaptureProcessSnapshot -and ($Action -ne 'Gui' -or $CaptureSettingsImage -or
 $ConfigPath=$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ConfigPath)
 . (Join-Path $PSScriptRoot 'Settings.ps1')
 . (Join-Path $PSScriptRoot 'Control.ps1')
+. (Join-Path $PSScriptRoot 'Context-Environment.ps1')
 $settings = Read-AwxSettings $ConfigPath
 $HarnessPort=if($null -ne $settings.HarnessPort){[int]$settings.HarnessPort}else{3080}
 if($HarnessPort -lt 1 -or $HarnessPort -gt 65535){throw 'HarnessPort must be between 1 and 65535.'}
@@ -76,7 +77,9 @@ function Start-Harness {
         try {
             [Environment]::SetEnvironmentVariable('AIBRAINWORX_API_KEY','strata-local-no-auth','Process')
             [Environment]::SetEnvironmentVariable('DSH_HOME',$prepared.HarnessHome,'Process')
-            $process = Start-Process -FilePath $Node -ArgumentList $arguments -WorkingDirectory $prepared.WorkspaceRoot -WindowStyle Hidden -RedirectStandardOutput $Stdout -RedirectStandardError $Stderr -PassThru
+            $process = Invoke-AwxHarnessContextEnvironment $prepared {
+                Start-Process -FilePath $Node -ArgumentList $arguments -WorkingDirectory $prepared.WorkspaceRoot -WindowStyle Hidden -RedirectStandardOutput $Stdout -RedirectStandardError $Stderr -PassThru
+            }
             [IO.File]::WriteAllText((Join-Path $settings.StateRoot 'harness-runtime.local.json'),(@{Pid=$process.Id;ProfileId=$prepared.ProfileId} | ConvertTo-Json),(New-Object Text.UTF8Encoding($false)))
         } finally {
             [Environment]::SetEnvironmentVariable('AIBRAINWORX_API_KEY',$previousKey,'Process')

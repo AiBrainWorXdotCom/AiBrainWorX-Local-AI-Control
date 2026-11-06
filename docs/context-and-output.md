@@ -5,7 +5,7 @@ Windows 0.4.0-alpha.3 fix. This is a control-plane change, not a model upgrade.
 
 - Count AFTER user instructions, optional project memory and reasoning settings.
 - Use the running server's per-slot context, bounded by the profile's declaration.
-- Output allowance is the minimum of client cap, profile cap, 4096 per pass,
+- Output allowance is the minimum of client cap, profile cap, 8192 per pass,
   remaining 12288 total allowance, and context minus prompt minus 256 tokens.
 - No `len(text)//4` estimate. Strata uses its installed frontend and tokenizer in
   a persistent helper; the running template hash must match. Text, tools and

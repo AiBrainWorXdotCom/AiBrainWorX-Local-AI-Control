@@ -35,7 +35,9 @@ class Counter:
     def start(self):
         self.close()
         replies = queue.Queue(maxsize=4)
-        command = [self.config.get('StrataPython') or self.config['PythonExecutable'], '-u',
+        # The parent sends UTF-8 JSON, including non-ASCII chat text. Windows
+        # Python otherwise uses a locale-dependent console encoding for stdin.
+        command = [self.config.get('StrataPython') or self.config['PythonExecutable'], '-u', '-X', 'utf8',
                    str(Path(__file__).with_name('strata_counter.py')), '--root', self.config['StrataRoot'],
                    '--config', self.selected['configPath']]
         self.process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,

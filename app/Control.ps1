@@ -201,7 +201,7 @@ function Show-AwxSettings($Owner,$Settings,[string]$ConfigPath,$State,[string]$C
     $ui.Tokens=New-Object Windows.Forms.NumericUpDown
     $ui.Tokens.Minimum=64;$ui.Tokens.Maximum=65536;$ui.Tokens.Increment=128;$ui.Tokens.Value=$State.active.maxOutputTokens;$ui.Tokens.SetBounds(514,583,260,30)
     $dialog.Controls.Add($ui.Tokens)
-    [void](Label 'This is a cap; a client can request less.' 514 623 350 25)
+    [void](Label 'Counted backends: 8192/pass; room can reduce.' 514 623 350 25)
     $ui.Feedback=Label '' 24 679 850 36
     $ui.Feedback.ForeColor=[Drawing.ColorTranslator]::FromHtml('#B5A2FF')
     $save=Button 'Save profile' 24 727 200 {param($sender,$e);Save-AwxEditor $sender.FindForm() $false}

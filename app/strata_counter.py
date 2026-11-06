@@ -10,7 +10,14 @@ from pathlib import Path
 import sys
 
 
+def configure_ipc_streams():
+    # PYTHONIOENCODING can override -X utf8. The parent protocol is always UTF-8.
+    sys.stdin.reconfigure(encoding='utf-8', errors='strict')
+    sys.stdout.reconfigure(encoding='utf-8', errors='strict')
+
+
 def main():
+    configure_ipc_streams()
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', required=True)
     parser.add_argument('--config', required=True)

@@ -6,7 +6,7 @@ from copy import deepcopy
 from dataclasses import asdict, dataclass
 
 CONTEXT_RESERVE = 256
-PASS_LIMIT = 4096
+PASS_LIMIT = 8192  # A profile can opt into a longer pass; real headroom still wins.
 MAX_CONTINUATIONS = 2  # Two EXTRA requests, three passes total.
 TOTAL_OUTPUT_LIMIT = 12288
 MIN_CONTINUATION_ROOM = 2048

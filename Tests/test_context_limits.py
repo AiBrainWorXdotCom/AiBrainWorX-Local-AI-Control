@@ -68,6 +68,26 @@ class Budgets(unittest.TestCase):
                                profile_limit=8000, total_remaining=700)
         self.assertEqual(value['max_tokens'], 700)
 
+    def test_longer_pass_requires_profile_and_client_allowance(self):
+        value, budget = fit_request(request(max_tokens=8192), prompt_tokens=5000,
+                                    server_context=16384, profile_limit=8192)
+        self.assertEqual(value['max_tokens'], 8192)
+        self.assertEqual(budget.output_tokens, 8192)
+        limited, _ = fit_request(request(max_tokens=2048), prompt_tokens=5000,
+                                 server_context=16384, profile_limit=8192)
+        self.assertEqual(limited['max_tokens'], 2048)
+        default, _ = fit_request(request(max_tokens=8192), prompt_tokens=5000,
+                                 server_context=16384, profile_limit=4096)
+        self.assertEqual(default['max_tokens'], 4096)
+
+    def test_longer_pass_obeys_real_context_and_reserve(self):
+        value, _ = fit_request(request(max_tokens=8192), prompt_tokens=10000,
+                               server_context=16384, profile_limit=8192)
+        self.assertEqual(value['max_tokens'], 6128)
+        with self.assertRaises(BudgetError):
+            fit_request(request(max_tokens=8192), prompt_tokens=16128,
+                        server_context=16384, profile_limit=8192)
+
     def test_server_and_profile_context_use_lower(self):
         value, _ = fit_request(request(), prompt_tokens=3700, server_context=32768, context_ceiling=4096)
         self.assertEqual(value['max_tokens'], 140)
@@ -145,6 +165,15 @@ class Streams(unittest.TestCase):
         backend = ScriptBackend([[chunk('', 'length', tool_calls=tool)]])
         _, parsed, _ = output(backend)
         self.assertEqual(parsed[0]['choices'][0]['delta']['tool_calls'], tool)
+        self.assertEqual(len(backend.requests), 1)
+
+    def test_tool_call_stream_is_preserved_without_continuation(self):
+        tool = [{'index': 0, 'id': 'call-test', 'type': 'function',
+                 'function': {'name': 'inspect', 'arguments': '{"path":"a"}'}}]
+        backend = ScriptBackend([[chunk('', 'tool_calls', tool_calls=tool)]])
+        _, parsed, _ = output(backend, request(tools=[{'type': 'function'}]), profile_limit=8192)
+        self.assertEqual(parsed[0]['choices'][0]['delta']['tool_calls'], tool)
+        self.assertEqual(parsed[-1]['choices'][0]['finish_reason'], 'tool_calls')
         self.assertEqual(len(backend.requests), 1)
 
     def test_truncated_stream_is_error_not_success(self):

@@ -271,6 +271,47 @@ def model_id(config):
     return get_profile(ensure_state(config))['model']['modelId']
 
 
+def prepare_harness_manifest(target):
+    """Keep installed DSH bundles and profile metadata across launcher starts.
+
+    Harness owns this manifest too: its plugin manager records both package
+    dependencies and bundle names here. Refuse malformed data instead of
+    replacing a user's profile with a clean one.
+    """
+    path = Path(target) / 'package.json'
+    if path.exists():
+        try:
+            manifest = read_json(path)
+        except (OSError, UnicodeError, ValueError) as exc:
+            raise ValueError('The Harness profile manifest is unreadable. Your existing file was not changed.') from exc
+        if not isinstance(manifest, dict):
+            raise ValueError('The Harness profile manifest must be an object. Your existing file was not changed.')
+    else:
+        manifest = {}
+
+    manifest.setdefault('name', 'aibrainworx-profile')
+    manifest.setdefault('private', True)
+    dependencies = manifest.setdefault('dependencies', {})
+    dsh = manifest.setdefault('dsh', {})
+    if (not isinstance(dependencies, dict) or
+            any(not isinstance(key, str) or not isinstance(value, str) for key, value in dependencies.items()) or
+            not isinstance(dsh, dict)):
+        raise ValueError('The Harness profile dependencies or configuration are invalid. Your existing file was not changed.')
+    profile = dsh.setdefault('profile', {})
+    if not isinstance(profile, dict):
+        raise ValueError('The Harness profile configuration is invalid. Your existing file was not changed.')
+    bundles = profile.setdefault('bundles', [])
+    if not isinstance(bundles, list) or any(not isinstance(item, str) for item in bundles):
+        raise ValueError('The Harness profile bundles are invalid. Your existing file was not changed.')
+    base, web = '@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app'
+    if base not in bundles:
+        bundles.insert(0, base)
+    if web not in bundles:
+        bundles.insert(bundles.index(base) + 1, web)
+    write_json(path, manifest)
+    return manifest
+
+
 def prepare_clients(config):
     profile = get_profile(ensure_state(config))
     identity = profile['id']
@@ -281,7 +322,8 @@ def prepare_clients(config):
     endpoint = f"http://127.0.0.1:{config.get('GatewayPort',8082)}/profiles/{identity}/v1"
     harness = home / 'harness'
     target = harness / 'profiles/web'
-    write_json(target / 'package.json', {'name': 'aibrainworx-profile', 'private': True, 'dependencies': {}, 'dsh': {'profile': {'bundles': ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app']}}})
+    harness_manifest = prepare_harness_manifest(target)
+    context_extension = 'billion-context' in harness_manifest['dsh']['profile']['bundles']
     bridge = ROOT / 'bridge/unreal_mcp.py'
     replacements = {'qwen3.8-flash-next-coder': model, 'http://127.0.0.1:8081/v1': endpoint,
                     'C:/AI/UnrealAssistant/unreal_mcp.py': bridge.as_posix(),
@@ -346,7 +388,8 @@ def prepare_clients(config):
     (codex / 'aibrainworx-local.config.toml').write_text(template, encoding='utf-8')
     return dict(ProfileId=identity, HarnessHome=str(harness), CodexHome=str(codex), WorkspaceRoot=profile['workspaceRoot'],
                 EnginePython=profile['enginePython'], UnrealProjectName=profile['unrealProjectName'], GatewayURL=endpoint,
-                Model=selected)
+                Model=selected, HarnessBillionContext=context_extension,
+                HarnessContextSessionDir=str(home / 'billion-context' / 'sessions'))
 
 
 def fetch_json(url, timeout=2):
