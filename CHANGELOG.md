@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Add an optional, per-profile Billion-Context integration for DeepSeek Harness;
+  preserve installed Harness plugins and disclose its privacy and update behavior.
+- Raise the counted-backend output allowance to 8,192 tokens per pass when the
+  profile, client and available model context permit; retain tool-call safeguards.
+- Fix Windows tokenizer communication for non-ASCII requests.
+- Isolate Strata setup settings for separate installs and install/verify the
+  official runtime requirements in newly created managed Strata environments.
+
 ## 0.4.0-alpha.6
 
 - Roomier native workspace, labeled core-service LEDs and opt-in Activity monitoring.

@@ -1,6 +1,6 @@
 # AiBrainWorX Model Launcher
 
-Made by **AiBrainWorX**. **[OpenSourceCoder.com](https://opensourcecoder.com/)** is our website and developer hub for this launcher, model profiles, setup guides and community showcases. [AiBrainWorX.com](https://aibrainworx.com/) publishes our AI research, news and hardware tests.
+Made by **AiBrainWorX**. **[OpenSourceCoder.com](https://opensourcecoder.com/)** is our website and developer hub for this launcher, model profiles, setup guides and open-source projects. [AiBrainWorX.com](https://aibrainworx.com/) publishes our AI research, news and hardware tests.
 
 **Portable local AI for your hardware.** Connect a model, chat, choose a coding client, save instructions and carry project notes across model profiles.
 
@@ -39,7 +39,7 @@ If an installation fails, read the last message, fix that prerequisite and rerun
 
 The model card shows **Stopped**, amber **Starting / Stopping**, and green **Running** states. Start is highlighted when available; Stop becomes active while an owned Strata model starts or runs. Loading does not freeze the window. Other backends remain controlled in their own apps. Shutdown verifies that the captured process tree exited, including when Windows reports a child that already ended.
 
-Setup offers missing prerequisites from official sources and installs the official client packages into a separate app runtime when approved. Large Strata model downloads need an explicit `DOWNLOAD` confirmation. The tested Coder files alone are approximately 58.4 GB, plus prepared data; other models differ.
+Setup offers missing prerequisites from official sources and installs the official client packages into a separate app runtime when approved. When setup creates a new Strata Python environment, it installs and verifies Strata's official runtime requirements there. An existing incomplete environment is not silently changed. Large Strata model downloads need an explicit `DOWNLOAD` confirmation. The tested Coder files alone are approximately 58.4 GB, plus prepared data; other models differ.
 
 ## Setup CLI, progress and isolated tests
 
@@ -77,7 +77,7 @@ details](docs/install-progress.md).
 
 - **Model profiles:** backend, exact model ID, loopback API, context declaration, image capability and an optional API-key environment-variable name.
 - **Instructions:** editable presets for coding, Unreal, review, stories, adventure games, learning and brainstorming.
-- **Request controls:** optional temperature/top-p sliders, a 64–65,536-token output cap, and explicit reasoning effort when supported by the model/server. Server default remains available.
+- **Request controls:** optional temperature/top-p sliders, a configurable output cap, and explicit reasoning effort when supported by the model/server. Counted backends allow up to 8,192 tokens per pass, subject to the client request and remaining context. Server default remains available.
 - **Local chat:** streamed text, stop reply, new conversation and a draft-memory action. Strata/compatible built-in chat saves a full local transcript and can refresh working context behind the same visible conversation. Project memory remains separate; no notes are automatically marked verified.
 - **AiBrainWorX Memory:** local project notes, facts, decisions, tasks, pinning, user verification labels, archive/restore, context preview and Markdown handoff export.
 - **Update Center:** one read-only check for the launcher, Strata app and matching engine, Harness, recorded model revisions, bundled skills, upstream references and user plugins. Unknown versions remain unverified. Checks never install or restart anything.

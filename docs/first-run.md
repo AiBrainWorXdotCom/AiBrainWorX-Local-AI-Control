@@ -28,6 +28,11 @@ without typing means **No**. Package-manager prompts/installer dialogs remain
 visible; setup does not silently accept license agreements or change credentials.
 Model terms are separate from the launcher's MIT license.
 
+If setup creates Strata's private Python environment, it installs and verifies
+the official Strata runtime requirements there, even when reusing a model.
+If an existing environment is missing those packages, setup stops with a repair
+message instead of silently changing that environment.
+
 ### “Python was not found” / Microsoft Store shortcut
 
 Windows can include a `python.exe` shortcut even when Python is not installed.

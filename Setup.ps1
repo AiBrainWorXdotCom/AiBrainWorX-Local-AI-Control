@@ -184,6 +184,21 @@ function Invoke-StrataSetup([string[]]$Arguments) {
         [Environment]::SetEnvironmentVariable('STRATA_COMPONENTS_DIR',$oldStrataComponents,'Process')
     }
 }
+function Ensure-AwxStrataRuntime([string]$Python,[string]$StrataDirectory,[string]$ManagedMarker) {
+    # --check inspects hardware; it does not install the model server's imports.
+    $probe='import jinja2,numpy,regex,yaml,tqdm,requests,PIL,psutil; print("AWX_STRATA_READY")'
+    if ((Invoke-AwxDependencyProbe $Python @('-I','-c',$probe) 15000) -eq 'AWX_STRATA_READY') { return }
+    if (-not (Test-Path -LiteralPath $ManagedMarker -PathType Leaf)) {
+        throw 'The existing Strata Python environment is missing runtime packages. Repair it using official Strata setup, then rerun this installer; it was not modified.'
+    }
+    $requirements=Join-Path $StrataDirectory 'requirements.txt'
+    if (-not (Test-Path -LiteralPath $requirements -PathType Leaf)) { throw 'Strata runtime requirements are missing. Reinstall the official Strata source.' }
+    Write-SetupConsole 'Installing the official Strata runtime packages in its private environment.'
+    Run-Checked $Python @('-m','pip','install','--disable-pip-version-check','-r',$requirements)
+    if ((Invoke-AwxDependencyProbe $Python @('-I','-c',$probe) 15000) -ne 'AWX_STRATA_READY') {
+        throw 'Strata runtime packages could not be verified. Existing files were kept; rerun setup.'
+    }
+}
 function Save-Backup([string]$Path) {
     if (Test-Path -LiteralPath $Path) {
         $backupRoot = Join-Path $RuntimeRoot 'backups'
@@ -264,8 +279,13 @@ try {
     # already validated above. START-HERE.bat may otherwise try a global Python
     # install/optional shared launcher. Preserve the alpha.5 launcher safeguards.
     $StrataPython=Join-Path $StrataRoot '.venv\Scripts\python.exe'
-    if (-not (Test-Path -LiteralPath $StrataPython -PathType Leaf)) { Run-Checked $Python @('-m','venv',(Join-Path $StrataRoot '.venv')) }
+    $managedVenvMarker=Join-Path $StrataRoot '.venv\aibrainworx-managed.txt'
+    if (-not (Test-Path -LiteralPath $StrataPython -PathType Leaf)) {
+        Run-Checked $Python @('-m','venv',(Join-Path $StrataRoot '.venv'))
+        Write-Utf8 $managedVenvMarker 'Created by AiBrainWorX setup.'
+    }
     if (-not (Select-AwxPython @([pscustomobject]@{Executable=$StrataPython;Arguments=@()}))) { throw 'Strata needs a working private 64-bit Python 3.10+ environment. Existing files were kept.' }
+    Ensure-AwxStrataRuntime $StrataPython $StrataRoot $managedVenvMarker
     # HELP: PROGRESS - the wrapper changes the display only. The official setup
     # retains its range resume, SHA-256 repair, TLS and explicit model choices.
     Invoke-StrataSetup @('--check')
