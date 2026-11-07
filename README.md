@@ -71,7 +71,8 @@ answers; saved local settings remain private. Review screenshots before sharing.
 A fresh runtime on an existing PC does not establish a fresh-machine bootstrap.
 Reusing model weights does not test their full download. Tutorial captures must
 describe the steps actually performed. [Progress, privacy and isolated acceptance
-details](docs/install-progress.md).
+details](docs/install-progress.md). The [November 6 real-install record](docs/validation/2026-11-06-fresh-install.md)
+shows exactly what was reused, what passed, and the shutdown warning observed.
 
 ## Customize before launch
 
